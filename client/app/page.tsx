@@ -3,7 +3,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import BiddingProduct from '@/components/ui/BiddingProducts';
-import BiddingProducts from '@/components/ui/BiddingProducts';
+import SoldProduct from '@/components/ui/SoldProducts';
 
 function page() {
   const [message, setMessage] = useState("Loading");
@@ -21,7 +21,7 @@ function page() {
   return (
     <div>
       {message}
-      <BiddingProducts/>
+      
     </div>
   )
 }
