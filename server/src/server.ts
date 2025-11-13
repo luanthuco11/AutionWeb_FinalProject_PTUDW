@@ -1,17 +1,20 @@
-import express from "express"
-import type { Request,  Response } from "express";
+import express from "express";
 import cors from "cors";
+import morgan from "morgan";
+import routes from "./routes";
 
 const app = express();
 const PORT = 8080;
 
+app.use(express.json());
 app.use(cors());
+app.use(morgan("dev")); // log the requests
 
-app.get("/", (req: Request, res: Response) => {
-    res.json({message: "hello world"});
-})
+// Dùng Factory tạo route cho resource
+app.use("/", routes);
 
-app.listen(PORT, () => {
-    console.log("Server is running on port 8080")
-})
-export default app;
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+

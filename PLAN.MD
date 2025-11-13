@@ -91,3 +91,31 @@
     PATCH	/orders/:productId/status	        Cập nhật trạng thái (paid / shipped / completed / cancelled)	
     POST	/orders/:productId/chat	            Chat giữa buyer & seller	
 
+
+
+src/
+├── config/
+│   ├── database.ts          # Singleton DB connection
+│   └── env.ts               # Environment config
+├── core/
+│   ├── BaseRoute.ts         # Abstract base class cho routes
+│   ├── BaseController.ts    # Abstract base class cho controllers
+│   ├── BaseService.ts       # Abstract base class cho services
+│   └── BaseRepository.ts    # Abstract base class cho repositories
+├── middleware/
+│   ├── errorHandler.ts      # Global error handling
+│   ├── logger.ts            # Request logging
+│   ├── validator.ts         # Request validation
+│   └── auth.ts              # Authentication (implement sau)
+├── utils/
+│   ├── Logger.ts            # Logger utility (Winston/Pino)
+│   ├── ApiResponse.ts       # Standardized API response
+│   └── ApiError.ts          # Custom error classes
+├── modules/                 # Feature-based organization
+│   └── user/
+│       ├── user.routes.ts
+│       ├── user.controller.ts
+│       ├── user.service.ts
+│       ├── user.repository.ts
+│       └── user.model.ts
+└── app.ts                   # Express app setup
