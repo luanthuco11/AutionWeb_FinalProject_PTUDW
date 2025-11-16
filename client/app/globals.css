@@ -219,6 +219,6 @@ h6 {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-.test {
-  @apply text-red-500;
+.background-user{
+  @apply bg-white shadow-sm px-6 rounded-lg pt-8 pb-4 border border-gray-200
 }

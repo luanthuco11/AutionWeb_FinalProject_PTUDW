@@ -5,6 +5,7 @@ import { FC, SVGProps, useState } from "react";
 interface Button {
   text: string;
   textColor?: string;
+  hoverTextColor?: string;
   backgroundColor?: string;
   hoverBackgroundColor?: string;
   icon?: FC<SVGProps<SVGSVGElement>>;
@@ -16,6 +17,7 @@ export default function PrimaryButton({
   onClick,
   icon: Icon,
   textColor,
+  hoverTextColor,
   backgroundColor,
   hoverBackgroundColor,
 } : Button) {
@@ -27,7 +29,7 @@ export default function PrimaryButton({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         style={{
-          color: textColor || "#FFFFFF",
+           color:  isHovered ? (hoverTextColor || "#FFFFFF") : (textColor ||  "#FFFFFF"),
           backgroundColor: isHovered ? (hoverBackgroundColor || "var(--chart-6)") : (backgroundColor || "var(--chart-2)"),
         }}
         className={`w-full flex items-center gap-2 justify-center py-2 font-medium rounded-lg `}

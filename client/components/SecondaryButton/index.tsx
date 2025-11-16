@@ -5,6 +5,7 @@ import { FC, SVGProps, useState } from "react";
 interface Button {
   text: string;
   textColor?: string;
+  hoverTextColor?: string;
   backgroundColor?: string;
   hoverBackgroundColor?: string;
   icon?: FC<SVGProps<SVGSVGElement>>;
@@ -18,6 +19,7 @@ export default function SecondaryButton({
   onClick,
   icon: Icon,
   textColor,
+  hoverTextColor,
   backgroundColor,
   hoverBackgroundColor,
 } : Button) {
@@ -29,7 +31,7 @@ export default function SecondaryButton({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        color: textColor || "#000000",
+        color:  isHovered ? (hoverTextColor || "#000000") : (textColor ||  "#000000"),
         backgroundColor: isHovered
           ? hoverBackgroundColor || "#9CA3AF"
           : backgroundColor || "#FFFFFF",
