@@ -4,12 +4,12 @@ export const userCategories: UserCategory[] = [
   {
     name: "Thông tin tài khoản",
     slug: "/info",
-    icon: InfoIcon
+    icon: InfoIcon,
   },
   {
     name: "Chi tiết đánh giá",
     slug: "/rating",
-    icon: RatingIcon
+    icon: RatingIcon,
   },
   {
     name: "Sản phẩm yêu thích",
@@ -34,5 +34,9 @@ export const userCategories: UserCategory[] = [
   {
     name: "Sản phẩm đã bán",
     slug: "/sold_products",
+  },
+  {
+    name: "Tạo sản phẩm",
+    slug: "/selling_products/create",
   },
 ];
