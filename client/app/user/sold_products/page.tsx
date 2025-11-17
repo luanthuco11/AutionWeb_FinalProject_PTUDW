@@ -64,7 +64,7 @@ const SoldProductPage = () => {
     return (
         <div className='bg-card shadow-sm rounded-lg p-8'>
             <div className="text-3xl text-[#1e293b] font-semibold mb-7">
-                Sản phẩm đã thắng
+                Sản phẩm đã bán
             </div>
             <div className="flex flex-col gap-5">
                 {soldProduct.map((bP, index) => (

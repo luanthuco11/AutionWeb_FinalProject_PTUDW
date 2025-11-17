@@ -17,7 +17,7 @@ export const userCategories: UserCategory[] = [
   },
   {
     name: "Sản phẩm đang đấu giá",
-    slug: "/favorite_products",
+    slug: "/bidding_products",
   },
   {
     name: "Sản phẩm đã thắng",
