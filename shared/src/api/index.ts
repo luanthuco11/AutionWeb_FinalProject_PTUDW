@@ -1,6 +1,5 @@
 const BASE_API = '/api';
 
-const USER_BASE = `${BASE_API}/user`;
 
 
 

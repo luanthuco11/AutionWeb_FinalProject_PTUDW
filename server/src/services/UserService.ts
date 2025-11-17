@@ -1,11 +1,6 @@
 import { BaseService } from "./BaseService";
-
 export class UserService extends BaseService {
   private static instance: UserService;
-  private users = [
-    { id: 1, name: "Minh Tri" },
-    { id: 2, name: "Nguyen Van A" },
-  ];
 
   private constructor() {
     super();
@@ -21,6 +16,7 @@ export class UserService extends BaseService {
   async getUsers() {
     const sql = `SELECT * FROM product.products`;
     const users = await this.safeQuery(sql);
+    // const result = await this.safeQuery<User>(sql, [id]); (cung duoc)
     // const users = await this.safeQuery(sql, params);
     return users;
   }

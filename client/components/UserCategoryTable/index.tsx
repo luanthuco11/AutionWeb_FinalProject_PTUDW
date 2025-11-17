@@ -20,7 +20,7 @@ export default function UserCategoryTable({
     setIdCurrent(id);
   };
   return (
-    <div className="relative w-60 h-120 flex flex-col bg-white border-2 border-gray-200 rounded-xl py-4 pl-4 pr-2 shadow-sm">
+    <div className="relative w-60 h-125 flex flex-col bg-white border-2 border-gray-200 rounded-xl py-4 pl-4 pr-2 shadow-sm">
       <p className="text-xl font-medium">Hồ sơ</p>
       <div className="grow overflow-y-auto minimal-scrollbar">
         {userCategories.map((item, index) => {
