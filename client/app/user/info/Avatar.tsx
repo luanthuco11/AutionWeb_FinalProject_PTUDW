@@ -26,6 +26,7 @@ export default function Avatar({
   } = imageProps
 
   const [isAvatarClicked, setIsAvatarClicked] = useState<boolean>(false);
+  const [viewAvatar, setViewAvatar] = useState<boolean>(false);
   const avatarRef = useRef<HTMLDivElement>(null);
 
   // Detect click outside
@@ -48,13 +49,14 @@ export default function Avatar({
   }, []);
 
   function handleViewImage() {
-    console.log("View Image");
+    setViewAvatar(true);
+    setIsAvatarClicked(false); 
   }
 
   function handleUpdateImage() {
     console.log("Update Image");
   }
-  
+
   function handleRemoveImage() {
     console.log("Remove Image");
   }
@@ -64,8 +66,27 @@ export default function Avatar({
       alt={alt}
       width={width}
       height={height}
-      className="border-2 border-black rounded-full object-cover"
+      onClick={() => setViewAvatar(true)}
+      className="border-2 border-black rounded-full object-cover cursor-pointer"
     />
+
+    {viewAvatar && (
+      <div
+        className="fixed inset-0 bg-black/30 flex items-center justify-center z-50"
+        onClick={() => setViewAvatar(false)} 
+      >
+        <Image
+          src={src}
+          alt={alt}
+          width={width / height * 600}
+          height={600}
+          className={`
+            max-w-[600px] max-h-[600px] rounded-lg shadow-lg
+            transition-transform duration-200
+          `}
+        />
+      </div>
+    )}
 
     {allowEdit && <div className="cursor-pointer" onClick={() => setIsAvatarClicked(true)}>
       <div className={`absolute inset-0 bg-gray-800 opacity-0 group-hover:opacity-60 transition-opacity duration-200 w-[${width}px] h-[${height}px] rounded-full`} />

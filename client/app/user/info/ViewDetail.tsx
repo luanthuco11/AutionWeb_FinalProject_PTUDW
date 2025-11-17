@@ -1,17 +1,20 @@
 import React from "react"
 import Image from 'next/image'
 import { CalendarIcon, MailIcon } from "lucide-react"
+import Avatar from "./Avatar"
 
 export default function ViewDetail() {
   return <div>
     <section className="flex flex-row my-5 mx-2 gap-5">
       <div>
-        <Image
-          src="https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTyhgwFBBuEqiLB5BAjQR4hCDCoJYefwwYtelRMap_8uXFoyisZLRptYiqLuXet0zX9X9Z4z_UAxYbYCcyD9Pm8i2iEe1ljOiYaXfrieWMo7cAQCVQZQ8iYoWz5pDdJFY67SAOckK9jv-c&s=19"
-          alt="avatar"
-          width={100}
-          height={100}
-          className="border-2 border-black rounded-full object-cover"
+        <Avatar
+          allowEdit={false}
+          imageProps={{
+            src: "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTyhgwFBBuEqiLB5BAjQR4hCDCoJYefwwYtelRMap_8uXFoyisZLRptYiqLuXet0zX9X9Z4z_UAxYbYCcyD9Pm8i2iEe1ljOiYaXfrieWMo7cAQCVQZQ8iYoWz5pDdJFY67SAOckK9jv-c&s=19",
+            alt: "avatar",
+            width: 100,
+            height: 100
+          }}
         />
       </div>
       <div className="grow flex flex-col gap-1">
