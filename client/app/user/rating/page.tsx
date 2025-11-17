@@ -1,302 +1,208 @@
 import ProductCard from '@/components/ProductCard'
 import React from 'react'
-import { Product } from '../../../../shared/src/types';
+import RatingLog from './RatingLog'
+import { UserRatingHistory } from '../../../../shared/src/types'
 
-export const mockProducts: Product[] = [
-  {
-    id: 1,
-    slug: "dong-ho-rolex-day-kim-loai",
-    seller: {
+const ratingHistory: UserRatingHistory = {
+  ratee_id: 1,
+  logs: [
+    {
+      id: 1,
+      rater: {
+        id: 2,
+        name: "Donald Trump",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      rating: 1,
+      comment: "Bán hàng uy tín, hàng không hư hỏng. Hàng hóa giống hình 100%",
+      created_at: new Date(2005, 11, 27),
+      updated_at: null
+    },
+    {
+      id: 2,
+      rater: {
+        id: 3,
+        name: "Bill Gates",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      rating: 0,
+      comment: "Không đẹp trai như Huỳnh Gia Âu!",
+      created_at: new Date(2023, 0, 15), // 15/01/2023
+      updated_at: null
+    },
+    {
+      id: 3,
+      rater: {
+        id: 4,
+        name: "Elon Musk",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      rating: 0,
+      comment: "Sản phẩm bị lỗi nhỏ, liên hệ hỗ trợ hơi chậm. Cần cải thiện.",
+      created_at: new Date(2024, 8, 5), // 05/09/2024
+      updated_at: null
+    },
+    {
+      id: 4,
+      rater: {
+        id: 5,
+        name: "Taylor Swift",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      rating: 1,
+      comment: "Tuyệt vời, sẽ ủng hộ tiếp!",
+      created_at: new Date(2024, 10, 20), // 20/11/2024
+      updated_at: null
+    },
+    {
+      id: 5,
+      rater: {
+        id: 6,
+        name: "Jeff Bezos",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47DZ33C0"
+      },
+      rating: 1,
+      // Không có trường comment
+      created_at: new Date(2022, 5, 3), // 03/06/2022
+      updated_at: null
+    },
+    {
+      id: 6,
+      rater: {
+        id: 7,
+        name: "Barack Obama",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      rating: 0,
+      comment: "Gió ơi xin đừng lấy em đi Hãy mang em về chốn xuân thì Ngày nào còn bồi hồi tóc xanh Ngày nào còn trò chuyện vớ anh Em nói em thương anh mà Nói em yêu em mà Cớ sao ta lại hóa chia xa Đóa phong lan lặng lẽ mơ màng Nàng dịu dàng tựa đèn phố Vinh Đẹp rạng ngời chẳng cần cố Xinh",
+      created_at: new Date(2021, 1, 28), // 28/02/2021
+      updated_at: null
+    },
+    {
+      id: 7,
+      rater: {
+        id: 8,
+        name: "Rihanna",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      rating: 1,
+      comment: "Chủ shop nhiệt tình, tư vấn chu đáo.",
+      created_at: new Date(2023, 11, 1), // 01/12/2023
+      updated_at: null
+    },
+    {
+      id: 8,
+      rater: {
+        id: 9,
+        name: "LeBron James",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      rating: 1,
+      // Không có trường comment
+      created_at: new Date(2024, 3, 10), // 10/04/2024
+      updated_at: null
+    },
+    {
+      id: 9,
+      rater: {
+        id: 10,
+        name: "Ariana Grande",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      rating: 0,
+      comment: "Thời gian giao hàng quá lâu, vượt quá cam kết.",
+      created_at: new Date(2023, 7, 22), // 22/08/2023
+      updated_at: null
+    },
+    {
       id: 10,
-      name: "Nguyễn Văn A",
-      profile_img: "https://ui-avatars.com/api/?name=Nguyen+Van+A",
-    },
-    category_id: 1,
-    main_image: "https://picsum.photos/seed/rolex/600/400",
-    extra_images: [
-      "https://picsum.photos/seed/rolex1/600/400",
-      "https://picsum.photos/seed/rolex2/600/400",
-    ],
-    name: "Đồng hồ Rolex Day-Date 40mm",
-    initial_price: 150000000,
-    buy_now_price: 200000000,
-    current_price: 155000000,
-    top_bidder: {
-      id: 22,
-      name: "Trần Minh",
-      profile_img: "https://ui-avatars.com/api/?name=Tran+Minh",
-    },
-    bid_count: 12,
-    end_time: new Date("2025-12-20T15:30:00"),
-    description: "Rolex Day-Date 40mm dây vàng khối, tình trạng 99%, fullbox.",
-    auto_extend: true,
-    price_increment: 2000000,
-    created_at: new Date("2025-10-10T13:20:00"),
-    updated_at: new Date("2025-11-01T09:15:00"),
-  },
-
-  {
-    id: 2,
-    slug: "macbook-pro-m3-2025",
-    seller: {
-      id: 11,
-      name: "Trần Quốc Bảo",
-      profile_img: "https://ui-avatars.com/api/?name=Tran+Quoc+Bao",
-    },
-    category_id: 2,
-    main_image: "https://picsum.photos/seed/macbook/600/400",
-    extra_images: ["https://picsum.photos/seed/macbook1/600/400"],
-    name: "MacBook Pro M3 Max 2025 – 32GB / 1TB",
-    initial_price: 45000000,
-    buy_now_price: 55000000,
-    current_price: 46800000,
-    top_bidder: null,
-    bid_count: 0,
-    end_time: new Date("2025-12-28T20:00:00"),
-    description:
-      "MacBook Pro M3 Max mới 98%, hiệu năng cực mạnh, phù hợp editor.",
-    auto_extend: false,
-    price_increment: 500000,
-    created_at: new Date("2025-11-05T08:30:00"),
-    updated_at: null,
-  },
-
-  {
-    id: 3,
-    slug: "giay-jordan-1-lost-and-found",
-    seller: {
-      id: 15,
-      name: "Phạm Hoàng Long",
-      profile_img: "https://ui-avatars.com/api/?name=Pham+Hoang+Long",
-    },
-    category_id: 3,
-    main_image: "https://picsum.photos/seed/jordan/600/400",
-    extra_images: [
-      "https://picsum.photos/seed/jordan1/600/400",
-      "https://picsum.photos/seed/jordan2/600/400",
-    ],
-    name: "Jordan 1 Retro High OG - Lost & Found",
-    initial_price: 8000000,
-    buy_now_price: 11000000,
-    current_price: 9000000,
-    top_bidder: {
-      id: 24,
-      name: "Lê Thanh",
-      profile_img: "https://ui-avatars.com/api/?name=Le+Thanh",
-    },
-    bid_count: 5,
-    end_time: new Date("2025-12-25T18:45:00"),
-    description: "Jordan 1 Lost & Found size 42, hàng chính hãng 100%.",
-    auto_extend: true,
-    price_increment: 200000,
-    created_at: new Date("2025-10-30T11:00:00"),
-    updated_at: new Date("2025-11-10T12:00:00"),
-  },
-
-  {
-    id: 4,
-    slug: "camera-sony-a7m4-body",
-    seller: {
-      id: 12,
-      name: "Hoàng Gia Minh",
-      profile_img: "https://ui-avatars.com/api/?name=Hoang+Gia+Minh",
-    },
-    category_id: 4,
-    main_image: "https://picsum.photos/seed/sony/600/400",
-    extra_images: [],
-    name: "Sony A7 Mark IV (Body)",
-    initial_price: 30000000,
-    buy_now_price: 38000000,
-    current_price: 31500000,
-    top_bidder: null,
-    bid_count: 2,
-    end_time: new Date("2025-12-22T19:00:00"),
-    description: "Sony A7M4 body đẹp 97%, chụp 25k shots.",
-    auto_extend: true,
-    price_increment: 1000000,
-    created_at: new Date("2025-10-18T14:30:00"),
-    updated_at: null,
-  },
-
-  {
-    id: 5,
-    slug: "lego-star-wars-millennium-falcon",
-    seller: {
-      id: 14,
-      name: "Đỗ Hải Phong",
-      profile_img: "https://ui-avatars.com/api/?name=Do+Hai+Phong",
-    },
-    category_id: 5,
-    main_image: "https://picsum.photos/seed/lego/600/400",
-    extra_images: ["https://picsum.photos/seed/lego1/600/400"],
-    name: "LEGO Star Wars – Millennium Falcon (Ultimate Edition)",
-    initial_price: 16000000,
-    buy_now_price: 20000000,
-    current_price: 16800000,
-    top_bidder: {
-      id: 33,
-      name: "Ngô Nhật",
-      profile_img: "https://ui-avatars.com/api/?name=Ngo+Nhat",
-    },
-    bid_count: 8,
-    end_time: new Date("2025-12-30T21:30:00"),
-    description: "Bản LEGO Millennium Falcon cực lớn, hơn 7,500 chi tiết.",
-    auto_extend: false,
-    price_increment: 300000,
-    created_at: new Date("2025-11-02T10:00:00"),
-    updated_at: new Date("2025-11-12T16:00:00"),
-  },
-];
-
-export const mockProducts: Product[] = [
-  {
-    id: 1,
-    slug: "dong-ho-rolex-day-kim-loai",
-    seller: {
-      id: 10,
-      name: "Nguyễn Văn A",
-      profile_img: "https://ui-avatars.com/api/?name=Nguyen+Van+A",
-    },
-    category_id: 1,
-    main_image: "https://picsum.photos/seed/rolex/600/400",
-    extra_images: [
-      "https://picsum.photos/seed/rolex1/600/400",
-      "https://picsum.photos/seed/rolex2/600/400",
-    ],
-    name: "Đồng hồ Rolex Day-Date 40mm",
-    initial_price: 150000000,
-    buy_now_price: 200000000,
-    current_price: 155000000,
-    top_bidder: {
-      id: 22,
-      name: "Trần Minh",
-      profile_img: "https://ui-avatars.com/api/?name=Tran+Minh",
-    },
-    bid_count: 12,
-    end_time: new Date("2025-12-20T15:30:00"),
-    description: "Rolex Day-Date 40mm dây vàng khối, tình trạng 99%, fullbox.",
-    auto_extend: true,
-    price_increment: 2000000,
-    created_at: new Date("2025-10-10T13:20:00"),
-    updated_at: new Date("2025-11-01T09:15:00"),
-  },
-
-  {
-    id: 2,
-    slug: "macbook-pro-m3-2025",
-    seller: {
-      id: 11,
-      name: "Trần Quốc Bảo",
-      profile_img: "https://ui-avatars.com/api/?name=Tran+Quoc+Bao",
-    },
-    category_id: 2,
-    main_image: "https://picsum.photos/seed/macbook/600/400",
-    extra_images: ["https://picsum.photos/seed/macbook1/600/400"],
-    name: "MacBook Pro M3 Max 2025 – 32GB / 1TB",
-    initial_price: 45000000,
-    buy_now_price: 55000000,
-    current_price: 46800000,
-    top_bidder: null,
-    bid_count: 0,
-    end_time: new Date("2025-12-28T20:00:00"),
-    description:
-      "MacBook Pro M3 Max mới 98%, hiệu năng cực mạnh, phù hợp editor.",
-    auto_extend: false,
-    price_increment: 500000,
-    created_at: new Date("2025-11-05T08:30:00"),
-    updated_at: null,
-  },
-
-  {
-    id: 3,
-    slug: "giay-jordan-1-lost-and-found",
-    seller: {
-      id: 15,
-      name: "Phạm Hoàng Long",
-      profile_img: "https://ui-avatars.com/api/?name=Pham+Hoang+Long",
-    },
-    category_id: 3,
-    main_image: "https://picsum.photos/seed/jordan/600/400",
-    extra_images: [
-      "https://picsum.photos/seed/jordan1/600/400",
-      "https://picsum.photos/seed/jordan2/600/400",
-    ],
-    name: "Jordan 1 Retro High OG - Lost & Found",
-    initial_price: 8000000,
-    buy_now_price: 11000000,
-    current_price: 9000000,
-    top_bidder: {
-      id: 24,
-      name: "Lê Thanh",
-      profile_img: "https://ui-avatars.com/api/?name=Le+Thanh",
-    },
-    bid_count: 5,
-    end_time: new Date("2025-12-25T18:45:00"),
-    description: "Jordan 1 Lost & Found size 42, hàng chính hãng 100%.",
-    auto_extend: true,
-    price_increment: 200000,
-    created_at: new Date("2025-10-30T11:00:00"),
-    updated_at: new Date("2025-11-10T12:00:00"),
-  },
-
-  {
-    id: 4,
-    slug: "camera-sony-a7m4-body",
-    seller: {
-      id: 12,
-      name: "Hoàng Gia Minh",
-      profile_img: "https://ui-avatars.com/api/?name=Hoang+Gia+Minh",
-    },
-    category_id: 4,
-    main_image: "https://picsum.photos/seed/sony/600/400",
-    extra_images: [],
-    name: "Sony A7 Mark IV (Body)",
-    initial_price: 30000000,
-    buy_now_price: 38000000,
-    current_price: 31500000,
-    top_bidder: null,
-    bid_count: 2,
-    end_time: new Date("2025-12-22T19:00:00"),
-    description: "Sony A7M4 body đẹp 97%, chụp 25k shots.",
-    auto_extend: true,
-    price_increment: 1000000,
-    created_at: new Date("2025-10-18T14:30:00"),
-    updated_at: null,
-  },
-
-  {
-    id: 5,
-    slug: "lego-star-wars-millennium-falcon",
-    seller: {
-      id: 14,
-      name: "Đỗ Hải Phong",
-      profile_img: "https://ui-avatars.com/api/?name=Do+Hai+Phong",
-    },
-    category_id: 5,
-    main_image: "https://picsum.photos/seed/lego/600/400",
-    extra_images: ["https://picsum.photos/seed/lego1/600/400"],
-    name: "LEGO Star Wars – Millennium Falcon (Ultimate Edition)",
-    initial_price: 16000000,
-    buy_now_price: 20000000,
-    current_price: 16800000,
-    top_bidder: {
-      id: 33,
-      name: "Ngô Nhật",
-      profile_img: "https://ui-avatars.com/api/?name=Ngo+Nhat",
-    },
-    bid_count: 8,
-    end_time: new Date("2025-12-30T21:30:00"),
-    description: "Bản LEGO Millennium Falcon cực lớn, hơn 7,500 chi tiết.",
-    auto_extend: false,
-    price_increment: 300000,
-    created_at: new Date("2025-11-02T10:00:00"),
-    updated_at: new Date("2025-11-12T16:00:00"),
-  },
-];
+      rater: {
+        id: 11,
+        name: "Queen Elizabeth",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      ratee: {
+        id: 1,
+        name: "Huỳnh Gia Âu",
+        profile_img: "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTu-GSY_bXjggu92Go8I0Od4bEoIE-RnSuaCRmN5xcL4lfSDQI169Wyg5hK0VegSLUJjpqlG47veDZ33C0"
+      },
+      rating: 1,
+      // Không có trường comment
+      created_at: new Date(2024, 6, 4), // 04/07/2024
+      updated_at: null
+    }
+  ]
+}
 
 const RatingPage = () => {
-  return <div className="flex flex-row gap-2">
-    {mockProducts.map(product => <ProductCard key={product.slug} product={product}/>)}
+  return <div className="background-user flex flex-col gap-2">
+    <h1 className="text-2xl font-medium">Chi tiết đánh giá</h1>
+    <div className="mt-4 bg-slate-100 py-7 flex flex-row justify-evenly rounded-lg border-2 border-slate-300">
+      <div className="flex flex-col items-center gap-1">
+        <p className="text-4xl font-bold text-green-700">96%</p>
+        <p className="text-sm text-gray-500">Điểm tích cực</p>
+      </div>
+      <div className="flex flex-col items-center gap-1">
+        <p className="text-4xl font-bold text-slate-600">112</p>
+        <p className="text-sm text-gray-500">Đánh giá tích cực</p>
+      </div>
+      <div className="flex flex-col items-center gap-1">
+        <p className="text-4xl font-bold text-slate-600">117</p>
+        <p className="text-sm text-gray-500">Tổng đánh giá</p>
+      </div>
+    </div>
+
+    <h2 className="mt-6 text-xl font-medium">Những đánh giá gần đây</h2>
+    <div className="mt-2 flex flex-col gap-4">
+      {ratingHistory.logs.map(log => <RatingLog key={log.id} ratingLog={log}/>)}
+    </div>
+
+    {/* pagination */}
   </div>
 }
 
