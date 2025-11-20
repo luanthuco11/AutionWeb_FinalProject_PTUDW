@@ -29,67 +29,65 @@
 
 
 # Phase 2: Api Development
-## 1: USER & UPGRADES REQUEST API
+## 1: USER & UPGRADES REQUEST API (Hà)
  --> user.routes.ts
-    GET	    /users/:id	                        Xem hồ sơ user (ẩn email nếu không phải chủ)	
+    GET	    /users/profile	                        Xem hồ sơ user (ẩn email nếu không phải chủ)	
     PATCH	/users/profile	                    Cập nhật hồ sơ cá nhân	
     PATCH	/users/password	                    Đổi mật khẩu (yêu cầu mật khẩu cũ)	
-    GET	    /users/:id/summary	                Tổng hợp số sản phẩm tham gia, thắng, đánh giá  	
  --> upgrade.routes.ts
     POST	/upgrades/request	                Bidder gửi yêu cầu trở thành seller	
     GET	    /upgrades/status	                Xem tình trạng yêu cầu	
     PATCH	/upgrades/:id/approve	            Duyệt yêu cầu	
     PATCH	/upgrades/:id/reject	            Từ chối yêu cầu	
 ----------------------------
-## 2: PRODUCT API
- --> Product.routes.ts
+## 2: PRODUCT API (Âu)
+ --> product.routes.ts
     GET	    /products	                                Lấy danh sách tất cả sản phẩm 
-    GET	    /products/search	                        Tìm kiếm full-text theo tên, danh mục, sắp xếp theo thời gian, giá...	
+    GET	    /products?query&category&sort	                        Tìm kiếm full-text theo tên, danh mục, sắp xếp theo thời gian, giá...	
     GET	    /products/top	                            Top 5 sản phẩm sắp kết thúc / nhiều lượt ra giá / giá cao nhất
-    GET	    /products/:slug	                            Xem chi tiết sản phẩm	
+    GET	    /products/:id	                            Xem chi tiết sản phẩm	
     POST	/products	                                Seller đăng sản phẩm mới	
     PATCH	/products/:id/description	                Seller bổ sung mô tả	
     DELETE	/products/:id	                            Gỡ sản phẩm	
     GET	    /products/:productId/questions	            Lấy danh sách câu hỏi & trả lời	
     POST	/products/:productId/questions	            Đặt câu hỏi	
     POST	/products/:productId/:questionsId/answers	Người bán trả lời câu hỏi	
+    GET	    /products/:productId/status	        Kiểm tra tình trạng (đang diễn ra / kết thúc / gia hạn)	
+    POST	/products/:productId/extend	        Tự động gia hạn (trigger nội bộ hoặc admin chỉnh config)
 ----------------------------
-## 3: CATEGORY API
- --> Category.routes.ts
+## 3: CATEGORY API (Luân)
+ --> ategory.routes.ts
     GET	    /categories	                        Lấy danh sách tất cả danh mục 2 cấp	
     GET	    /categories/:id/products	        Lấy sản phẩm theo danh mục (phân trang)	
     POST	/categories	                        Tạo danh mục mới	    
     PATCH	/categories/:id	                    Cập nhật danh mục (Name)	
     DELETE	/categories/:id	                    Xoá danh mục        
 ----------------------------
-## 4: FAVORITE (Watch List) API
+## 4: FAVORITE (Watch List) API (Trí)
 --> favorite.route.ts
     GET	    /favorites	                        Xem danh sách sản phẩm yêu thích	
     POST	/favorites/:productId	            Thêm vào danh sách yêu thích	
     DELETE	/favorites/:productId	            Xoá khỏi danh sách yêu thích
 ---------------------------
-## 5: RATING API
+## 5: RATING API (Hà)
 --> rating.route.ts
     GET	    /ratings/:userId	Xem chi tiết đánh giá của user	
-    POST	/ratings	        Gửi đánh giá (+1 hoặc -1, có comment)		
+    POST	/ratings	        Gửi đánh giá (0 hoặc 1, có thể không có comment)		
 ---------------------------
-## 6: BID & AUCTION API
+## 6: BID & AUCTION API (Luân)
 --> bid.routes.ts
     GET	    /bids/:productId	                Xem lịch sử đấu giá 
     POST	/bids	                            Gửi giá đấu 
     POST	/bids/reject	                    Seller từ chối người mua cụ thể	Seller
---> auction.route.ts
-    GET	    /auctions/active	                Lấy danh sách phiên đang diễn ra	
-    GET	    /auctions/:productId/status	        Kiểm tra tình trạng (đang diễn ra / kết thúc / gia hạn)	
-    POST	/auctions/:productId/extend	        Tự động gia hạn (trigger nội bộ hoặc admin chỉnh config)	
 ---------------------------
-## 7: ORDER & TRANSACTION API
+## 7: ORDER & TRANSACTION API (Trí)
 --> order.route.ts
     GET	    /orders	                            Xem danh sách đơn hàng của user	
     GET	    /orders/:productId	                Xem chi tiết đơn hàng (thắng đấu giá)	
     POST	/orders	                            Tạo đơn hàng sau khi kết thúc phiên	
-    PATCH	/orders/:productId/status	        Cập nhật trạng thái (paid / shipped / completed / cancelled)	
-    POST	/orders/:productId/chat	            Chat giữa buyer & seller	
+    PATCH	/orders/:productId/status	        Cập nhật trạng thái (paid / shipped / completed / cancelled)
+    GET   /orders/:productId/chat             Lấy dữ liệu chat giữa buyer & seller	
+    POST	/orders/:productId/chat	            Cập nhật chat giữa buyer & seller	
 
 
 
