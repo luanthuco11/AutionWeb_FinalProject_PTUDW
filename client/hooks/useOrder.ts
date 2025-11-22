@@ -76,12 +76,16 @@ class OrderHook {
   }
 
   static useCreateOrderChat() {
+    const queryClient = useQueryClient();
+
     return useMutation({
       mutationFn: (params: { productId: number, payload: any}) =>
         OrderService.createOrderChat(params.productId, params.payload),
 
       onSuccess: (_, params) => {
-        queryKey: ["order_chat", params.productId]
+        queryClient.invalidateQueries({
+          queryKey: ["order_chat", params.productId]
+        })
       }
     })
   }
