@@ -35,7 +35,7 @@ export type ProductPreview = Pick<Product,
   'auto_extend' | 
   'created_at'
 > & {
-    top_bidder_name: string
+  top_bidder_name: string
 }
 
 export type ProductCategoryTree = {
