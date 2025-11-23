@@ -5,6 +5,7 @@ import { ArrowRight } from "@/components/icons";
 import Link from "next/link";
 import { Product } from "../../shared/src/types";
 import ProductCard from "@/components/ProductCard";
+import ProductHook from "@/hooks/useProduct";
 
 const mockProductEndTime: Product[] = [
   {
@@ -194,6 +195,13 @@ const pageItems: PageItem[] = [
 ];
 
 function Page() {
+  const { data, isLoading, error } = ProductHook.useGetProducts();
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error!</p>;
+
+
+  console.log("this is data: ", data);
   return (
     <>
       <div>

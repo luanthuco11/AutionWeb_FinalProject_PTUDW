@@ -18,9 +18,9 @@ export class ProductController extends BaseController {
   }
 
   async getTopProduct(req: Request, res: Response) {
-    const topEndingSoonProducts = await this.service.getTopEndingSoonProducts();
-    const topBiddingProducts = await this.service.getTopBiddingProducts();
-    const topPriceProducts = await this.service.getTopPriceProducts();
+    const topEndingSoonProducts = await this.service.getTopEndingSoonProducts(5);
+    const topBiddingProducts = await this.service.getTopBiddingProducts(5);
+    const topPriceProducts = await this.service.getTopPriceProducts(5);
 
     return {
       topEndingSoonProducts: topEndingSoonProducts,

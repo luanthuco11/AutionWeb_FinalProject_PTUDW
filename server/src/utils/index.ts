@@ -1,4 +1,4 @@
-import { Product } from './../../../shared/src/types/Product';
+import { Product, ProductAnswer, ProductQuestion } from './../../../shared/src/types/Product';
 import Database from '../config/db';
 export const getProductColumns = async () => {
     const pool = Database.getInstance();
@@ -16,6 +16,41 @@ export const getProductColumns = async () => {
   const result = await pool.query(sql);
   return result.rows.map(r => r.column_name);
 };
+
+export const getProductQuestionColumns = async () => {
+   const pool = Database.getInstance();
+  const sql = `
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_schema = 'feedback'
+      AND table_name = 'product_questions'
+      AND column_name <> 'id'
+      AND column_name <> 'created_at'
+    ORDER BY ordinal_position;
+  `;
+
+  const result = await pool.query(sql);
+  return result.rows.map(r => r.column_name);
+}
+
+
+export const getProductAnswerColumns = async () => {
+   const pool = Database.getInstance();
+  const sql = `
+    SELECT column_name
+    FROM information_schema.columns
+    WHERE table_schema = 'feedback'
+      AND table_name = 'product_answers'
+      AND column_name <> 'id'
+      AND column_name <> 'created_at'
+    ORDER BY ordinal_position;
+  `;
+
+  const result = await pool.query(sql);
+  return result.rows.map(r => r.column_name);
+}
+
+
 
 export const getProductValue = (data: Product) => {
   const  {
@@ -48,5 +83,35 @@ export const getProductValue = (data: Product) => {
     description,
     auto_extend, 
     price_increment
+]
+};
+
+export const getProductQuestionValue = (data: ProductQuestion) => {
+  const  {
+    product_id,
+    user,
+    comment,
+  } = data
+
+  return [
+    product_id,
+    user.id,
+    comment,
+]
+};
+
+
+
+export const getProductAnswerValue = (data: ProductAnswer) => {
+  const  {
+    question_id,
+    user,
+    comment,
+  } = data
+
+  return [
+    question_id,
+    user.id,
+    comment,
 ]
 };

@@ -1,5 +1,6 @@
-import { getProductColumns, getProductValue } from "../utils";
-import { ProductQuestion } from "./../../../shared/src/types/Product";
+import { ProductPreview } from './../../../shared/src/types/Product';
+import { profile } from "console";
+import { getProductAnswerColumns, getProductAnswerValue, getProductColumns, getProductQuestionColumns, getProductQuestionValue, getProductValue } from "../utils";
 import { BaseService } from "./BaseService";
 import { Request, Response, NextFunction } from "express";
 export class ProductService extends BaseService {
@@ -70,7 +71,7 @@ export class ProductService extends BaseService {
 
     const top_bidder = result[0];
     const bid_count =  result[1];
-    const current_price = result[2];
+    let current_price = result[2];
     const status = result[3];
     const sql = `
     SELECT 
@@ -104,6 +105,9 @@ export class ProductService extends BaseService {
     products[0].initial_price = products[0].initial_price ? Number(products[0].initial_price) : null
     products[0].buy_now_price = products[0].buy_now_price ? Number(products[0].buy_now_price) : null
     products[0].price_increment = products[0].price_increment ? Number(products[0].price_increment) : null
+    if (current_price == null){
+      current_price = products[0].initial_price;
+    }
 
 
     products = {
@@ -118,13 +122,60 @@ export class ProductService extends BaseService {
     return products;
   }
 
+   async getProductPreviewType(productId: number) {
+    const result = await Promise.all([
+      this.getTopBidder(productId),
+      this.getBidCount(productId),
+      this.getCurrentPrice(productId),
+    ]);
+
+    const top_bidder: any = result[0];
+    const bid_count =  result[1];
+    let current_price = result[2];
+    const sql = `
+    SELECT 
+      p.id, 
+      p.slug,
+      p.category_id,
+      p.main_image,
+      p.name,
+      p.buy_now_price,
+      p.end_time,
+      p.auto_extend,
+      p.created_at
+
+    FROM product.products p 
+    JOIN admin.users u on u.id = p.seller_id 
+    WHERE p.id = $1
+    `;
+
+    let products: any = await this.safeQuery(sql, [productId]);
+    products[0].id = products[0].id ? Number(products[0].id) : null
+    products[0].initial_price = products[0].initial_price ? Number(products[0].initial_price) : null
+    products[0].buy_now_price = products[0].buy_now_price ? Number(products[0].buy_now_price) : null
+    products[0].price_increment = products[0].price_increment ? Number(products[0].price_increment) : null
+    if (current_price == null){
+      current_price = products[0].initial_price;
+    }
+
+
+    products = {
+      ...products[0],
+      top_bidder_name: top_bidder ? top_bidder.name : null,
+      current_price: current_price,
+      bid_count: bid_count
+    }
+
+    return products;
+  }
+
   async getProducts() {
-    const sql = `SELECT id FROM product.products order by id asc  LIMIT 5 `;
-    let products = await this.safeQuery(sql);
+    const sql = `SELECT id FROM product.products order by id asc  `;
+    let products = await this.safeQuery<ProductPreview>(sql);
 
     const newProducts = await Promise.all(
       products.map(async (item: any) => {
-        const productType = this.getProductType(item.id);
+        const productType = this.getProductPreviewType(item.id);
         return productType
       })
     );
@@ -135,21 +186,36 @@ export class ProductService extends BaseService {
   }
 
   // Ko chuyen limit cung
-  async getTopEndingSoonProducts() {
-    const sql = `
-    SELECT * 
+  async getTopEndingSoonProducts(limit?: number) {
+    console.log("this is limit: ", limit);
+    let sql = `
+    SELECT id
     FROM product.products
     ORDER BY product.products.end_time ASC
-    LIMIT 5
     `;
-    const endTimeProducts = await this.safeQuery(sql);
-    return endTimeProducts;
+
+    const params: any[] = [];
+    if (limit){
+      sql += `LIMIT $1 \n`;
+      params.push(limit);
+    }
+
+    const endTimeProducts = await this.safeQuery(sql, params);
+
+    const newEndtimeProducts = await Promise.all(
+      endTimeProducts.map(async (item: any) => {
+        const productType = this.getProductPreviewType(item.id);
+        return productType
+      })
+    );
+
+    return newEndtimeProducts;
   }
 
   // Ko chuyen limit cung
-  async getTopBiddingProducts() {
-    const sql = `
-  SELECT * 
+  async getTopBiddingProducts(limit?: number) {
+    let sql = `
+  SELECT products.id 
   FROM product.products AS products 
   WHERE products.id IN (
   SELECT products.id
@@ -157,23 +223,49 @@ export class ProductService extends BaseService {
   JOIN auction.bid_logs  AS bid_logs ON bid_logs.product_id = products.id 
   GROUP BY products.id 
   ORDER BY COUNT(DISTINCT bid_logs.user_id) DESC
-  LIMIT 5
   )
   `;
-    const topBiddingProducts = await this.safeQuery(sql);
-    return topBiddingProducts;
+   const params: any[] = [];
+    if (limit){
+      sql += `LIMIT $1 \n`;
+      params.push(limit);
+    }
+
+    const topBiddingProducts = await this.safeQuery(sql, params);
+
+     const newTopBiddingProducts = await Promise.all(
+      topBiddingProducts.map(async (item: any) => {
+        const productType = this.getProductPreviewType(item.id);
+        return productType
+      })
+    );
+
+    return newTopBiddingProducts;
   }
 
   // Ko chuyen limit cung
-  async getTopPriceProducts() {
-    const sql = `
-    SELECT * 
-    FROM product.products AS products 
-    ORDER BY products.initial_price DESC 
-    LIMIT 5
+  async getTopPriceProducts(limit? :number) {
+    let sql = `
+    SELECT pp.id
+    FROM product.products AS pp
+    JOin auction.bid_logs bl on bl.product_id = pp.id 
+    GROUP BY pp.id 
+    ORDER BY MAX(bl.price) DESC 
     `;
-    const topPriceProducts = await this.safeQuery(sql);
-    return topPriceProducts;
+    let params: any[] = []
+    if (limit){
+      sql += `LIMIT $1 \n`;
+      params.push(limit);
+    }
+    const topPriceProducts = await this.safeQuery(sql, params);
+
+     const newTopPriceProducts = await Promise.all(
+      topPriceProducts.map(async (item: any) => {
+        const productType = this.getProductPreviewType(item.id);
+        return productType
+      })
+    );
+    return newTopPriceProducts;
   }
 
   // check productId phai la number
@@ -198,10 +290,6 @@ export class ProductService extends BaseService {
   }
 
   async createProduct(req: Request) {
-    // const data = {
-    //   ...req.body,
-    //   seller_id: req.body.seller.id
-    // }
     const keys = await getProductColumns();
     const values = getProductValue(req.body);
     const params = keys.map((_, i) => `$${i + 1}`);
@@ -282,12 +370,8 @@ export class ProductService extends BaseService {
   }
 
   async createQuestion(req: Request) {
-    const object = {
-      ...req.body,
-      product_id: Number(req.params.productId),
-    };
-    const key = Object.keys(object);
-    const data = Object.values(object);
+    const key = await getProductQuestionColumns();
+    const data = getProductQuestionValue(req.body);
     const params = key.map((_, i) => `$${i + 1}`);
     const sql = `
     INSERT INTO feedback.product_questions(${key.join(",")})
@@ -295,24 +379,21 @@ export class ProductService extends BaseService {
     RETURNING *
     `;
     const question = await this.safeQuery(sql, data);
-    return question;
+    return question[0];
   }
 
+
   async createAnswer(req: Request) {
-    const object = {
-      ...req.body,
-      question_id: Number(req.params.questionId),
-    };
-    const key = Object.keys(object);
-    const data = Object.values(object);
+     const key = await getProductAnswerColumns();
+    const data = getProductAnswerValue(req.body);
     const params = key.map((_, i) => `$${i + 1}`);
     const sql = `
     INSERT INTO feedback.product_answers(${key.join(",")})
     VALUES (${params})
     RETURNING *
     `;
-    const question = await this.safeQuery(sql, data);
-    return question;
+    const answer = await this.safeQuery(sql, data);
+    return answer[0];
   }
 
   async updateProductExtend(req: Request) {
