@@ -23,7 +23,7 @@ export class OrderService {
     })
   }
 
-  static async updateOrderStatus(productId: number, status: boolean): Promise<any> {
+  static async updateOrderStatus(productId: number, status: 'pending | paid | shipped | completed | cancelled'): Promise<any> {
     return safeRequest(async() => {
       const res = await api.patch(API_ROUTES.order.updateOrderStatus(productId, status));
       return res.data;

@@ -50,7 +50,7 @@ class OrderHook {
     const queryClient = useQueryClient();
 
     return useMutation({
-      mutationFn: (params: { productId: number, status: boolean}) =>
+      mutationFn: (params: { productId: number, status: string}) =>
         OrderService.updateOrderStatus(params.productId, params.status),
 
       onSuccess: (_, params) => {

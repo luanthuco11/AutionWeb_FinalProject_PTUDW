@@ -6,7 +6,12 @@ export type Order = {
   bidder: User;
   status: 'pending | paid | shipped | completed | cancelled';
   shipping_address: string;
-  payment_invoice: string;
+  payment_invoice: string | null;
   created_at: Date;
   updated_at: Date | null;
+}
+
+export type NewOrderRequest = {
+  product_id: number;
+  shipping_address: string;
 }

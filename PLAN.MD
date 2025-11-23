@@ -68,7 +68,8 @@
 ## 4: FAVORITE (Watch List) API (Âu)
 --> favorite.route.ts
     GET	    /favorite	                        Xem danh sách sản phẩm yêu thích	
-    PATCH	/favorite/:productId/:isFavorite	            Thêm/bỏ vào danh sách yêu thích
+    POST	/favorite/:productId/           Thêm vào danh sách yêu thích
+    DELETE	/favorite/:productId/           Xóa khỏi danh sách yêu thích
 ---------------------------
 ## 5: RATING API (Hà)
 --> rating.route.ts

@@ -19,7 +19,7 @@ const API_ROUTES = {
     getOrder: ORDER_API, // GET
     getOrderById: (productId: number) => `${ORDER_API}/${productId}`, // GET
     createOrder: ORDER_API, // POST
-    updateOrderStatus: (productId: number, status: boolean) => `/${ORDER_API}/${productId}/${status}`, // PATCH
+    updateOrderStatus: (productId: number, status: string) => `/${ORDER_API}/${productId}/${status}`, // PATCH
     getOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // GET
     createOrderChat: (productId: number) =>  `${ORDER_API}/${productId}/chat` // POST
   }

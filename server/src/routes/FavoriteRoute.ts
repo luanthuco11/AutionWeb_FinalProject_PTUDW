@@ -10,9 +10,10 @@ export class FavoriteRoute extends BaseRoute {
     this.controller = new FavoriteController(FavoriteService.getInstance());
     this.initRoutes();
   }
-
+  
   initRoutes() {
     this.router.get("/", this.controller.getFavorite.bind(this.controller));
-    this.router.post("/:productId", this.controller.updateFavorite.bind(this.controller));
+    this.router.post("/:productId", this.controller.addFavorite.bind(this.controller));
+    this.router.delete("/:productId", this.controller.removeFavorite.bind(this.controller));
   }
 }

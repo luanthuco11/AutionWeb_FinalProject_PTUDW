@@ -32,8 +32,10 @@ export class FavoriteService extends BaseService{
       VALUES ($1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     `
 
-    const result = await this.safeQuery(sql, [productId]);
-    return result;
+    await this.safeQuery(sql, [productId]);
+    return {
+      success: true
+    }
   }
 
   async removeFavorite(productId: number) {
@@ -42,7 +44,9 @@ export class FavoriteService extends BaseService{
       WHERE PRODUCT_ID = $1 AND USER_ID = 1
     `
 
-    const result = await this.safeQuery(sql, [productId]);
-    return result;
+    await this.safeQuery(sql, [productId]);
+    return {
+      success: true
+    };
   }
 }
