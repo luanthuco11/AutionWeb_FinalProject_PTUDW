@@ -12,7 +12,7 @@ app.use(cors());
 app.use(morgan("dev")); // log the requests
 
 // Dùng Factory tạo route cho resource
-app.use("/", router);
+app.use("/api", router);
 
 
 // const userRoute = new UserRoute();

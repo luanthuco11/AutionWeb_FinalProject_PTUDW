@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FavoriteService } from "@/services/favoriteService";
 import { STALE_10_MIN } from "@/config/query.config";
+import { Product } from "../../shared/src/types";
 
 class FavoriteHook {
   static useFavorite() {

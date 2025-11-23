@@ -7,6 +7,7 @@ export class OrderController extends BaseController {
   }
 
   async getOrder (req: Request, res: Response) {
+    return "hi";
     const orders = await this.service.getOrder();
     return { orders }
   }
