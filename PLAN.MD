@@ -54,7 +54,7 @@ PATCH /upgrade/:id/reject Từ chối yêu cầu
     DELETE	/product/:productId	                            Gỡ sản phẩm	 --> ok
     GET	    /product/:productId/questions	            Lấy danh sách câu hỏi & trả lời  --> ok	
     POST	/product/:productId/questions	            Đặt câu hỏi	
-    POST	/product/:productId/:questionsId/answers	Người bán trả lời câu hỏi	
+    POST	/product/:productId/:questionsId/answers	Người bán trả lời câu hỏi
     GET	    /product/:productId/status	        Kiểm tra tình trạng (đang diễn ra / kết thúc / gia hạn)	
     PATCH	/product/:productId/extend	        Tự động gia hạn 
 ----------------------------
@@ -72,12 +72,10 @@ Done DELETE /category/:id Xoá danh mục
 ## 4: FAVORITE (Watch List) API (Âu)
 
 --> favorite.route.ts
-GET /favorite Xem danh sách sản phẩm yêu thích
-POST /favorite/:productId Thêm vào danh sách yêu thích
-DELETE /favorite/:productId Xoá khỏi danh sách yêu thích
-
----
-
+    GET	    /favorite	                        Xem danh sách sản phẩm yêu thích	
+    POST	/favorite/:productId/           Thêm vào danh sách yêu thích
+    DELETE	/favorite/:productId/           Xóa khỏi danh sách yêu thích
+---------------------------
 ## 5: RATING API (Hà)
 
 --> rating.route.ts
@@ -98,12 +96,14 @@ done POST /bid/reject Seller từ chối người mua cụ thể Seller
 ## 7: ORDER & TRANSACTION API (Âu)
 
 --> order.route.ts
-GET /order Xem danh sách đơn hàng của user
-GET /order/:productId Xem chi tiết đơn hàng (thắng đấu giá)
-POST /order Tạo đơn hàng sau khi kết thúc phiên
-PATCH /order/:productId/status Cập nhật trạng thái (paid / shipped / completed / cancelled)
-GET /order/:productId/chat Lấy dữ liệu chat giữa buyer & seller
-POST /order/:productId/chat Cập nhật chat giữa buyer & seller
+    GET	    /order	                            Xem danh sách đơn hàng của user	
+    GET	    /order/:productId	                Xem chi tiết đơn hàng (thắng đấu giá)	
+    POST	/order	                            Tạo đơn hàng sau khi kết thúc phiên	
+    PATCH	/order/:productId/:status	        Cập nhật trạng thái (paid / shipped / completed / cancelled)
+    GET   /order/:productId/chat             Lấy dữ liệu chat giữa buyer & seller	
+    POST	/order/:productId/chat	            Cập nhật chat giữa buyer & seller	
+
+
 
 src/
 ├── config/
@@ -120,7 +120,6 @@ src/
 │ ├── validator.ts # Request validation
 │ └── auth.ts # Authentication (implement sau)
 ├── utils/
-<<<<<<< HEAD
 │ ├── Logger.ts # Logger utility (Winston/Pino)
 │ ├── ApiResponse.ts # Standardized API response
 │ └── ApiError.ts # Custom error classes
@@ -132,19 +131,3 @@ src/
 │ ├── user.repository.ts
 │ └── user.model.ts
 └── app.ts # Express app setup
-=======
-│   ├── Logger.ts            # Logger utility (Winston/Pino)
-│   ├── ApiResponse.ts       # Standardized API response
-│   └── ApiError.ts          # Custom error classes
-├── modules/                 # Feature-based organization
-│   └── user/
-│       ├── user.routes.ts
-│       ├── user.controller.ts
-│       ├── user.service.ts
-│       ├── user.repository.ts
-│       └── user.model.ts
-└── app.ts                   # Express app setup
-
-
-
->>>>>>> origin/api/products

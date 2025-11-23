@@ -10,6 +10,7 @@ import { Pagination } from "../../shared/src/types/Pagination";
 import AuctionHook from "@/hooks/useBid";
 import { BidLog } from "../../shared/src/types";
 import ProductHook from "@/hooks/useProduct";
+import FavoriteHook from "@/hooks/useFavorite";
 
 const mockProductEndTime: Product[] = [
   {
@@ -199,15 +200,17 @@ const pageItems: PageItem[] = [
 ];
 
 function Page() {
-  const { data: category, isLoading: loa } = CategoryHook.useCategories();
-  console.log(category);
-  // const { data, isLoading, error } = ProductHook.useGetProducts();
+  // const { data: category, isLoading: loa } = CategoryHook.useCategories();
+  // const {data, isLoading} = FavoriteHook.useFavorite();
+  const { data, isLoading, error } = ProductHook.useGetProducts();
 
   // if (isLoading) return <p>Loading...</p>;
   // if (error) return <p>Error!</p>;
 
+  if (isLoading) return <p>Loading...</p>;
 
-  // console.log("this is data: ", data);
+
+  console.log("this is data: ", data);
   return (
     <>
       <div>

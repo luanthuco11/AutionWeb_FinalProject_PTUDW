@@ -14,6 +14,10 @@ app.use(morgan("dev")); // log the requests
 // Dùng Factory tạo route cho resource
 app.use("/api/", router);
 
+app.use((req, res, next) => {
+  console.log("Incoming request:", req.method, req.url);
+  next();
+});
 
 // const userRoute = new UserRoute();
 

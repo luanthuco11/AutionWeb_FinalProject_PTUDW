@@ -2,6 +2,8 @@ const BASE_API = "http://localhost:8080/api";
 const PRODUCT_API = `${BASE_API}/bid`;
 const CATEGORY_API = `${BASE_API}/category`;
 const BID_API = `${BASE_API}/bid`;
+const FAVORITE_API = `${BASE_API}/favorite`;
+const ORDER_API = `${BASE_API}/order`;
 import { Pagination } from "../types/Pagination";
 
 const API_ROUTES = {
@@ -36,7 +38,22 @@ const API_ROUTES = {
     createProductQuestion: (id: number) => `${PRODUCT_API}/${id}/questions`, // POST
     createProductAnswer: (idProduct: number, idQuestion: number) => `${PRODUCT_API}/${idProduct}/${idQuestion}/answers`, // POST
     updateProductExtend: (id: number) => `${PRODUCT_API}/${id}/extend`, // PATCH
+  },
+  favorite: {
+    getFavorite: FAVORITE_API, // GET
+    addFavorite: (productId: number) => `${FAVORITE_API}/${productId}`, // POST
+    removeFavorite: (productId: number) => `${FAVORITE_API}/${productId}`, // DELETE
+  },
+  order: {
+    getOrder: ORDER_API, // GET
+    getOrderById: (productId: number) => `${ORDER_API}/${productId}`, // GET
+    createOrder: ORDER_API, // POST
+    updateOrderStatus: (productId: number, status: string) => `/${ORDER_API}/${productId}/${status}`, // PATCH
+    getOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // GET
+    createOrderChat: (productId: number) =>  `${ORDER_API}/${productId}/chat` // POST
   }
 };
 
 export default API_ROUTES;
+
+

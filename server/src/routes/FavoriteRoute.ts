@@ -1,0 +1,20 @@
+import { FavoriteController } from "../controllers/FavoriteController";
+import { FavoriteService } from "../services/FavoriteService";
+import { BaseRoute } from "./BaseRoute";
+import { BaseController } from "../controllers/BaseController";
+
+export class FavoriteRoute extends BaseRoute {
+  private controller : FavoriteController;
+
+  constructor() {
+    super();
+    this.controller = new FavoriteController(FavoriteService.getInstance());
+    this.initRoutes();
+  }
+  
+  initRoutes() {
+    this.router.get("/", BaseController.handleRequest(this.controller.getFavorite.bind(this.controller)));
+    this.router.post("/:productId", BaseController.handleRequest(this.controller.addFavorite.bind(this.controller)));
+    this.router.delete("/:productId", BaseController.handleRequest(this.controller.removeFavorite.bind(this.controller)));
+  }
+}

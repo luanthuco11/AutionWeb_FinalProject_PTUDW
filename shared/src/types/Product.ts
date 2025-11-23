@@ -39,6 +39,7 @@ export type ProductPreview = Pick<Product,
   top_bidder_name: string
 }
 
+
 export type ProductCategoryTree = {
   id: number;
   slug: string;
