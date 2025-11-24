@@ -11,3 +11,5 @@ export type User = {
   created_at: Date;
   updated_at: Date | null;
 }
+
+export type ShortUser = Pick<User, 'id'| 'name' | 'profile_img'>

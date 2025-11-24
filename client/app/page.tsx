@@ -210,7 +210,6 @@ function Page() {
   if (isLoading) return <p>Loading...</p>;
 
 
-  console.log("this is data: ", data);
   return (
     <>
       <div>

@@ -1,5 +1,5 @@
 const BASE_API = "http://localhost:8080/api";
-const PRODUCT_API = `${BASE_API}/bid`;
+const PRODUCT_API = `${BASE_API}/product`;
 const CATEGORY_API = `${BASE_API}/category`;
 const BID_API = `${BASE_API}/bid`;
 const FAVORITE_API = `${BASE_API}/favorite`;

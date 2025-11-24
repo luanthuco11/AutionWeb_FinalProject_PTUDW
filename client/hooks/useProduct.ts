@@ -5,8 +5,8 @@ import { Product, ProductAnswer, ProductQuestion } from "../../shared/src/types"
 
 // Một hàm xử lý logic REACT, và chỉ được biết tới REACT(FRONT END) thôi
 // Nó không được biết về api
-const ProductHook = {
-  useGetProducts() {
+class ProductHook {
+  static useGetProducts() {
     return useQuery({
       queryKey: ["products"],
 
@@ -20,9 +20,9 @@ const ProductHook = {
         return data;
       },
     });
-  },
+  }
 
-  useGetProductTop() {
+  static useGetProductTop() {
     return useQuery({
       queryKey: ["product_top"],
 
@@ -36,9 +36,9 @@ const ProductHook = {
         return data;
       },
     });
-  },
+  }
 
-  useGetProductById(id: number) {
+  static useGetProductById(id: number) {
     return useQuery({
       queryKey: ["product_by_id", id],
 
@@ -54,9 +54,9 @@ const ProductHook = {
         return data;
       },
     });
-  },
+  }
 
-  useCreateProduct() {
+  static useCreateProduct() {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn: (data: Product) =>
@@ -68,9 +68,9 @@ const ProductHook = {
         });
       },
     });
-  },
+  }
 
-   useUpdateProductDescription() {
+  static useUpdateProductDescription() {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn: ({id, description}: {id: number, description: string}) =>
@@ -82,9 +82,9 @@ const ProductHook = {
         });
       },
     });
-  },
+  }
 
-  useDeleteProductById() {
+  static useDeleteProductById() {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn: (id: number) =>
@@ -96,9 +96,9 @@ const ProductHook = {
         });
       },
     });
-  },
+  }
 
-  useGetProductQuestion(id: number) {
+  static useGetProductQuestion(id: number) {
     return useQuery({
       queryKey: ["product_question", id],
 
@@ -114,11 +114,11 @@ const ProductHook = {
         return data;
       },
     });
-  },
+  }
 
 
   
-  useCreateProductQuestion() {
+  static useCreateProductQuestion() {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn: ({id, data}: {id: number, data: ProductQuestion}) =>
@@ -130,9 +130,9 @@ const ProductHook = {
         });
       },
     });
-  },
+  }
 
-   useCreateProductAnswer() {
+  static useCreateProductAnswer() {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn: ({idProduct, idQuestion, data}: {idProduct: number, idQuestion: number, data: ProductAnswer}) =>
@@ -144,9 +144,9 @@ const ProductHook = {
         });
       },
     });
-  },
+  }
 
-   useUpdateProductExtend() {
+  static useUpdateProductExtend() {
     const queryClient = useQueryClient();
     return useMutation({
       mutationFn: ({id, auto_extend}: {id: number, auto_extend: boolean}) =>
@@ -158,7 +158,7 @@ const ProductHook = {
         });
       },
     });
-  },
+  }
 
 
 

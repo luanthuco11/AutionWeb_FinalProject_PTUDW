@@ -9,16 +9,16 @@ export type Product = {
   main_image: string;
   extra_images?: string[];
   name: string;
-  initial_price?: number;
-  buy_now_price?: number;
-  current_price?: number;
+  initial_price?: number | null;
+  buy_now_price?: number | null;
+  current_price?: number | null ;
   top_bidder?: Pick<User, 'id' | 'name' | 'profile_img'> | null;
   bid_count?: number;
   end_time?: Date;
-  description?: string;
-  auto_extend?: boolean;
+  description?: string | null;
+  auto_extend?: boolean | null;
   status?: Pick<Order, 'status'> | "available";
-  price_increment?: number;
+  price_increment?: number | null;
   created_at?: Date;
   updated_at?: Date | null;
 }
@@ -34,9 +34,10 @@ export type ProductPreview = Pick<Product,
   'bid_count' |
   'end_time' |
   'auto_extend' | 
-  'created_at'
+  'created_at' |
+  'initial_price'
 > & {
-  top_bidder_name: string
+  top_bidder_name: string | null
 }
 
 
