@@ -14,5 +14,7 @@ export class UpgradeService extends BaseService {
         return this.instance;
     }
 
-    
+    async createSellerRequest(id: string) {
+        
+    }
 }
