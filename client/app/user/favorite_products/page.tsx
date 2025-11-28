@@ -1,214 +1,39 @@
+"use client";
+
 import React from "react";
-import { Product } from "../../../../shared/src/types";
+import { Product, ProductPreview } from "../../../../shared/src/types";
 import ProductCard from "@/components/ProductCard";
-const mockProductEndTime: Product[] = [
-  {
-    id: 101,
-    slug: "macbook-pro-2022",
-    seller: {
-      id: 2,
-      name: "Trần B",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    category_id: 3,
-    main_image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    extra_images: [],
-    name: "MacBook Pro 2022 – M1 Pro 16 inch",
-    initial_price: 25000000,
-    buy_now_price: 35000000,
-    current_price: 28000000,
-    top_bidder: {
-      id: 5,
-      name: "Lê C",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    bid_count: 12,
-    end_time: new Date(Date.now() + 4 * 60 * 60 * 1000), // sau 4 giờ
-    description:
-      "MacBook Pro M1 Pro 16 inch, RAM 16GB, SSD 512GB, máy đẹp 99%.",
-    auto_extend: true,
-    price_increment: 500000,
-    created_at: new Date(),
-    updated_at: null,
-  },
-  {
-    id: 102,
-    slug: "macbook-pro-2022",
-    seller: {
-      id: 2,
-      name: "Trần B",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    category_id: 3,
-    main_image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    extra_images: [],
-    name: "MacBook Pro 2022 – M1 Pro 16 inch",
-    initial_price: 25000000,
-    buy_now_price: 35000000,
-    current_price: 28000000,
-    top_bidder: {
-      id: 5,
-      name: "Lê C",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    bid_count: 12,
-    end_time: new Date(Date.now() + 4 * 60 * 60 * 1000), // sau 4 giờ
-    description:
-      "MacBook Pro M1 Pro 16 inch, RAM 16GB, SSD 512GB, máy đẹp 99%.",
-    auto_extend: true,
-    price_increment: 500000,
-    created_at: new Date(),
-    updated_at: null,
-  },
-  {
-    id: 103,
-    slug: "macbook-pro-2022",
-    seller: {
-      id: 2,
-      name: "Trần B",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    category_id: 3,
-    main_image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    extra_images: [],
-    name: "MacBook Pro 2022 – M1 Pro 16 inch",
-    initial_price: 25000000,
-    buy_now_price: 35000000,
-    current_price: 28000000,
-    top_bidder: {
-      id: 5,
-      name: "Lê C",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    bid_count: 12,
-    end_time: new Date(Date.now() + 4 * 60 * 60 * 1000), // sau 4 giờ
-    description:
-      "MacBook Pro M1 Pro 16 inch, RAM 16GB, SSD 512GB, máy đẹp 99%.",
-    auto_extend: true,
-    price_increment: 500000,
-    created_at: new Date(),
-    updated_at: null,
-  },
-  {
-    id: 104,
-    slug: "macbook-pro-2022",
-    seller: {
-      id: 2,
-      name: "Trần B",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    category_id: 3,
-    main_image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    extra_images: [],
-    name: "MacBook Pro 2022 – M1 Pro 16 inch",
-    initial_price: 25000000,
-    buy_now_price: 35000000,
-    current_price: 28000000,
-    top_bidder: {
-      id: 5,
-      name: "Lê C",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    bid_count: 12,
-    end_time: new Date(Date.now() + 4 * 60 * 60 * 1000), // sau 4 giờ
-    description:
-      "MacBook Pro M1 Pro 16 inch, RAM 16GB, SSD 512GB, máy đẹp 99%.",
-    auto_extend: true,
-    price_increment: 500000,
-    created_at: new Date(),
-    updated_at: null,
-  },
-  {
-    id: 105,
-    slug: "macbook-pro-2022",
-    seller: {
-      id: 2,
-      name: "Trần B",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    category_id: 3,
-    main_image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    extra_images: [],
-    name: "MacBook Pro 2022 – M1 Pro 16 inch",
-    initial_price: 25000000,
-    buy_now_price: 35000000,
-    current_price: 28000000,
-    top_bidder: {
-      id: 5,
-      name: "Lê C",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    bid_count: 12,
-    end_time: new Date(Date.now() + 4 * 60 * 60 * 1000), // sau 4 giờ
-    description:
-      "MacBook Pro M1 Pro 16 inch, RAM 16GB, SSD 512GB, máy đẹp 99%.",
-    auto_extend: true,
-    price_increment: 500000,
-    created_at: new Date(),
-    updated_at: null,
-  },
-  {
-    id: 105,
-    slug: "macbook-pro-2022",
-    seller: {
-      id: 2,
-      name: "Trần B",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    category_id: 3,
-    main_image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    extra_images: [],
-    name: "MacBook Pro 2022 – M1 Pro 16 inch",
-    initial_price: 25000000,
-    buy_now_price: 35000000,
-    current_price: 28000000,
-    top_bidder: {
-      id: 5,
-      name: "Lê C",
-      profile_img:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-    },
-    bid_count: 12,
-    end_time: new Date(Date.now() + 4 * 60 * 60 * 1000), // sau 4 giờ
-    description:
-      "MacBook Pro M1 Pro 16 inch, RAM 16GB, SSD 512GB, máy đẹp 99%.",
-    auto_extend: true,
-    price_increment: 500000,
-    created_at: new Date(),
-    updated_at: null,
-  } 
-];
+import FavoriteHook from "@/hooks/useFavorite";
 
 const FavoriteProductPage = () => {
+  const {
+    data: favoriteProducts,
+    isLoading,
+    error,
+  } = FavoriteHook.useFavorite() as {
+    data: any;
+    isLoading: boolean;
+    error: any;
+  };
+
+  console.log(favoriteProducts);
+
   return (
     <div className="background-user">
       <div className="text-2xl font-medium">Sản phẩm yêu thích</div>
-      <div className="mt-2 grid grid-cols-5 gap-3">
-        {mockProductEndTime.map((item, index) => {
-          return (
-         <div key={index} className="mt-3">
-           <ProductCard key={index} product={item} />
-         </div>
-          )
-        })}
-      </div>
+      {isLoading && <div>Loading</div>}
+      {error && <div>{error.message}</div>}
+      {!isLoading && !error && (
+        <div className="mt-2 grid grid-cols-5 gap-3">
+          {favoriteProducts.data.favorite_products.map((item) => {
+            return (
+              <div key={item.id} className="mt-3">
+                <ProductCard key={item.id} product={item} />
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

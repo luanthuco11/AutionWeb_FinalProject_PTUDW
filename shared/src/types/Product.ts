@@ -11,35 +11,35 @@ export type Product = {
   name: string;
   initial_price: number | null;
   buy_now_price: number | null;
-  current_price: number | null ;
-  top_bidder: Pick<User, 'id' | 'name' | 'profile_img'> | null;
+  current_price: number | null;
+  top_bidder: Pick<User, "id" | "name" | "profile_img"> | null;
   bid_count: number;
   end_time: Date;
   description: string | null;
   auto_extend: boolean | null;
-  status: Pick<Order, 'status'> | "available";
+  status: Pick<Order, "status"> | "available";
   price_increment: number | null;
   created_at: Date;
   updated_at: Date | null;
-}
+};
 
-export type ProductPreview = Pick<Product,
-  'id' |
-  'slug' |
-  'category_id' |
-  'main_image' |
-  'name' |
-  'current_price' |
-  'buy_now_price' |
-  'bid_count' |
-  'end_time' |
-  'auto_extend' | 
-  'created_at' |
-  'initial_price'
+export type ProductPreview = Pick<
+  Product,
+  | "id"
+  | "slug"
+  | "category_id"
+  | "main_image"
+  | "name"
+  | "current_price"
+  | "buy_now_price"
+  | "bid_count"
+  | "end_time"
+  | "auto_extend"
+  | "created_at"
+  | "initial_price"
 > & {
-  top_bidder_name: string | null
-}
-
+  top_bidder_name: string | null;
+};
 
 export type ProductCategoryTree = {
   id: number;
