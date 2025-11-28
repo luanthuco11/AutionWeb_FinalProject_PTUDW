@@ -15,7 +15,12 @@ export class BidService extends BaseService {
     return BidService.instance;
   }
   async getBidLogs(id: number): Promise<BidLog[]> {
-    const sql = `SELECT * FROM auction.bid_logs as l WHERE l.product_id = $1 ORDER BY l.created_at DESC `;
+    const sql = `SELECT *, json_build_object(
+                            'id', u.id,
+                            'name', u.name
+                            ) AS user
+    FROM auction.bid_logs as l, admin.users as u
+     WHERE l.product_id = $1 AND u.id = l.user_id ORDER BY l.created_at DESC `;
     const logs: BidLog[] = await this.safeQuery(sql, [id]);
     return logs;
   }

@@ -1,4 +1,8 @@
-import { Product, ProductPreview, ProductQuestion } from './../../../shared/src/types/Product';
+import {
+  Product,
+  ProductPreview,
+  ProductQuestion,
+} from "./../../../shared/src/types/Product";
 import { profile } from "console";
 import {
   getProductAnswerColumns,
@@ -10,7 +14,7 @@ import {
 } from "../utils";
 import { BaseService } from "./BaseService";
 import { Request, Response, NextFunction } from "express";
-import { ShortUser, User } from '../../../shared/src/types';
+import { ShortUser, User } from "../../../shared/src/types";
 export class ProductService extends BaseService {
   private static instance: ProductService;
 
@@ -25,7 +29,7 @@ export class ProductService extends BaseService {
     return ProductService.instance;
   }
 
-  async getTopBidder(productId: number): Promise<ShortUser| null> {
+  async getTopBidder(productId: number): Promise<ShortUser | null> {
     const sql = `  
     SELECT u.id, u.name, u.profile_img
     FROM auction.bid_logs bl 
@@ -38,7 +42,7 @@ export class ProductService extends BaseService {
     return bidder[0] ? bidder[0] : null;
   }
 
-  async getBidCount(productId: number) : Promise<number> {
+  async getBidCount(productId: number): Promise<number> {
     const sql = `  
     SELECT COUNT(*) AS bid_count
     FROM auction.bid_logs bl 
@@ -50,7 +54,7 @@ export class ProductService extends BaseService {
     return Number(bidCount[0]?.bid_count ?? 0);
   }
 
-  async getCurrentPrice(productId: number) : Promise<number | null>  {
+  async getCurrentPrice(productId: number): Promise<number | null> {
     const sql = `  
     SELECT MAX(bl.price) AS current_price
     FROM auction.bid_logs bl 
@@ -114,11 +118,17 @@ export class ProductService extends BaseService {
     `;
 
     let products: any = await this.safeQuery<Product>(sql, [productId]);
-    products[0].id = products[0].id ? Number(products[0].id) : null
-    products[0].initial_price = products[0].initial_price ? Number(products[0].initial_price) : null
-    products[0].buy_now_price = products[0].buy_now_price ? Number(products[0].buy_now_price) : null
-    products[0].price_increment = products[0].price_increment ? Number(products[0].price_increment) : null
-    if (current_price == null){
+    products[0].id = products[0].id ? Number(products[0].id) : null;
+    products[0].initial_price = products[0].initial_price
+      ? Number(products[0].initial_price)
+      : null;
+    products[0].buy_now_price = products[0].buy_now_price
+      ? Number(products[0].buy_now_price)
+      : null;
+    products[0].price_increment = products[0].price_increment
+      ? Number(products[0].price_increment)
+      : null;
+    if (current_price == null) {
       current_price = products[0].initial_price;
     }
 
@@ -132,7 +142,7 @@ export class ProductService extends BaseService {
     return products;
   }
 
-   async getProductPreviewType(productId: number) : Promise<ProductPreview> {
+  async getProductPreviewType(productId: number): Promise<ProductPreview> {
     const result = await Promise.all([
       this.getTopBidder(productId),
       this.getBidCount(productId),
@@ -160,11 +170,17 @@ export class ProductService extends BaseService {
     `;
 
     let products: any = await this.safeQuery<ProductPreview>(sql, [productId]);
-    products[0].id = products[0].id ? Number(products[0].id) : null
-    products[0].initial_price = products[0].initial_price ? Number(products[0].initial_price) : null
-    products[0].buy_now_price = products[0].buy_now_price ? Number(products[0].buy_now_price) : null
-    products[0].price_increment = products[0].price_increment ? Number(products[0].price_increment) : null
-    if (current_price == null){
+    products[0].id = products[0].id ? Number(products[0].id) : null;
+    products[0].initial_price = products[0].initial_price
+      ? Number(products[0].initial_price)
+      : null;
+    products[0].buy_now_price = products[0].buy_now_price
+      ? Number(products[0].buy_now_price)
+      : null;
+    products[0].price_increment = products[0].price_increment
+      ? Number(products[0].price_increment)
+      : null;
+    if (current_price == null) {
       current_price = products[0].initial_price;
     }
 
@@ -195,7 +211,7 @@ export class ProductService extends BaseService {
   }
 
   // Ko chuyen limit cung
-  async getTopEndingSoonProducts(limit?: number) : Promise<ProductPreview[]>  {
+  async getTopEndingSoonProducts(limit?: number): Promise<ProductPreview[]> {
     let sql = `
     SELECT id
     FROM product.products
@@ -221,7 +237,7 @@ export class ProductService extends BaseService {
   }
 
   // Ko chuyen limit cung
-  async getTopBiddingProducts(limit?: number): Promise<ProductPreview[]>  {
+  async getTopBiddingProducts(limit?: number): Promise<ProductPreview[]> {
     let sql = `
   SELECT products.id 
   FROM product.products AS products 
@@ -239,7 +255,10 @@ export class ProductService extends BaseService {
       params.push(limit);
     }
 
-    const topBiddingProducts = await this.safeQuery<ProductPreview>(sql, params);
+    const topBiddingProducts = await this.safeQuery<ProductPreview>(
+      sql,
+      params
+    );
 
     const newTopBiddingProducts = await Promise.all(
       topBiddingProducts.map(async (item: any) => {
@@ -252,7 +271,7 @@ export class ProductService extends BaseService {
   }
 
   // Ko chuyen limit cung
-  async getTopPriceProducts(limit? :number): Promise<ProductPreview[]>  {
+  async getTopPriceProducts(limit?: number): Promise<ProductPreview[]> {
     let sql = `
     SELECT pp.id
     FROM product.products AS pp
@@ -277,7 +296,7 @@ export class ProductService extends BaseService {
   }
 
   // check productId phai la number
-  async getProductById(req: Request): Promise<Product | undefined>  {
+  async getProductById(req: Request): Promise<Product | undefined> {
     const productId = req.params.productId;
 
     const sql = `
@@ -355,6 +374,7 @@ export class ProductService extends BaseService {
             SELECT 
                 json_build_object(
                     'id', pa.id,
+                    'comment', pq.comment,
                     'question_id', pa.question_id,
                     'user', json_build_object(
                         'id', u2.id,
@@ -365,7 +385,7 @@ export class ProductService extends BaseService {
             FROM feedback.product_answers pa
             JOIN admin.users u2 ON u2.id = pa.user_id
             WHERE pa.question_id = pq.id
-          ) AS answers
+          ) AS answer
       FROM feedback.product_questions pq
       JOIN admin.users u ON u.id = pq.user_id
       WHERE pq.product_id = $1;
