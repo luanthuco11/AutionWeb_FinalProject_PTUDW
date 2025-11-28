@@ -30,7 +30,7 @@ const API_ROUTES = {
   product: {
     getProducts: `${PRODUCT_API}`, // GET
     getProductTop: `${PRODUCT_API}/top`, // GET 
-    getProductById: (id: number) => `${PRODUCT_API}/:${id}`, // GET
+    getProductById: (id: number) => `${PRODUCT_API}/${id}`, // GET
     createProduct: `${PRODUCT_API}`, // POST
     updateProductDescription: (id: number) => `${PRODUCT_API}/${id}/description`, // PATCH
     deleteProductById: (id: number) => `${PRODUCT_API}/${id}`, // DELETE

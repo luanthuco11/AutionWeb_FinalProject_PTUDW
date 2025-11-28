@@ -1,9 +1,20 @@
-import { Product, ProductPreview, ProductQuestion } from './../../../shared/src/types/Product';
+import {
+  Product,
+  ProductPreview,
+  ProductQuestion,
+} from "./../../../shared/src/types/Product";
 import { profile } from "console";
-import { getProductAnswerColumns, getProductAnswerValue, getProductColumns, getProductQuestionColumns, getProductQuestionValue, getProductValue } from "../utils";
+import {
+  getProductAnswerColumns,
+  getProductAnswerValue,
+  getProductColumns,
+  getProductQuestionColumns,
+  getProductQuestionValue,
+  getProductValue,
+} from "../utils";
 import { BaseService } from "./BaseService";
 import { Request, Response, NextFunction } from "express";
-import { ShortUser, User } from '../../../shared/src/types';
+import { ShortUser, User } from "../../../shared/src/types";
 export class ProductService extends BaseService {
   private static instance: ProductService;
 
@@ -18,7 +29,7 @@ export class ProductService extends BaseService {
     return ProductService.instance;
   }
 
-  async getTopBidder(productId: number): Promise<ShortUser| null> {
+  async getTopBidder(productId: number): Promise<ShortUser | null> {
     const sql = `  
     SELECT u.id, u.name, u.profile_img
     FROM auction.bid_logs bl 
@@ -31,24 +42,29 @@ export class ProductService extends BaseService {
     return bidder[0] ? bidder[0] : null;
   }
 
-  async getBidCount(productId: number) : Promise<number> {
+  async getBidCount(productId: number): Promise<number> {
     const sql = `  
     SELECT COUNT(*) AS bid_count
     FROM auction.bid_logs bl 
     WHERE bl.product_id = $1
     `;
-    const bidCount: {bid_count: number}[] = await this.safeQuery(sql, [productId]);
-    return Number(bidCount[0]?.bid_count ?? 0) ;
+    const bidCount: { bid_count: number }[] = await this.safeQuery(sql, [
+      productId,
+    ]);
+    return Number(bidCount[0]?.bid_count ?? 0);
   }
 
-  async getCurrentPrice(productId: number) : Promise<number | null>  {
+  async getCurrentPrice(productId: number): Promise<number | null> {
     const sql = `  
     SELECT MAX(bl.price) AS current_price
     FROM auction.bid_logs bl 
     WHERE bl.product_id = $1
     `;
-    const currentPrice: {current_price: number | null}[] = await this.safeQuery(sql, [productId]);
-    return currentPrice[0]?.current_price ? Number(currentPrice[0].current_price) : null;
+    const currentPrice: { current_price: number | null }[] =
+      await this.safeQuery(sql, [productId]);
+    return currentPrice[0]?.current_price
+      ? Number(currentPrice[0].current_price)
+      : null;
   }
 
   async getStatus(productId: number): Promise<string> {
@@ -57,9 +73,9 @@ export class ProductService extends BaseService {
       ao.status
     FROM auction.orders ao
     WHERE ao.product_id = $1
-    `
-    const status: {status: string}[] = await this.safeQuery(sql, [productId]);
-    return status[0]?.status ?? "available"  
+    `;
+    const status: { status: string }[] = await this.safeQuery(sql, [productId]);
+    return status[0]?.status ?? "available";
   }
 
   async getProductType(productId: number): Promise<Product> {
@@ -71,7 +87,7 @@ export class ProductService extends BaseService {
     ]);
 
     const top_bidder = result[0];
-    const bid_count =  result[1];
+    const bid_count = result[1];
     let current_price = result[2];
     const status = result[3];
     const sql = `
@@ -102,28 +118,31 @@ export class ProductService extends BaseService {
     `;
 
     let products: any = await this.safeQuery<Product>(sql, [productId]);
-    products[0].id = products[0].id ? Number(products[0].id) : null
-    products[0].initial_price = products[0].initial_price ? Number(products[0].initial_price) : null
-    products[0].buy_now_price = products[0].buy_now_price ? Number(products[0].buy_now_price) : null
-    products[0].price_increment = products[0].price_increment ? Number(products[0].price_increment) : null
-    if (current_price == null){
+    products[0].id = products[0].id ? Number(products[0].id) : null;
+    products[0].initial_price = products[0].initial_price
+      ? Number(products[0].initial_price)
+      : null;
+    products[0].buy_now_price = products[0].buy_now_price
+      ? Number(products[0].buy_now_price)
+      : null;
+    products[0].price_increment = products[0].price_increment
+      ? Number(products[0].price_increment)
+      : null;
+    if (current_price == null) {
       current_price = products[0].initial_price;
     }
-
 
     products = {
       ...products[0],
       top_bidder: top_bidder,
       current_price: current_price,
       bid_count: bid_count,
-      status: status
-
-
-    }
+      status: status,
+    };
     return products;
   }
 
-   async getProductPreviewType(productId: number) : Promise<ProductPreview> {
+  async getProductPreviewType(productId: number): Promise<ProductPreview> {
     const result = await Promise.all([
       this.getTopBidder(productId),
       this.getBidCount(productId),
@@ -131,7 +150,7 @@ export class ProductService extends BaseService {
     ]);
 
     const top_bidder: any = result[0];
-    const bid_count =  result[1];
+    const bid_count = result[1];
     let current_price = result[2];
     const sql = `
     SELECT 
@@ -151,21 +170,26 @@ export class ProductService extends BaseService {
     `;
 
     let products: any = await this.safeQuery<ProductPreview>(sql, [productId]);
-    products[0].id = products[0].id ? Number(products[0].id) : null
-    products[0].initial_price = products[0].initial_price ? Number(products[0].initial_price) : null
-    products[0].buy_now_price = products[0].buy_now_price ? Number(products[0].buy_now_price) : null
-    products[0].price_increment = products[0].price_increment ? Number(products[0].price_increment) : null
-    if (current_price == null){
+    products[0].id = products[0].id ? Number(products[0].id) : null;
+    products[0].initial_price = products[0].initial_price
+      ? Number(products[0].initial_price)
+      : null;
+    products[0].buy_now_price = products[0].buy_now_price
+      ? Number(products[0].buy_now_price)
+      : null;
+    products[0].price_increment = products[0].price_increment
+      ? Number(products[0].price_increment)
+      : null;
+    if (current_price == null) {
       current_price = products[0].initial_price;
     }
-
 
     products = {
       ...products[0],
       top_bidder_name: top_bidder ? top_bidder.name : null,
       current_price: current_price,
-      bid_count: bid_count
-    }
+      bid_count: bid_count,
+    };
 
     return products;
   }
@@ -177,7 +201,7 @@ export class ProductService extends BaseService {
     const newProducts = await Promise.all(
       products.map(async (item: any) => {
         const productType = this.getProductPreviewType(item.id);
-        return productType
+        return productType;
       })
     );
 
@@ -187,7 +211,7 @@ export class ProductService extends BaseService {
   }
 
   // Ko chuyen limit cung
-  async getTopEndingSoonProducts(limit?: number) : Promise<ProductPreview[]>  {
+  async getTopEndingSoonProducts(limit?: number): Promise<ProductPreview[]> {
     let sql = `
     SELECT id
     FROM product.products
@@ -195,7 +219,7 @@ export class ProductService extends BaseService {
     `;
 
     const params: any[] = [];
-    if (limit){
+    if (limit) {
       sql += `LIMIT $1 \n`;
       params.push(limit);
     }
@@ -205,7 +229,7 @@ export class ProductService extends BaseService {
     const newEndtimeProducts = await Promise.all(
       endTimeProducts.map(async (item: any) => {
         const productType = this.getProductPreviewType(item.id);
-        return productType
+        return productType;
       })
     );
 
@@ -213,7 +237,7 @@ export class ProductService extends BaseService {
   }
 
   // Ko chuyen limit cung
-  async getTopBiddingProducts(limit?: number): Promise<ProductPreview[]>  {
+  async getTopBiddingProducts(limit?: number): Promise<ProductPreview[]> {
     let sql = `
   SELECT products.id 
   FROM product.products AS products 
@@ -225,18 +249,21 @@ export class ProductService extends BaseService {
   ORDER BY COUNT(DISTINCT bid_logs.user_id) DESC
   )
   `;
-   const params: any[] = [];
-    if (limit){
+    const params: any[] = [];
+    if (limit) {
       sql += `LIMIT $1 \n`;
       params.push(limit);
     }
 
-    const topBiddingProducts = await this.safeQuery<ProductPreview>(sql, params);
+    const topBiddingProducts = await this.safeQuery<ProductPreview>(
+      sql,
+      params
+    );
 
-     const newTopBiddingProducts = await Promise.all(
+    const newTopBiddingProducts = await Promise.all(
       topBiddingProducts.map(async (item: any) => {
         const productType = this.getProductPreviewType(item.id);
-        return productType
+        return productType;
       })
     );
 
@@ -244,7 +271,7 @@ export class ProductService extends BaseService {
   }
 
   // Ko chuyen limit cung
-  async getTopPriceProducts(limit? :number): Promise<ProductPreview[]>  {
+  async getTopPriceProducts(limit?: number): Promise<ProductPreview[]> {
     let sql = `
     SELECT pp.id
     FROM product.products AS pp
@@ -252,24 +279,24 @@ export class ProductService extends BaseService {
     GROUP BY pp.id 
     ORDER BY MAX(bl.price) DESC 
     `;
-    let params: any[] = []
-    if (limit){
+    let params: any[] = [];
+    if (limit) {
       sql += `LIMIT $1 \n`;
       params.push(limit);
     }
     const topPriceProducts = await this.safeQuery<ProductPreview>(sql, params);
 
-     const newTopPriceProducts = await Promise.all(
+    const newTopPriceProducts = await Promise.all(
       topPriceProducts.map(async (item: any) => {
         const productType = this.getProductPreviewType(item.id);
-        return productType
+        return productType;
       })
     );
     return newTopPriceProducts;
   }
 
   // check productId phai la number
-  async getProductById(req: Request): Promise<Product | undefined>  {
+  async getProductById(req: Request): Promise<Product | undefined> {
     const productId = req.params.productId;
 
     const sql = `
@@ -283,7 +310,7 @@ export class ProductService extends BaseService {
     const newProduct = await Promise.all(
       product.map(async (item: any) => {
         const productType = this.getProductType(item.id);
-        return productType
+        return productType;
       })
     );
     return newProduct[0];
@@ -365,7 +392,6 @@ export class ProductService extends BaseService {
     `;
     const questions = await this.safeQuery<ProductQuestion>(sql, [productId]);
 
-  
     return questions;
   }
 
@@ -382,9 +408,8 @@ export class ProductService extends BaseService {
     return question[0];
   }
 
-
   async createAnswer(req: Request) {
-     const key = await getProductAnswerColumns();
+    const key = await getProductAnswerColumns();
     const data = getProductAnswerValue(req.body);
     const params = key.map((_, i) => `$${i + 1}`);
     const sql = `
@@ -416,7 +441,6 @@ export class ProductService extends BaseService {
 - Can tim hieu async, await , Promise.all
 */
 
-
 /*
 {
   "slug": "Tri-ne",
@@ -439,7 +463,6 @@ export class ProductService extends BaseService {
   }
 }
 */
-
 
 /*
 ⚡ Async / Await — Ý chính
