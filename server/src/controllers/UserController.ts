@@ -18,4 +18,8 @@ export class UserController extends BaseController {
         return { profile }
     }
 
+    async updateProfile(req: Request, res: Response) {
+        const result = await this.service.updateProfile(req.body);
+        return {result};
+    }
 }
