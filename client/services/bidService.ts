@@ -10,13 +10,13 @@ export class BidService {
     });
   }
 
-  static async createBid(payload: BidLog) {
+  static async createBid(payload: BidLog): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.bid.createBid, payload);
       return res.data;
     });
   }
-  static async createReject(payload: BidLog) {
+  static async createReject(payload: BidLog): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.bid.createReject, payload);
       return res.data;

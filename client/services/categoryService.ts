@@ -18,7 +18,7 @@ export class CategoryService {
       return res.data;
     });
   }
-  static async createCategory(payload: ProductCategoryTree) {
+  static async createCategory(payload: ProductCategoryTree): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.category.createCategory, payload);
       return res.data;

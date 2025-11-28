@@ -49,7 +49,7 @@ export type ProductCategoryTree = {
   children?: ProductCategoryTree[];
   created_at?: Date;
   updated_at?: Date | null;
-}
+};
 
 export type ProductAnswer = {
   id: number;
@@ -57,7 +57,7 @@ export type ProductAnswer = {
   user: Pick<User, "id" | "name" | "profile_img">;
   comment: string;
   created_at?: Date;
-}
+};
 
 export type ProductQuestion = {
   id: number;
@@ -66,4 +66,10 @@ export type ProductQuestion = {
   comment: string;
   answer?: ProductAnswer;
   created_at?: Date;
-}
+};
+export type ProductPagination = {
+  page: number;
+  limit: number;
+  total: number;
+  products: Product[];
+};

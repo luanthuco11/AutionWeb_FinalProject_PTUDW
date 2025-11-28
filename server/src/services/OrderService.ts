@@ -1,9 +1,15 @@
 import { BaseService } from "./BaseService";
-import { User, Order, NewOrderRequest, OrderStatus, OrderMessage, OrderConversation, NewOrderMessageRequest } from "./../../../shared/src/types"
+import {
+  User,
+  Order,
+  NewOrderRequest,
+  OrderStatus,
+  OrderMessage,
+  OrderConversation,
+  NewOrderMessageRequest,
+} from "./../../../shared/src/types";
 
-type MutationResult = {
-  success: boolean
-}
+import { MutationResult } from "../../../shared/src/types/Mutation";
 
 export class OrderService extends BaseService {
   private static instance: OrderService;
@@ -19,11 +25,11 @@ export class OrderService extends BaseService {
     return OrderService.instance;
   }
 
-  async getOrder () {
+  async getOrder() {
     // Đâu cần api này nhỉ
   }
 
-  async getOrderById (productId: number): Promise<Order | undefined> {
+  async getOrderById(productId: number): Promise<Order | undefined> {
     const sql = `
       SELECT
         O.*,
@@ -36,9 +42,9 @@ export class OrderService extends BaseService {
     `;
 
     type OrderWithUsers = Order & {
-      seller_id: number,
-      top_bidder_id: number
-    }
+      seller_id: number;
+      top_bidder_id: number;
+    };
 
     const order = (await this.safeQuery<OrderWithUsers>(sql, [productId]))?.[0];
     if (!order) return undefined;
@@ -61,7 +67,7 @@ export class OrderService extends BaseService {
     };
   }
 
-  async createOrder (payload: NewOrderRequest): Promise<MutationResult> {
+  async createOrder(payload: NewOrderRequest): Promise<MutationResult> {
     const { product_id, shipping_address } = payload;
 
     const sql = `
@@ -71,24 +77,29 @@ export class OrderService extends BaseService {
 
     await this.safeQuery(sql, [product_id, shipping_address]);
     return {
-      success: true
-    }
+      success: true,
+    };
   }
 
-  async updateOrderStatus (productId: number, status: OrderStatus) : Promise<MutationResult> {
+  async updateOrderStatus(
+    productId: number,
+    status: OrderStatus
+  ): Promise<MutationResult> {
     const sql = `
       UPDATE AUCTION.ORDERS
       SET STATUS = $1
       WHERE PRODUCT_ID = $2
-    `
+    `;
 
     await this.safeQuery(sql, [status, productId]);
     return {
-      success: true
-    }
+      success: true,
+    };
   }
 
-  async getOrderChat (productId: number): Promise<OrderConversation | undefined> {
+  async getOrderChat(
+    productId: number
+  ): Promise<OrderConversation | undefined> {
     const sql = `
       SELECT 
         U.ID,
@@ -99,7 +110,7 @@ export class OrderService extends BaseService {
       FROM AUCTION.ORDER_MESSAGES M
       JOIN ADMIN.USERS U ON U.ID = M.USER_ID
       WHERE M.PRODUCT_ID = $1
-    `
+    `;
 
     const orderMessages = await this.safeQuery<OrderMessage>(sql, [productId]);
     console.log(orderMessages);
@@ -107,15 +118,15 @@ export class OrderService extends BaseService {
 
     return {
       product_id: productId,
-      messages: orderMessages
-    }    
+      messages: orderMessages,
+    };
   }
 
-  async createOrderChat (productId: number, payload: NewOrderMessageRequest) : Promise<MutationResult> {
-    const {
-      user_id,
-      message
-    } = payload;
+  async createOrderChat(
+    productId: number,
+    payload: NewOrderMessageRequest
+  ): Promise<MutationResult> {
+    const { user_id, message } = payload;
 
     const sql = `
       INSERT INTO AUCTION.ORDER_MESSAGES (PRODUCT_ID, USER_ID, MESSAGE)
@@ -125,12 +136,14 @@ export class OrderService extends BaseService {
     await this.safeQuery(sql, [productId, user_id, message]);
 
     return {
-      success: true
-    }
+      success: true,
+    };
   }
 
   private Helper = {
-    getUserById: async (userId: number | undefined): Promise<User | undefined> => {
+    getUserById: async (
+      userId: number | undefined
+    ): Promise<User | undefined> => {
       if (!userId) return undefined;
 
       const sql = `
@@ -142,6 +155,6 @@ export class OrderService extends BaseService {
       const user = (await this.safeQuery<User>(sql, [userId]))?.[0];
 
       return user;
-    }
-  }
+    },
+  };
 }

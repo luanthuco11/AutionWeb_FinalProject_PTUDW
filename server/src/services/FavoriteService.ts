@@ -1,10 +1,6 @@
-  import { ProductPreview } from "../../../shared/src/types";
+import { ProductPreview } from "../../../shared/src/types";
 import { BaseService } from "./BaseService";
-
-type MutationResult = {
-  success: boolean
-}
-
+import { MutationResult } from "../../../shared/src/types/Mutation";
 export class FavoriteService extends BaseService {
   private static instance: FavoriteService;
 
@@ -54,23 +50,23 @@ export class FavoriteService extends BaseService {
     const sql = `
       INSERT INTO AUCTION.FAVORITE_PRODUCTS (PRODUCT_ID, USER_ID, CREATED_AT, UPDATED_AT)
       VALUES ($1, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-    `
+    `;
 
     await this.safeQuery(sql, [productId]);
     return {
-      success: true
-    }
+      success: true,
+    };
   }
 
   async removeFavorite(productId: number): Promise<MutationResult> {
     const sql = `
       DELETE FROM AUCTION.FAVORITE_PRODUCTS
       WHERE PRODUCT_ID = $1 AND USER_ID = 1
-    `
+    `;
 
     await this.safeQuery(sql, [productId]);
     return {
-      success: true
+      success: true,
     };
   }
 }
