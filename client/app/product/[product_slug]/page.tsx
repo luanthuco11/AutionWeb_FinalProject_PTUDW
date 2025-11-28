@@ -19,6 +19,7 @@ import { useParams } from "next/navigation";
 import { Question, formatCurrency, formatDate } from "./components/Question";
 import { BidHistory } from "./components/BidHistory";
 import { RelatedProducts } from "./components/RelatedProducts";
+import { useAuth } from "@/hooks/useAuth";
 
 function isLessThreeDays(dateA: Date, dateB: Date): boolean {
   const diffMs = Math.abs(dateA.getTime() - dateB.getTime()); // hiệu số milliseconds
@@ -72,8 +73,10 @@ export default function ProductPage() {
   const [product, setProduct] = useState<Product>();
   const { data: data, isLoading: isLoadingProduct } =
     ProductHook.useGetProductById(21);
-
+  const { user } = useAuth();
+  console.log(user);
   const handleLike = () => {
+    
     console.log("Đã nhấn like");
   };
   const handleBuyNow = () => {
@@ -212,7 +215,9 @@ export default function ProductPage() {
       </div>
       {product && <Question productId={product.id} />}
       {product && <BidHistory productId={product.id} />}
-      {product && <RelatedProducts categoryId={product.category_id} />}
+      {
+        //product && <RelatedProducts categoryId={product.category_id} />
+      }
     </div>
   );
 }
