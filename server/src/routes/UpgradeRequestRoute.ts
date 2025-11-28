@@ -26,14 +26,14 @@ export class UpgradeRequestRoute extends BaseRoute {
                     this.controller
                 )));
 
-        this.router.get(
+        this.router.patch(
             "/approve", 
             BaseController.handleRequest(
                 this.controller.updateApproveRequest.bind(
                     this.controller
                 )));
 
-        this.router.get(
+        this.router.patch(
             "/reject", 
             BaseController.handleRequest(
                 this.controller.updateRejectRequest.bind(

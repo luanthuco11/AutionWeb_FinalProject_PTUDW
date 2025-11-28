@@ -38,25 +38,27 @@ export class UpgradeService extends BaseService {
     }
 
     async updateApproveRequest(payload: { id: string }) {
+        const status = 'approved'
         const sql =
             `
-                UPDATE INTO admin.user_upgrade_request;
-                SET status = 'approved'
-                WHERE id = $1;
+                UPDATE admin.user_upgrade_requests
+                SET status = $1
+                WHERE id = $2;
                 `
-        const params = [payload.id];
+        const params = [status, payload.id];
 
         return this.safeQuery(sql, params);
     }
 
     async updateRejectRequest(payload: { id: string }) {
+        const status = 'rejected'
         const sql =
             `
-                UPDATE INTO admin.user_upgrade_request;
-                SET status = 'reject'
-                WHERE id = $1;
+                UPDATE admin.user_upgrade_requests
+                SET status = $1
+                WHERE id = $2;
                 `
-        const params = [payload.id];
+        const params = [status, payload.id];
 
         return this.safeQuery(sql, params);
     }
