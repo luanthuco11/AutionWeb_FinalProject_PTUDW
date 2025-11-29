@@ -29,6 +29,13 @@ export class ProductService {
     });
   }
 
+  static async getSoldProduct():  Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(API_ROUTES.product.getSoldProduct);
+      return res.data;
+    });
+  }
+
   static async createProduct(payload: Product):  Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.product.createProduct, payload);

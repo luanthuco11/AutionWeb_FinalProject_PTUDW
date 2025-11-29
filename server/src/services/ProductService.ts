@@ -298,7 +298,6 @@ export class ProductService extends BaseService {
   // check productId phai la number
   async getProductById(req: Request): Promise<Product | undefined> {
     const productId = req.params.productId;
-
     const sql = `
     SELECT id
     FROM product.products 
@@ -314,6 +313,24 @@ export class ProductService extends BaseService {
       })
     );
     return newProduct[0];
+  }
+
+  async getSoldProducts(): Promise<ProductPreview[] | undefined> {
+    const sql = `
+   SELECT o.product_id as id
+FROM auction.orders o 
+where  o.status = 'completed'
+    `;
+
+    const product = await this.safeQuery<ProductPreview>(sql);
+
+    const newProduct = await Promise.all(
+      product.map(async (item: any) => {
+        const productType = this.getProductPreviewType(item.id);
+        return productType;
+      })
+    );
+    return newProduct;
   }
 
   async createProduct(req: Request) {

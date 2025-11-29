@@ -1,9 +1,3 @@
-import { it } from "node:test";
-import {
-  Product,
-  ProductAnswer,
-  ProductQuestion,
-} from "./../../../shared/src/types/Product";
 import { BaseController } from "./BaseController";
 import { Request, Response, NextFunction } from "express";
 
@@ -18,7 +12,9 @@ export class ProductController extends BaseController {
   }
 
   async getTopProduct(req: Request, res: Response) {
-    const topEndingSoonProducts = await this.service.getTopEndingSoonProducts(5);
+    const topEndingSoonProducts = await this.service.getTopEndingSoonProducts(
+      5
+    );
     const topBiddingProducts = await this.service.getTopBiddingProducts(5);
     const topPriceProducts = await this.service.getTopPriceProducts(5);
 
@@ -33,6 +29,13 @@ export class ProductController extends BaseController {
     const product = await this.service.getProductById(req);
     return {
       product: product,
+    };
+  }
+  async getSoldProducts(req: Request, res: Response) {
+    console.log("ABC");
+    const soldProducts = await this.service.getSoldProducts();
+    return {
+      soldProducts: soldProducts,
     };
   }
 
@@ -78,13 +81,12 @@ export class ProductController extends BaseController {
     };
   }
 
-  async updateProductExtend(req: Request, res: Response){
+  async updateProductExtend(req: Request, res: Response) {
     const productExtend = await this.service.updateProductExtend(req);
     return {
       productExtend: productExtend,
     };
   }
-
 }
 
 // user/
