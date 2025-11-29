@@ -8,7 +8,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import Pagination from "@/components/Pagination";
 import { useSearchParams, useRouter } from "next/navigation";
 
-function Page() {
+export default function Page() {
   const per_page = 15;
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -72,15 +72,9 @@ function Page() {
               onPageChange={handlePageChange}
               currentPage={Number(page)}
             />
+          </div>
         </div>
+      )}
+    </>
+  );
 }
-export default Page;
-// "/category/[:...category_slugs]/product/[:product_slug]"
-// "/user/info"
-// "/user/rating"
-// "/user/favourite_products"
-// "/user/bidding_products"
-// "/user/winning_products"
-// "/user/seller_role"
-// "/user/selling_products"
-// "/user/sold_products"

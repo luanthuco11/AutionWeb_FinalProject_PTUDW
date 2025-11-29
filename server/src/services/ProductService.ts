@@ -210,6 +210,15 @@ export class ProductService extends BaseService {
     return newProducts;
   }
 
+  async getTotalProducts(): Promise<number | undefined> {
+    let sql = `
+    SELECT COUNT(*) AS total
+    FROM product.products
+    `;
+    let totalProducts: {total: number}[] = await this.safeQuery(sql);
+    return totalProducts[0]?.total;
+  }
+
   // Ko chuyen limit cung
   async getTopEndingSoonProducts(
     limit?: number,
@@ -217,12 +226,6 @@ export class ProductService extends BaseService {
   ): Promise<ProductPreview[]> {
     let sqlData = `
     SELECT id
-    FROM product.products
-    ORDER BY product.products.end_time ASC
-    `;
-
-    let sqlCount = `
-    SELECT COUNT(*) AS total
     FROM product.products
     ORDER BY product.products.end_time ASC
     `;
@@ -238,10 +241,10 @@ export class ProductService extends BaseService {
       params.push(offset);
     }
 
-    const [endTimeProducts, totalProducts] = await Promise.all([
-      this.safeQuery<ProductPreview>(sqlData, params),
-      this.safeQuery<{ total: number }>(sqlCount),
-    ]);
+    const endTimeProducts = await this.safeQuery<ProductPreview>(
+      sqlData,
+      params
+    );
 
     const newEndtimeProducts = await Promise.all(
       endTimeProducts.map(async (item: any) => {
@@ -308,8 +311,7 @@ export class ProductService extends BaseService {
   }
 
   // check productId phai la number
-  async getProductById(req: Request): Promise<Product | undefined> {
-    const productId = req.params.productId;
+  async getProductById(productId: number): Promise<Product | undefined> {
     const sql = `
     SELECT id
     FROM product.products 
@@ -359,9 +361,7 @@ where  o.status = 'completed'
     return newProduct;
   }
 
-  async updateProductDescription(req: Request) {
-    const productId = req.params.productId;
-    const description = req.body.description;
+  async updateProductDescription(productId: number, description: string) {
     const sql = `
     UPDATE product.products
     SET description = 
@@ -375,8 +375,7 @@ where  o.status = 'completed'
     const updateProduct = await this.safeQuery(sql, [description, productId]);
     return updateProduct;
   }
-  async deleteProductById(req: Request) {
-    const productId = req.params.productId;
+  async deleteProductById(productId: number) {
     const sql = `
     DELETE FROM product.products 
     WHERE id = $1
@@ -386,8 +385,7 @@ where  o.status = 'completed'
     return deleteProduct;
   }
 
-  async getQuestions(req: Request): Promise<ProductQuestion[]> {
-    const productId = Number(req.params.productId);
+  async getQuestions(productId: number): Promise<ProductQuestion[]> {
     const sql = `
     SELECT 
           pq.id, 
@@ -450,9 +448,7 @@ where  o.status = 'completed'
     return answer[0];
   }
 
-  async updateProductExtend(req: Request) {
-    const productId = req.params.productId;
-    const auto_extend = req.body.auto_extend;
+  async updateProductExtend(productId: number, auto_extend: boolean) {
     const sql = `
     UPDATE product.products
     SET auto_extend = $1

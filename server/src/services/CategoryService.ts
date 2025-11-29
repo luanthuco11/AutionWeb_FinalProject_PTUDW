@@ -27,6 +27,8 @@ export class CategoryService extends BaseService {
     const categories: ProductCategoryTree[] = await this.safeQuery(sql);
     return categories;
   }
+
+  
   async getProductsByCategory(
     pagination: Pagination
   ): Promise<ProductPagination> {
