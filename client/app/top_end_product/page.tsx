@@ -5,78 +5,73 @@ import { ProductPreview } from "../../../shared/src/types";
 import ProductCard from "@/components/ProductCard";
 import ProductHook from "@/hooks/useProduct";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import Pagination from "@/components/Pagination";
+import { useSearchParams, useRouter } from "next/navigation";
 
 function Page() {
   const per_page = 15;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const page = searchParams.get("page") || "1";
   const {
     data: topEndingSoonProduct,
     isLoading: isLoadingTopEndingSoonProduct,
     error: errorTopEndingSoonProduct,
-  } = ProductHook.useGetTopEndingSoonProduct(per_page, 2);
+  } = ProductHook.useGetTopEndingSoonProduct(per_page, Number(page));
 
-  if (isLoadingTopEndingSoonProduct)
-    return (
-      <>
-        <LoadingSpinner />
-      </>
-    );
-  if (errorTopEndingSoonProduct) {
-    return <>{errorTopEndingSoonProduct.message};</>;
-  }
+  const handlePageChange = (value: number) => {
+    const next = new URLSearchParams(searchParams);
+    next.set("page", String(value));
+    router.replace(`?${next.toString()}`);
+  };
+
   const data = topEndingSoonProduct as ProductPreview[];
-
-  // const pageItems: PageItem[] = [
-  //   {
-  //     title: "Sản phẩm sắp kết thúc",
-  //     href: "/top_end_product",
-  //     products: productTop.topEndingSoonProducts,
-  //   },
-  //   {
-  //     title: "Sản phẩm nhiều lượt đấu giá nhất",
-  //     href: "/top_bid_product",
-  //     products: productTop.topBiddingProducts,
-  //   },
-  //   {
-  //     title: "Sản phẩm giá cao nhất",
-  //     href: "/top_price_product",
-  //     products: productTop.topPriceProducts,
-  //   },
-  // ];
 
   return (
     <>
-      <div>
-        <div className="text-center w-full">
-          <h1 className="text-4xl">Chào mừng đến AuctionHub</h1>
-          <div className="mt-2 text-gray-500">
-            Tìm kiếm và đấu giá hàng triệu sản phẩm từ những người bán uy tín
-          </div>
-        </div>
-
+      {isLoadingTopEndingSoonProduct && <LoadingSpinner />}
+      {errorTopEndingSoonProduct && <> Error.... </>}
+      {topEndingSoonProduct && (
         <div>
-          <div className="mt-15">
-            <div className="flex justify-between font-medium">
-              <div className=" text-2xl">Sản phẩm sắp kết thúc</div>
-              <Link
-                href={"/"}
-                className="text-blue-500 flex items-center  gap-2"
-              >
-                <div className="text-[15px]">Xem tất cả</div>
-                <ArrowRight className="w-5 h-5 mt-0.5" />
-              </Link>
+          <div className="text-center w-full">
+            <h1 className="text-4xl">Chào mừng đến AuctionHub</h1>
+            <div className="mt-2 text-gray-500">
+              Tìm kiếm và đấu giá hàng triệu sản phẩm từ những người bán uy tín
             </div>
           </div>
-          <div className="mt-2 grid grid-cols-5 gap-3">
-            {data.map((item, index) => {
-              return (
-                <div key={index} className="mt-3">
-                  <ProductCard product={item} isFavorite={false} />
-                </div>
-              );
-            })}
+
+          <div>
+            <div className="mt-15">
+              <div className="flex justify-between font-medium">
+                <div className=" text-2xl">Sản phẩm sắp kết thúc</div>
+                <Link
+                  href={"/"}
+                  className="text-blue-500 flex items-center  gap-2"
+                >
+                  <div className="text-[15px]">Xem tất cả</div>
+                  <ArrowRight className="w-5 h-5 mt-0.5" />
+                </Link>
+              </div>
+            </div>
+            <div className="mt-2 grid grid-cols-5 gap-3">
+              {data.map((item, index) => {
+                return (
+                  <div key={index} className="mt-3">
+                    <ProductCard product={item} isFavorite={false} />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="mt-10 flex justify-center">
+            <Pagination
+              totalPages={3}
+              onPageChange={handlePageChange}
+              currentPage={Number(page)}
+            />
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
