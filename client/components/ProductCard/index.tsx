@@ -1,9 +1,12 @@
+"use client";
+
 import React from "react";
 import FavoriteButton from "../FavoriteButton";
 import { Product, ProductPreview } from "../../../shared/src/types";
 import { getTimeDifference } from "@/app/utils";
 import Link from "next/link";
 import Image from "next/image";
+import FavoriteHook from "@/hooks/useFavorite";
 
 export default function ProductCard({
   product,
@@ -12,6 +15,34 @@ export default function ProductCard({
   product: ProductPreview;
   isFavorite: boolean;
 }) {
+  const { mutate: addFavorite, isPending: isAdding } =
+    FavoriteHook.useAddFavorite();
+  const { mutate: removeFavorite, isPending: isRemoving } =
+    FavoriteHook.useRemoveFavorite();
+  const {
+    data: favoriteProducts,
+    isLoading,
+    error,
+  } = FavoriteHook.useFavorite() as {
+    data: ProductPreview[];
+    isLoading: boolean;
+    error: any;
+  };
+
+  const favoriteSet = new Set(favoriteProducts.map((item) => item.id));
+
+  const handleFavorite = (productId: number, isFavorite: boolean) => {
+    try {
+      if (isFavorite) {
+        addFavorite({ productId: productId });
+      } else {
+        removeFavorite({ productId: productId });
+      }
+    } catch (e) {
+      console.error("Fail to adding or removing favorite products", e);
+    }
+  };
+
   return (
     <div className="group relative w-full h-123 rounded-lg border-2 border-gray-200 bg-white shadow-md hover:shadow-2xl hover:border-blue-500 transition-all duration-200 select-none">
       <Image
@@ -104,7 +135,12 @@ export default function ProductCard({
 
       {/* Favourite Button */}
       <div className="absolute top-1.5 left-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        <FavoriteButton isFavorite={false} />
+        <FavoriteButton
+          isFavorite={false}
+          onClick={() =>
+            handleFavorite(product.id, !favoriteSet.has(product.id))
+          }
+        />
       </div>
     </div>
   );
