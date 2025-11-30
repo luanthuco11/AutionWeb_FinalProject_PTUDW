@@ -1,7 +1,12 @@
 import { api, safeRequest } from "../config/axios.config";
 import API_ROUTES from "../../shared/src/api";
 import { Pagination } from "../../shared/src/types/Pagination";
-import { ProductCategoryTree } from "../../shared/src/types";
+import {
+  CreateCategory,
+  ProductCategoryTree,
+  UpdateCategory,
+} from "../../shared/src/types";
+
 
 export class CategoryService {
   static async getCategories(): Promise<any> {
@@ -18,13 +23,16 @@ export class CategoryService {
       return res.data;
     });
   }
-  static async createCategory(payload: ProductCategoryTree): Promise<any> {
+  static async createCategory(payload: CreateCategory): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.category.createCategory, payload);
       return res.data;
     });
   }
-  static async updateCategory(id: number, payload: any): Promise<any> {
+  static async updateCategory(
+    id: number,
+    payload: UpdateCategory
+  ): Promise<any> {
     return safeRequest(async () => {
       const res = await api.patch(
         API_ROUTES.category.updateCategory(id),

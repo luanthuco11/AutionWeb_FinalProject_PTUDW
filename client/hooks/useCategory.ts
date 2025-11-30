@@ -2,7 +2,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { STALE_10_MIN } from "@/config/query.config";
 import { CategoryService } from "@/services/categoryService";
 import { Pagination } from "../../shared/src/types/Pagination";
-import { ProductCategoryTree } from "../../shared/src/types";
+import {
+  CreateCategory,
+  ProductCategoryTree,
+  UpdateCategory,
+} from "../../shared/src/types";
 
 class CategoryHook {
   static useCategories() {
@@ -29,7 +33,7 @@ class CategoryHook {
     const queryClient = useQueryClient();
 
     return useMutation({
-      mutationFn: (category: ProductCategoryTree) =>
+      mutationFn: (category: CreateCategory) =>
         CategoryService.createCategory(category),
       onSuccess: (_, params) => {
         queryClient.invalidateQueries({
@@ -42,7 +46,7 @@ class CategoryHook {
     const queryClient = useQueryClient();
 
     return useMutation({
-      mutationFn: (category: ProductCategoryTree) =>
+      mutationFn: (category: UpdateCategory) =>
         CategoryService.updateCategory(category.id, category),
       onSuccess: (_, params) => {
         queryClient.invalidateQueries({

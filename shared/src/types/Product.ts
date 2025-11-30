@@ -67,9 +67,35 @@ export type ProductQuestion = {
   answer?: ProductAnswer;
   created_at?: Date;
 };
+
 export type ProductPagination = {
   page: number;
   limit: number;
   total: number;
   products: Product[];
 };
+
+export type CreateCategory = {
+  name: string;
+  parent_id?: number;
+};
+
+export type UpdateCategory = {
+  id: number;
+  name: string;
+};
+
+export type CreateProduct = Pick<
+  Product,
+  | "name"
+  | "category_id"
+  | "initial_price"
+  | "price_increment"
+  | "buy_now_price"
+  | "end_time"
+  | "description"
+  | "auto_extend"
+>;
+
+export type CreateQuestion = Pick<ProductQuestion, "comment">;
+export type CreateAnswer = Pick<ProductAnswer, "comment">;

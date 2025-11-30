@@ -1,9 +1,11 @@
 import {
+  CreateAnswer,
+  CreateProduct,
+  CreateQuestion,
   Product,
   ProductPreview,
   ProductQuestion,
 } from "./../../../shared/src/types/Product";
-import { profile } from "console";
 import {
   getProductAnswerColumns,
   getProductAnswerValue,
@@ -15,6 +17,9 @@ import {
 import { BaseService } from "./BaseService";
 import { Request, Response, NextFunction } from "express";
 import { ShortUser, User } from "../../../shared/src/types";
+
+import { createSlugUnique } from "../utils";
+
 export class ProductService extends BaseService {
   private static instance: ProductService;
 
@@ -210,6 +215,15 @@ export class ProductService extends BaseService {
     return newProducts;
   }
 
+  async getTotalProducts(): Promise<number | undefined> {
+    let sql = `
+    SELECT COUNT(*) AS total
+    FROM product.products
+    `;
+    let totalProducts: { total: number }[] = await this.safeQuery(sql);
+    return totalProducts[0]?.total;
+  }
+
   // Ko chuyen limit cung
   async getTopEndingSoonProducts(
     limit?: number,
@@ -217,12 +231,6 @@ export class ProductService extends BaseService {
   ): Promise<ProductPreview[]> {
     let sqlData = `
     SELECT id
-    FROM product.products
-    ORDER BY product.products.end_time ASC
-    `;
-
-    let sqlCount = `
-    SELECT COUNT(*) AS total
     FROM product.products
     ORDER BY product.products.end_time ASC
     `;
@@ -238,10 +246,10 @@ export class ProductService extends BaseService {
       params.push(offset);
     }
 
-    const [endTimeProducts, totalProducts] = await Promise.all([
-      this.safeQuery<ProductPreview>(sqlData, params),
-      this.safeQuery<{ total: number }>(sqlCount),
-    ]);
+    const endTimeProducts = await this.safeQuery<ProductPreview>(
+      sqlData,
+      params
+    );
 
     const newEndtimeProducts = await Promise.all(
       endTimeProducts.map(async (item: any) => {
@@ -308,14 +316,12 @@ export class ProductService extends BaseService {
   }
 
   // check productId phai la number
-  async getProductById(req: Request): Promise<Product | undefined> {
-    const productId = req.params.productId;
+  async getProductById(productId: number): Promise<Product | undefined> {
     const sql = `
     SELECT id
     FROM product.products 
     WHERE id = $1
     `;
-
     const product = await this.safeQuery<Product>(sql, [productId]);
 
     const newProduct = await Promise.all(
@@ -330,8 +336,8 @@ export class ProductService extends BaseService {
   async getSoldProducts(): Promise<ProductPreview[] | undefined> {
     const sql = `
    SELECT o.product_id as id
-FROM auction.orders o 
-where  o.status = 'completed'
+  FROM auction.orders o 
+  where  o.status = 'completed'
     `;
 
     const product = await this.safeQuery<ProductPreview>(sql);
@@ -345,38 +351,60 @@ where  o.status = 'completed'
     return soldProduct;
   }
 
-  async createProduct(req: Request) {
-    const keys = await getProductColumns();
-    const values = getProductValue(req.body);
-    const params = keys.map((_, i) => `$${i + 1}`);
-
+  async createProduct(product: CreateProduct, userId: number) {
+    const slug = createSlugUnique(product.name);
     const sql = `
-    INSERT INTO product.products(${keys.join(",")})
-    VALUES (${params.join(",")})
+    INSERT INTO product.products(
+    slug, 
+    seller_id,
+    category_id, 
+    main_image, 
+    extra_images, 
+    name, 
+    initial_price, 
+    buy_now_price, 
+    end_time, 
+    description, 
+    auto_extend, 
+    price_increment,
+    created_at
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
     RETURNING * 
     `;
-    const newProduct = await this.safeQuery(sql, values);
+    const newProduct = await this.safeQuery(sql, [
+      slug,
+      userId,
+      product.category_id,
+      null,
+      null,
+      product.name,
+      product.initial_price,
+      product.buy_now_price,
+      product.end_time,
+      product.description,
+      product.auto_extend,
+      product.price_increment,
+    ]);
     return newProduct;
   }
 
-  async updateProductDescription(req: Request) {
-    const productId = req.params.productId;
-    const description = req.body.description;
+  async updateProductDescription(productId: number, description: string) {
     const sql = `
     UPDATE product.products
     SET description = 
         CASE
             WHEN description IS NULL THEN $1
             ELSE description || E'\n\n' || $1
-        END
+        END,
+        updated = NOW()
     WHERE id = $2
     RETURNING *;
     `;
     const updateProduct = await this.safeQuery(sql, [description, productId]);
     return updateProduct;
   }
-  async deleteProductById(req: Request) {
-    const productId = req.params.productId;
+  async deleteProductById(productId: number) {
     const sql = `
     DELETE FROM product.products 
     WHERE id = $1
@@ -386,8 +414,7 @@ where  o.status = 'completed'
     return deleteProduct;
   }
 
-  async getQuestions(req: Request): Promise<ProductQuestion[]> {
-    const productId = Number(req.params.productId);
+  async getQuestions(productId: number): Promise<ProductQuestion[]> {
     const sql = `
     SELECT 
           pq.id, 
@@ -424,40 +451,58 @@ where  o.status = 'completed'
     return questions;
   }
 
-  async createQuestion(req: Request) {
-    const key = await getProductQuestionColumns();
-    const data = getProductQuestionValue(req.body);
-    const params = key.map((_, i) => `$${i + 1}`);
+  async createQuestion(
+    createQuestion: CreateQuestion,
+    userId: number,
+    productId: number
+  ) {
     const sql = `
-    INSERT INTO feedback.product_questions(${key.join(",")})
-    VALUES (${params})
+    INSERT INTO feedback.product_questions(
+    product_id, 
+    user_id,
+    comment,
+    created_at
+    )
+    VALUES ($1, $2, $3, NOW())
     RETURNING *
     `;
-    const question = await this.safeQuery(sql, data);
+    const question = await this.safeQuery(sql, [
+      productId,
+      userId,
+      createQuestion.comment,
+    ]);
     return question[0];
   }
 
-  async createAnswer(req: Request) {
-    const key = await getProductAnswerColumns();
-    const data = getProductAnswerValue(req.body);
-    const params = key.map((_, i) => `$${i + 1}`);
+  async createAnswer(
+    createAnswer: CreateAnswer,
+    userId: number,
+    questionId: number
+  ) {
     const sql = `
-    INSERT INTO feedback.product_answers(${key.join(",")})
-    VALUES (${params})
+    INSERT INTO feedback.product_answers(
+    question_id,
+    user_id,
+    comment, 
+    created_at
+    )
+    VALUES ($1, $2, $3, NOW())
     RETURNING *
     `;
-    const answer = await this.safeQuery(sql, data);
+    const answer = await this.safeQuery(sql, [
+      questionId,
+      userId,
+      createAnswer.comment,
+    ]);
     return answer[0];
   }
 
-  async updateProductExtend(req: Request) {
-    const productId = req.params.productId;
-    const auto_extend = req.body.auto_extend;
+  async updateProductExtend(productId: number, auto_extend: boolean) {
     const sql = `
     UPDATE product.products
-    SET auto_extend = $1
+    SET auto_extend = $1, 
+        updated = NOW()
     WHERE id = $2
-
     RETURNING * 
     `;
 
