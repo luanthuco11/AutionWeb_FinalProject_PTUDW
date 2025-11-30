@@ -1,42 +1,34 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { RatingService } from "@/services/ratingService";
 import { STALE_10_MIN } from "@/config/query.config";
-import { UserRating } from "../../shared/src/types";
-
-interface CreateRatingPayload extends UserRating {
-    rater_id: string
-    ratee_id: string
-}
+import { CreateRating, UserRating } from "../../shared/src/types";
 
 export class RatingHook {
+  static useGetRating(userId: number) {
+    return useQuery({
+      queryKey: ["user_rating", userId],
 
-    static async useGetRating(userId: number) {
-        return useQuery({
-            queryKey: ["user_rating", userId],
+      queryFn: () => RatingService.getRating(userId),
 
-            queryFn: () => RatingService.getRating(userId),
-            
-            staleTime: STALE_10_MIN,
+      staleTime: STALE_10_MIN,
 
-            select: (data) => {
-                return data.data;
-            }
-        })
-    }
+      select: (data) => {
+        return data.data;
+      },
+    });
+  }
 
-    static async useCreateRating(data: CreateRatingPayload) {
+  static useCreateRating() {
+    const queryClient = useQueryClient();
 
-        const queryClient = useQueryClient();
-        
-        return useMutation({
-            mutationFn: () => 
-                RatingService.createRating(data),
+    return useMutation({
+      mutationFn: (data: CreateRating) => RatingService.createRating(data),
 
-            onSuccess: () => {
-                queryClient.invalidateQueries({
-                    queryKey: ["user_rating", data.ratee_id]
-                })
-            }
-        })
-    }
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["user_rating"],
+        });
+      },
+    });
+  }
 }

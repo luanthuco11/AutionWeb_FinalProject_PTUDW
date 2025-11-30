@@ -169,8 +169,8 @@ export class ProductService extends BaseService {
       p.buy_now_price,
       p.end_time,
       p.auto_extend,
-      p.created_at
-
+      p.created_at,
+      p.initial_price
     FROM product.products p 
     JOIN admin.users u on u.id = p.seller_id 
     WHERE p.id = $1
@@ -193,6 +193,7 @@ export class ProductService extends BaseService {
 
     products = {
       ...products[0],
+      top_bidder: top_bidder,
       top_bidder_name: top_bidder ? top_bidder.name : null,
       current_price: current_price,
       bid_count: bid_count,

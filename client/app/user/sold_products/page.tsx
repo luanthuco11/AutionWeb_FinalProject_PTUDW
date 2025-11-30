@@ -1,78 +1,47 @@
-"use client"
+"use client";
 
-import SoldProduct from '@/components/SoldProduct'
-import ProductType from "@/types/product"
-import { useState } from "react"
+import SoldProduct from "@/components/SoldProduct";
+import ProductHook from "@/hooks/useProduct";
 
-const mockProducts = [
-  {
-    id: 1,
-    name: "Patek Philippe Nautilus - Rose Gold",
-    main_image: "https://binhminhdigital.com/storedata/images/product/camera/fujifilm/may-anh-fujifilm-instax-mini-12-blossom-pink-chinh-hang.jpg",
-    intial_price: "91.000.000",
-    closing_price: "91.000.000",
-    buyer_name: "Đỗ Văn Hà",
-  },
-  {
-    id: 2,
-    name: "Rolex Datejust - Stainless Steel",
-    main_image: "https://binhminhdigital.com/storedata/images/product/camera/fujifilm/may-anh-fujifilm-instax-mini-12-blossom-pink-chinh-hang.jpg",
-    intial_price: "52.000.000",
-    closing_price: "91.000.000",
-    buyer_name: "Huỳnh Gia Âu",
-  },
-  {
-    id: 3,
-    name: "Vintage Omega Seamaster 300",
-    main_image: "https://binhminhdigital.com/storedata/images/product/camera/fujifilm/may-anh-fujifilm-instax-mini-12-blossom-pink-chinh-hang.jpg",
-    intial_price: "42.000.000",
-    closing_price: "91.000.000",
-    buyer_name: "Nguyễn Minh Luân",
-  },
-  {
-    id: 4,
-    name: "MacBook Pro 16 inch M3 Max",
-    main_image: "https://binhminhdigital.com/storedata/images/product/camera/fujifilm/may-anh-fujifilm-instax-mini-12-blossom-pink-chinh-hang.jpg",
-    intial_price: "37.500.000",
-    closing_price: "91.000.000",
-    buyer_name: "Đỗ Nguyễn Minh Trí",
-  },
-  {
-    id: 5,
-    name: "Canon EOS R5 - Mirrorless Camera",
-    main_image: "https://binhminhdigital.com/storedata/images/product/camera/fujifilm/may-anh-fujifilm-instax-mini-12-blossom-pink-chinh-hang.jpg",
-    intial_price: "28.500.000",
-    closing_price: "91.000.000",
-    buyer_name: "no one know",
-  },
-];
-
-for (let i = 6; i <= 30; i++) {
-  mockProducts.push({
-    id: i,
-    name: `Sản phẩm đấu giá #${i}`,
-    main_image: "https://binhminhdigital.com/storedata/images/product/camera/fujifilm/may-anh-fujifilm-instax-mini-12-blossom-pink-chinh-hang.jpg",
-    intial_price: `${10_000_000 + i * 100_000} `,
-    closing_price: `${10_000_000 + i * 100_000} `,
-    buyer_name: "Fuck bitch"
-  });
-}
+import { useState } from "react";
+import { Product } from "../../../../shared/src/types";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { useAuth } from "@/hooks/useAuth";
 
 const SoldProductPage = () => {
-    const [soldProduct, setSoldProduct] = useState<ProductType.SoldProduct[]>(mockProducts)
-    
-    return (
-        <div className='bg-card shadow-sm rounded-lg p-8'>
-            <div className="text-3xl text-[#1e293b] font-semibold mb-7">
-                Sản phẩm đã bán
-            </div>
-            <div className="flex flex-col gap-5">
-                {soldProduct.map((bP, index) => (
-                    <SoldProduct key={index} product={bP}/>
-                ))}
-            </div>
-        </div>
-    )
-}
+  const { user } = useAuth();
+  const { data: soldProducts, isLoading: isLoadingSoldProducts } =
+    ProductHook.useGetSoldProduct() as {
+      data: Product[] | undefined;
+      isLoading: boolean;
+    };
 
-export default SoldProductPage
+  return (
+    <div className="bg-card shadow-sm rounded-lg p-8">
+      <div className="text-3xl text-[#1e293b] font-semibold mb-7">
+        Sản phẩm đã bán
+      </div>
+      {isLoadingSoldProducts ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="flex flex-col gap-5">
+          {soldProducts && soldProducts.length == 0 ? (
+            <>Chưa có sản phẩm</>
+          ) : (
+            soldProducts &&
+            user &&
+            soldProducts.map((bP, index) => (
+              <SoldProduct
+                key={index}
+                product={bP}
+                rater_id={parseInt(user.id as string)}
+              />
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SoldProductPage;

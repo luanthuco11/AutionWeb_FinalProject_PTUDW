@@ -1,48 +1,40 @@
 import { BaseService } from "./BaseService";
-import { UserRating } from "../../../shared/src/types";
-
-interface CreateRatingPayload extends UserRating {
-    rater_id: string
-    ratee_id: string
-}
+import { CreateRating, UserRating } from "../../../shared/src/types";
 
 export class RatingService extends BaseService {
+  private static instance: RatingService;
 
-    private static instance: RatingService;
+  private constructor() {
+    super();
+  }
 
-    private constructor() {
-        super();
+  static getInstance() {
+    if (!RatingService.instance) {
+      RatingService.instance = new RatingService();
     }
+    return RatingService.instance;
+  }
 
-    static getInstance() {
-        if (!RatingService.instance) {
-            RatingService.instance = new RatingService();
-        }
-        return RatingService.instance
-    }
-
-    async getRating(userId: number) {
-        const sql =
-            `
+  async getRating(userId: number) {
+    const sql = `
                 SELECT sum(rating)
                 FROM feedback.user_ratings
                 WHERE ratee_id = $1
-                `
-        const params = [userId]
+                `;
+    const params = [userId];
 
-        return await this.safeQuery(sql, params);
-    }
+    return await this.safeQuery(sql, params);
+  }
 
-    async createRating(payload: CreateRatingPayload) {
-        const {rater_id, ratee_id, comment, rating} = payload;
-        const sql = 
-                `
-                INSERT INTO feedback.user_ratings (rater_id, ratee_id, comment, rating)
-                VALUES ( $1, $2, $3, $4 )
-                `
-        const params = [rater_id, ratee_id, comment ? comment : "", rating];
+  async createRating(payload: CreateRating) {
+    const { rater_id, ratee, comment, rating } = payload;
+    console.log(payload);
+    const sql = `
+                INSERT INTO feedback.user_ratings (rater_id, ratee_id, comment, rating, created_at, updated_at)
+                VALUES ( $1, $2, $3, $4, NOW(), NOW() )
+                `;
+    const params = [rater_id, ratee.id, comment ? comment : "", rating];
 
-        return await this.safeQuery(sql, params);
-    }
-
+    return await this.safeQuery(sql, params);
+  }
 }
