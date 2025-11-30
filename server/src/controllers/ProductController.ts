@@ -1,3 +1,4 @@
+import { CreateAnswer, CreateProduct, CreateQuestion } from "../../../shared/src/types";
 import { BaseController } from "./BaseController";
 import { Request, Response, NextFunction } from "express";
 
@@ -71,7 +72,10 @@ export class ProductController extends BaseController {
   }
 
   async createProduct(req: Request, res: Response) {
-    const newProduct = await this.service.createProduct(req);
+    const product: CreateProduct = req.body;
+    const userId = req.headers["user-id"];
+    console.log("this is req: ", req.headers);
+    const newProduct = await this.service.createProduct(product, userId);
     return {
       newProduct: newProduct,
     };
@@ -106,14 +110,18 @@ export class ProductController extends BaseController {
   }
 
   async createQuestion(req: Request, res: Response) {
-    const question = await this.service.createQuestion(req);
+    const userId = req.headers["user-id"];
+    const createQuestion: CreateQuestion = req.body;
+    const question = await this.service.createQuestion(createQuestion, userId);
     return {
       question: question,
     };
   }
 
   async createAnswer(req: Request, res: Response) {
-    const answer = await this.service.createAnswer(req);
+    const userId = req.headers["user-id"];
+    const createAnswer: CreateAnswer = req.body;
+    const answer = await this.service.createAnswer(createAnswer, userId);
     return {
       answer: answer,
     };

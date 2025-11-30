@@ -1,11 +1,10 @@
-import { SoldProduct } from "@/components/SoldProduct";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ProductService } from "@/services/ProductService";
 import { STALE_10_MIN } from "@/config/query.config";
 import {
-  Product,
-  ProductAnswer,
-  ProductQuestion,
+  CreateAnswer,
+  CreateProduct,
+  CreateQuestion,
 } from "../../shared/src/types";
 
 // Một hàm xử lý logic REACT, và chỉ được biết tới REACT(FRONT END) thôi
@@ -129,7 +128,7 @@ class ProductHook {
   static useCreateProduct() {
     const queryClient = useQueryClient();
     return useMutation({
-      mutationFn: (data: Product) => ProductService.createProduct(data),
+      mutationFn: (data: CreateProduct) => ProductService.createProduct(data),
       onSuccess: () => {
         // Invalidate cache của dữ liệu
         queryClient.invalidateQueries({
@@ -187,7 +186,7 @@ class ProductHook {
   static useCreateProductQuestion() {
     const queryClient = useQueryClient();
     return useMutation({
-      mutationFn: ({ id, data }: { id: number; data: ProductQuestion }) =>
+      mutationFn: ({ id, data }: { id: number; data: CreateQuestion }) =>
         ProductService.createProductQuestion(id, data),
       onSuccess: (_data, variables) => {
         // Invalidate cache của dữ liệu
@@ -208,7 +207,7 @@ class ProductHook {
       }: {
         idProduct: number;
         idQuestion: number;
-        data: ProductAnswer;
+        data: CreateAnswer;
       }) => ProductService.createProductAnswer(idProduct, idQuestion, data),
       onSuccess: (_data, variables) => {
         // Invalidate cache của dữ liệu

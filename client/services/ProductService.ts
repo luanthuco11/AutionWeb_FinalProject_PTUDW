@@ -2,6 +2,9 @@ import axios from "axios";
 import { api, safeRequest } from "../config/axios.config";
 import API_ROUTES from "../../shared/src/api";
 import {
+  CreateAnswer,
+  CreateProduct,
+  CreateQuestion,
   Product,
   ProductAnswer,
   ProductPreview,
@@ -67,7 +70,7 @@ export class ProductService {
     });
   }
 
-  static async createProduct(payload: Product): Promise<any> {
+  static async createProduct(payload: CreateProduct): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.product.createProduct, payload);
       return res.data;
@@ -102,7 +105,7 @@ export class ProductService {
 
   static async createProductQuestion(
     id: number,
-    data: ProductQuestion
+    data: CreateQuestion
   ): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(
@@ -116,7 +119,7 @@ export class ProductService {
   static async createProductAnswer(
     idProduct: number,
     idQuestion: number,
-    data: ProductAnswer
+    data: CreateAnswer
   ): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(
