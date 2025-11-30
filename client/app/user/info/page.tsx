@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import ViewDetail from './ViewDetail'
 import PrimaryButton from '@/components/PrimaryButton'
 import { EditIcon } from 'lucide-react'
@@ -13,36 +13,27 @@ import LoadingSpinner from '@/components/LoadingSpinner'
 
 const InfoPage = () => {
 
-    // Define variables
+    // --- Define state ---
     const [inEditMode, setInEditMode] = useState<boolean>(false);
-    const {
-            data: userProfile, 
-            isLoading: isUserProfileLoading, 
-            error
-        } = UserHook.useGetProfile();
+    const [isSaving, setIsSaving] = useState(false);
+    const [isFormDirty, setIsFormDirty] = useState(false);
+    const [submitProfileForm, setSubmitProfileForm] = useState<(() => void) | null>(null);
 
-    // React Hook
-    useEffect(() => {
 
-    })
+    // --- Custom hook ---
+    const { data: userProfile, isLoading, error } = UserHook.useGetProfile()
 
-    function handleEditButton() {
-        setInEditMode(true);
-    }
+    // --- Handler ---
 
-    function handleLogout() {
-        console.log('Clicked on log out button');
-    }
+    const handleEditButton = () => setInEditMode(true)
+    const handleCancelEditButton = () => setInEditMode(false)
+    const handleLogout = () => console.log('Clicked on log out button')
 
-    function handleSaveButton() {
-        setInEditMode(false);
-    }
+    const handleSaveButton = useCallback(() => {
+        if (submitProfileForm) submitProfileForm()
+    }, [submitProfileForm])
 
-    function handleCancelEditButton() {
-        setInEditMode(false);
-    }
-
-    if (isUserProfileLoading) return <LoadingSpinner/>;
+    if (isLoading) return <LoadingSpinner />;
     if (error) return <p>Lỗi tải dữ liệu</p>;
     if (!userProfile) return <p>Không tìm thấy thông tin người dùng</p>;
 
@@ -50,15 +41,21 @@ const InfoPage = () => {
         <p className="text-2xl font-medium">Thông tin tài khoản</p>
         <div>
             {inEditMode ? <div>
-                <EditDetail />
+                <EditDetail
+                    user={userProfile}
+                    onProfileSubmit={setSubmitProfileForm}
+                    setIsSaving={setIsSaving}
+                    onSaveSuccess={() => setInEditMode(false)}
+                    setIsDirty={setIsFormDirty}
+                />
             </div> : <div>
-                <ViewDetail user={userProfile}/>
+                <ViewDetail user={userProfile} />
             </div>}
 
             {inEditMode ? <div>
                 <section className="flex flex-row gap-5 mt-10 max-w-80">
                     <PrimaryButton
-                        text="Lưu thay đổi"
+                        text={isSaving ? "Đang lưu..." : "Lưu thay đổi"}
                         onClick={handleSaveButton}
                     />
                     <SecondaryButton

@@ -1,33 +1,32 @@
 "use client";
 
-import { FC, SVGProps, useState } from "react";
+import { FC, SVGProps, useState, ButtonHTMLAttributes } from "react";
 
-interface Button {
+interface Button extends ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
   textColor?: string;
   hoverTextColor?: string;
   backgroundColor?: string;
   hoverBackgroundColor?: string;
   icon?: FC<SVGProps<SVGSVGElement>>;
-  onClick?: () => void;
 }
 
 
 
 export default function SecondaryButton({
   text,
-  onClick,
   icon: Icon,
   textColor,
   hoverTextColor,
   backgroundColor,
   hoverBackgroundColor,
+  ...rest
 } : Button) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <button
-      onClick={onClick}
+      {...rest}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
@@ -43,8 +42,3 @@ export default function SecondaryButton({
   );
 };
 
-
-/*
- <PrimaryButton text="Click me" icon={LoveIcon} onClick={() => console.log("123")} textColor="#333333" hoverBackgroundColor="#FF00FF" backgroundColor="#808080"  />;
-  <SecondaryButton text="Click me" icon={LoveIcon} onClick={() => console.log("123")} textColor="#333333" hoverBackgroundColor="#FF00FF" backgroundColor="#808080"  />;
-*/
