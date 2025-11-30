@@ -16,6 +16,8 @@ import {
 import ErrorMessage from "./ErrorMessage";
 import CategoryHook from "@/hooks/useCategory";
 import { formatPrice, parseNumber } from "@/app/utils";
+import LoadingSpinner from "@/components/LoadingSpinner";
+
 const Editor = dynamic(
   () =>
     import("@tinymce/tinymce-react").then(
@@ -164,7 +166,15 @@ const CreateProductPage = () => {
 
     formData.append("payload", JSON.stringify(payload));
 
-    createProduct(formData);
+    createProduct(formData, {
+      onSuccess: (_) => {
+        alert("Đăng sản phẩm thành công!");
+        window.location.reload();
+      },
+      onError: (error: any) => {
+        alert("Có lỗi xảy ra: " + error.message);
+      },
+    });
   };
 
   const handleSubmitUpload = (e: React.FormEvent) => {
@@ -192,9 +202,9 @@ const CreateProductPage = () => {
     console.log(res);
   };
   return (
-    <div className="w-full bg-[#F8FAFC] lg:px-32">
+    <div className="relative w-full bg-[#F8FAFC] lg:px-32">
       {/* GIAO DIỆN TẠM - NÚT UPLOAD & XÓA ẢNH TRONG CLOUDFLARE R2 */}
-      <div className="h-50 grid grid-cols-3 gap-2">
+      {/* <div className="h-50 grid grid-cols-3 gap-2">
         <button
           onClick={handleSubmitUpload}
           className="bg-gray-500 border border-gray-300 cursor-pointer text-white"
@@ -207,7 +217,7 @@ const CreateProductPage = () => {
         >
           Delete
         </button>
-      </div>
+      </div> */}
       {/* KẾT THÚC GIAO DIỆN TẠM */}
 
       <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -216,6 +226,12 @@ const CreateProductPage = () => {
       <p className="text-gray-600 mb-8">
         Điền thông tin chi tiết để bán sản phẩm của bạn
       </p>
+
+      {isPending && (
+        <div className="fixed inset-0 z-100">
+          <LoadingSpinner />
+        </div>
+      )}
       <form
         className="bg-white rounded-lg p-8 space-y-8 border border-gray-200"
         onSubmit={handleSubmit(onSubmit)}
@@ -448,12 +464,7 @@ const CreateProductPage = () => {
                   toolbar:
                     "undo redo | blocks fontfamily fontsize backcolor forecolor  | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
                 }}
-                onEditorChange={(content: string) => {
-                  setValue("description", content, {
-                    shouldValidate: true, // Tùy chọn: kích hoạt validation
-                    shouldDirty: true, // Tùy chọn: đánh dấu trường đã thay đổi
-                  });
-                }}
+                onEditorChange={(content: string) => field.onChange(content)}
                 onBlur={field.onBlur}
                 disabled={false}
               />

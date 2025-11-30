@@ -36,12 +36,7 @@ export class FavoriteController extends BaseController {
     }
 
     const r2 = R2Service.getInstance();
-    const result = await r2.uploadToR2(
-      file.buffer,
-      file.originalname,
-      file.mimetype,
-      "product"
-    );
+    const result = await r2.uploadToR2(file, "product");
     return result;
   }
 

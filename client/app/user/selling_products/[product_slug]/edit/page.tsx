@@ -7,6 +7,9 @@ import React from "react";
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { Editor as TinyMCEEditor } from "@tinymce/tinymce-react";
+import ProductHook from "@/hooks/useProduct";
+import { useParams } from "next/navigation";
+
 const Editor = dynamic(
   () =>
     import("@tinymce/tinymce-react").then(
@@ -16,11 +19,19 @@ const Editor = dynamic(
 );
 const EditProductPage = () => {
   const [content, setContent] = useState("");
+  const {
+    mutate: updateProductDescription,
+    isPending: isUpdatingProductDescription,
+  } = ProductHook.useUpdateProductDescription();
+
+  const { product_slug } = useParams();
+  const product = ProductHook.useGetProductById(Number(product_slug));
+
   const handleEditorChange = (content: string, editor: any) => {
     setContent(content);
   };
   const handleAddDes = () => {
-    console.log(content);
+    // TODO
   };
   return (
     <div className="bg-[#F8FAFC] w-full">

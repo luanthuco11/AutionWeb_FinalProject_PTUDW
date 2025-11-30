@@ -95,10 +95,6 @@ export class ProductController extends BaseController {
 
     const payload: CreateProduct = JSON.parse(payloadStr);
 
-    console.log(mainImage);
-    console.log(extraImages);
-    console.log("payload", payload);
-
     const newProduct = await this.service.createProduct(
       payload,
       mainImage,

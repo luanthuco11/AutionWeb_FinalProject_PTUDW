@@ -93,6 +93,21 @@ export class R2Service {
     }
   }
 
+  public async deleteFilesFromR2(filePaths: string[]): Promise<void> {
+    try {
+      const uploadPromises: Promise<void>[] = [];
+      filePaths.forEach((filePath) =>
+        uploadPromises.push(this.deleteFromR2(filePath))
+      );
+
+      await Promise.all(uploadPromises);
+    } catch (e) {
+      console.error("Fail to delete file", e);
+    } finally {
+      return;
+    }
+  }
+
   private extractKeyFromUrl(filePath: string): string {
     const bucketName = process.env.R2_BUCKET_NAME!;
     const accountId = process.env.R2_ACCOUNT_ID!;

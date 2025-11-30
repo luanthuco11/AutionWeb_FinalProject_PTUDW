@@ -14,7 +14,6 @@ export class BaseController {
   }
 
 
-
   static handleRequest(controllerFn: AsyncControllerFunction) {
     return async (req: Request, res: Response) => {
       try {

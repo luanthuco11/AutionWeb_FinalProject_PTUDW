@@ -19,6 +19,7 @@ import { Request, Response, NextFunction } from "express";
 import { ShortUser, User } from "../../../shared/src/types";
 
 import { createSlugUnique } from "../utils";
+import { R2Service } from "./R2Service";
 
 export class ProductService extends BaseService {
   private static instance: ProductService;
@@ -357,6 +358,12 @@ export class ProductService extends BaseService {
     extraImages: Express.Multer.File[],
     userId: number
   ) {
+    const r2 = R2Service.getInstance();
+    const [mainImageUrl, ...extraImageUrls] = await r2.uploadFilesToR2(
+      [mainImage, ...extraImages],
+      "product"
+    ); // Upload lên R2 và lấy link ảnh R2
+
     const slug = createSlugUnique(payload.name);
     const sql = `
     INSERT INTO product.products(
@@ -381,8 +388,8 @@ export class ProductService extends BaseService {
       slug,
       userId,
       payload.category_id,
-      null,
-      null,
+      mainImageUrl,
+      extraImageUrls,
       payload.name,
       payload.initial_price,
       payload.buy_now_price,
@@ -413,10 +420,22 @@ export class ProductService extends BaseService {
     const sql = `
     DELETE FROM product.products 
     WHERE id = $1
-    RETURNING *
+    RETURNING MAIN_IMAGE, EXTRA_IMAGES
     `;
-    const deleteProduct = await this.safeQuery(sql, [productId]);
-    return deleteProduct;
+    const result = await this.safeQuery<{
+      main_image: string;
+      extra_images: string[];
+    }>(sql, [productId]);
+
+    if (result.length == 0) {
+      throw new Error(`Không thể tìm thấy sản phẩm có id = ${productId}`);
+    }
+
+    const { main_image, extra_images = [] } = result[0]!;
+    const r2 = R2Service.getInstance();
+    await r2.deleteFilesFromR2([main_image, ...extra_images]);
+
+    return result;
   }
 
   async getQuestions(productId: number): Promise<ProductQuestion[]> {
