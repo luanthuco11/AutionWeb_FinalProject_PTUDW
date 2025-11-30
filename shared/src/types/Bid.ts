@@ -22,6 +22,7 @@ export type BidHistory = {
   logs: BidLog[];
 };
 
+
 export type UserBid = {
   id: number;
   max_price: number;

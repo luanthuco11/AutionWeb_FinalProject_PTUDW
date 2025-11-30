@@ -3,32 +3,32 @@ import { UpgradeRequestService } from "@/services/upgradeRequestService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 class UpgradeRequestHook {
-    static useGetRequestStatus(id: string) {
+    static useGetRequestStatus(userId: number) {
         return useQuery({
-            queryKey: ["request_status", id],
+            queryKey: ["request_status", userId],
 
-            queryFn: () => UpgradeRequestService.getRequestStatus(id),
+            queryFn: () => UpgradeRequestService.getRequestStatus(userId),
 
             staleTime: STALE_10_MIN,
 
-            enabled: !!id,
+            enabled: !!userId,
 
             select: (data) => {
-                return data.data;
+                return data.data.result;
             }
         });
     }
 
-    static useCreateSellerRequest(id: string) {
+    static useCreateSellerRequest() {
         const queryClient = useQueryClient();
 
         return useMutation({
             mutationFn: () =>
-                UpgradeRequestService.createSellerRequest(id),
+                UpgradeRequestService.createSellerRequest(),
 
             onSuccess: () => {
                 queryClient.invalidateQueries({
-                    queryKey: ["request_status", id]
+                    queryKey: ["request_status"]
                 })
             }
         })

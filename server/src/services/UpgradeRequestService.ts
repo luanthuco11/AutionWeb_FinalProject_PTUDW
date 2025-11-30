@@ -14,13 +14,13 @@ export class UpgradeService extends BaseService {
         return UpgradeService.instance;
     }
 
-    async createSellerRequest(payload: { id: number }) {
+    async createSellerRequest(id: number ) {
         const sql =
             `
                 INSERT INTO admin.user_upgrade_requests (bidder_id)
                 VALUES ($1);
                 `
-        const params = [payload.id];
+        const params = [id];
 
         return this.safeQuery(sql, params);
     }
@@ -28,7 +28,7 @@ export class UpgradeService extends BaseService {
     async getRequestStatus(id: string) {
         const sql =
             `
-                SELECT status 
+                SELECT * 
                 FROM admin.user_upgrade_requests
                 WHERE id = $1;
                 `
