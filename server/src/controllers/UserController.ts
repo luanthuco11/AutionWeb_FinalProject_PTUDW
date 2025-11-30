@@ -19,7 +19,7 @@ export class UserController extends BaseController {
     }
 
     async updateProfile(req: Request, res: Response) {
-        const result = await this.service.updateProfile(req.body);
+        const result = await this.service.updateProfile({...req.body, id: req.headers["user-id"]});
         return {result};
     }
 }

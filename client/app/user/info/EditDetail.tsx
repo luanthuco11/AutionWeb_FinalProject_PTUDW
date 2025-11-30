@@ -1,65 +1,160 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import Avatar from "./Avatar"
 import SecondaryButton from "@/components/SecondaryButton";
+import UserHook from "@/hooks/useUser";
+import { useForm, SubmitHandler } from "react-hook-form"
+import { EditProfileInputs, EditProfileSchema } from "./validation"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { User } from "../../../../shared/src/types";
 
-export default function EditDetail() {
-  const [isEditingPassword, setIsEditingPassword] = useState<boolean>(false);
+interface EditDetailProps {
+    user: User;
+    onProfileSubmit: (submitFn: () => void) => void;
+    setIsSaving: (isSaving: boolean) => void;
+    onSaveSuccess: () => void;
+    setIsDirty: (isDirty: boolean) => void;
+}
 
-  return <div>
-    <section className="flex flex-col gap-5 mt-5">
-      <div className="flex flex-col gap-2">
-        <label htmlFor="avatar" className="font-medium text-sm">Ảnh đại diện</label>
-        <Avatar
-          allowEdit={true}
-          imageProps={{
-            src: "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTyhgwFBBuEqiLB5BAjQR4hCDCoJYefwwYtelRMap_8uXFoyisZLRptYiqLuXet0zX9X9Z4z_UAxYbYCcyD9Pm8i2iEe1ljOiYaXfrieWMo7cAQCVQZQ8iYoWz5pDdJFY67SAOckK9jv-c&s=19"
-          }}
-        />
-      </div>
-      <div className="grid grid-cols-2">
-        <form className="flex flex-col gap-2">
-          <label htmlFor="fullname" className="font-medium text-sm">Tên đầy đủ<span className="text-red-500 ml-0.5">*</span></label>
-          <input name="fullname" id="fullname" type="text" defaultValue="Huỳnh Gia Âu" required={true} className="text-black rounded-lg mr-10" />
+export default function EditDetail({ user, onProfileSubmit, setIsSaving, onSaveSuccess, setIsDirty }: EditDetailProps) {
 
-          <label htmlFor="email" className="mt-3 font-medium text-sm">Email<span className="text-red-500 ml-0.5">*</span></label>
-          <input name="email" id="email" type="text" defaultValue="huynhgiaau27112005@gmail.com" required={true} className="text-black rounded-lg mr-10" />
+    // --- State ---
+    const [isEditingPassword, setIsEditingPassword] = useState<boolean>(false);
 
-          <label htmlFor="birthday" className="mt-3 font-medium text-sm">Ngày sinh<span className="text-red-500 ml-0.5">*</span></label>
-          <input name="birthday" id="birthday" type="date" defaultValue="27/11/2005" required={true} className="text-black rounded-lg mr-10" />
+    // --- Custom Hook ---
+    const { mutate: updateProfile, isPending: isLoading } = UserHook.useUpdateProfile();
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors, isDirty: isFormDirty },
+    } = useForm<EditProfileInputs>({
+        resolver: zodResolver(EditProfileSchema),
+        defaultValues: {
+            name: user.name || '',
+            email: user.email || '',
+            address: user.address || '',
+            profile_img: user.profile_img || '',
+        },
+        mode: 'onChange'
+    });
 
-          <label htmlFor="address" className="mt-3 font-medium text-sm">Địa chỉ<span className="text-red-500 ml-0.5">*</span></label>
-          <input name="address" id="address" type="text" required={true} defaultValue="47 Lý Thái Tổ, Phường 1, Quận 10, TP Hồ Chí Minh" className="text-black rounded-lg mr-10" />
-        </form>
-        <div className="flex flex-col gap-2">
-          <div className="ml-2 flex flex-row gap-2 items-center">
-            <input name="edit-password" id="edit-password" type="checkbox" onChange={(e) => setIsEditingPassword(e.target.checked)} className="checkbox-primary" />
-            <label htmlFor="edit-password">Thay đổi mật khẩu</label>
-          </div>
-          <form aria-disabled={!isEditingPassword} className="relative flex flex-col gap-2 p-6 border border-gray-500 rounded-sm aria-disabled:pointer-events-none">
-            {/* Overlay */}
-            {!isEditingPassword && (
-              <div className="absolute -inset-1 bg-white/70 pointer-events-none rounded-sm" />
-            )}
+    // --- Define handler ---
+    const onSubmit: SubmitHandler<EditProfileInputs> = useCallback((data) => {
+        const payload = {
+            name: data.name,
+            email: data.email,
+            address: data.address,
+            profile_img: data.profile_img,
+        };
 
-            <label htmlFor="old-password" className="font-medium text-sm">Mật khẩu cũ</label>
-            <div className="grid grid-cols-[4fr_2.5fr] gap-2.5">
-              <input name="old-password" id="old-password" type="password" disabled={!isEditingPassword} className="text-black rounded-lg basis-4/5 flex-1" />
-              <SecondaryButton
-                text="Quên mật khẩu"
-                onClick={() => console.log("Clicked on 'Quên mật khẩu'")}
-              />
+        updateProfile(payload, {
+            onSuccess: () => {
+                alert("Cập nhật profile thành công!");
+                onSaveSuccess();
+            },
+            onError: (error) => {
+                console.error("Lỗi cập nhật:", error);
+                alert("Cập nhật profile thất bại. Vui lòng kiểm tra console.");
+            }
+        })
+    }, [updateProfile, onSaveSuccess]);
+
+    // --- React Hooks  ---
+    useEffect(() => {
+        setIsSaving(isLoading);
+    }, [isLoading, setIsSaving]);
+
+    useEffect(() => {
+        setIsDirty(isFormDirty);
+    }, [isFormDirty, setIsDirty]);
+
+    useEffect(() => {
+        if (user) {
+            setValue('name', user.name || '');
+            setValue('email', user.email || '');
+            setValue('address', user.address || '');
+            setValue('profile_img', user.profile_img || '');
+        }
+    }, [user, setValue]);
+
+    useEffect(() => {
+        onProfileSubmit(() => handleSubmit(onSubmit))
+    }, [handleSubmit, onSubmit, onProfileSubmit])
+
+
+    return (
+        <div className="flex flex-col gap-5 mt-5">
+            <div className="flex flex-col gap-2">
+                <label htmlFor="avatar" className="font-medium text-sm">Ảnh đại diện</label>
+                <Avatar
+                    allowEdit={true}
+                    imageProps={{
+                        src: user.profile_img || 'https://via.placeholder.com/150' // Thêm URL placeholder
+                    }}
+                />
             </div>
+            <div className="grid grid-cols-2">
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+                    <label htmlFor="name" className="font-medium text-sm">Tên đầy đủ<span className="text-red-500 ml-0.5">*</span></label>
+                    <input
+                        {...register("name")}
+                        id="name"
+                        type="text"
+                        className="text-black rounded-lg mr-10"
+                    />
+                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
 
-            <label htmlFor="old-password" className="mt-3 font-medium text-sm">Mật khẩu mới</label>
-            <input name="old-password" id="old-password" type="password" disabled={!isEditingPassword} className="text-black rounded-lg" />
+                    <label htmlFor="email" className="mt-3 font-medium text-sm">Email<span className="text-red-500 ml-0.5">*</span></label>
+                    <input
+                        {...register("email")}
+                        id="email"
+                        type="email"
+                        className="text-black rounded-lg mr-10"
+                    />
+                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
 
-            <label htmlFor="old-password" className="mt-3 font-medium text-sm">Xác nhận mật khẩu mới</label>
-            <input name="old-password" id="old-password" type="password" disabled={!isEditingPassword} className="text-black rounded-lg" />
-          </form>
+                    <label htmlFor="address" className="mt-3 font-medium text-sm">Địa chỉ<span className="text-red-500 ml-0.5">*</span></label>
+                    <input
+                        {...register("address")}
+                        id="address"
+                        type="text"
+                        className="text-black rounded-lg mr-10"
+                    />
+                    {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>}
+
+                    <button type="submit" hidden aria-hidden="true" tabIndex={-1} />
+                </form>
+
+                {/* Phần Thay đổi Mật khẩu */}
+                <div className="flex flex-col gap-2">
+                    <div className="ml-2 flex flex-row gap-2 items-center">
+                        <input name="edit-password" id="edit-password" type="checkbox" onChange={(e) => setIsEditingPassword(e.target.checked)} className="checkbox-primary" />
+                        <label htmlFor="edit-password">Thay đổi mật khẩu</label>
+                    </div>
+                    <form aria-disabled={!isEditingPassword} className="relative flex flex-col gap-2 p-6 border border-gray-500 rounded-sm aria-disabled:pointer-events-none">
+                        {/* Overlay */}
+                        {!isEditingPassword && (
+                            <div className="absolute -inset-1 bg-white/70 pointer-events-none rounded-sm" />
+                        )}
+                        <label htmlFor="old-password" className="font-medium text-sm">Mật khẩu cũ</label>
+                        <div className="grid grid-cols-[4fr_2.5fr] gap-2.5">
+                            <input name="old-password" id="old-password" type="password" disabled={!isEditingPassword} className="text-black rounded-lg basis-4/5 flex-1" />
+                            <SecondaryButton
+                                text="Quên mật khẩu"
+                                type="button"
+                                onClick={() => console.log("Clicked on 'Quên mật khẩu'")}
+                            />
+                        </div>
+                        <label htmlFor="old-password" className="mt-3 font-medium text-sm">Mật khẩu mới</label>
+                        <input name="old-password" id="old-password" type="password" disabled={!isEditingPassword} className="text-black rounded-lg" />
+
+                        <label htmlFor="old-password" className="mt-3 font-medium text-sm">Xác nhận mật khẩu mới</label>
+                        <input name="old-password" id="old-password" type="password" disabled={!isEditingPassword} className="text-black rounded-lg" />
+                    </form>
+                </div>
+            </div>
         </div>
-      </div>
-    </section>
-  </div>
+    );
 }

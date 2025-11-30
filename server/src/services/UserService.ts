@@ -42,7 +42,7 @@ export class UserService extends BaseService {
         const params = [id];
         const profile = await this.safeQuery(sql, params);
 
-        return profile;
+        return profile[0];
     }
 
     async updateProfile(payload: UpdateUserPayload) {

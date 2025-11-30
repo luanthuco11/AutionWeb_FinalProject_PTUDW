@@ -11,6 +11,8 @@ class UpgradeRequestHook {
 
             staleTime: STALE_10_MIN,
 
+            enabled: !!id,
+
             select: (data) => {
                 return data.data;
             }
@@ -32,14 +34,14 @@ class UpgradeRequestHook {
         })
     }
 
-    static useUpdateApproveRequest(id: string) {
+    static useUpdateApproveRequest() {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: () =>
+            mutationFn: (id: string) =>
                 UpgradeRequestService.updateApproveRequest(id),
 
-            onSuccess: () => {
+            onSuccess: (_, id) => {
                 queryClient.invalidateQueries({
                     queryKey: ["request_status", id]
                 })
@@ -47,14 +49,14 @@ class UpgradeRequestHook {
         })
     }
 
-    static useUpdateRejectRequest(id: string) {
+    static useUpdateRejectRequest() {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: () =>
+            mutationFn: (id: string) =>
                 UpgradeRequestService.updateRejectRequest(id),
 
-            onSuccess: () => {
+            onSuccess: (_, id) => {
                 queryClient.invalidateQueries({
                     queryKey: ["request_status", id]
                 })

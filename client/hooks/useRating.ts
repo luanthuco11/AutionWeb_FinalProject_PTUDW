@@ -11,6 +11,7 @@ export class RatingHook {
       queryFn: () => RatingService.getRating(userId),
 
       staleTime: STALE_10_MIN,
+      enabled: !!userId,
 
       select: (data) => {
         return data.data;
