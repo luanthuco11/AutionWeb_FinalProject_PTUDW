@@ -18,13 +18,15 @@ export class R2Service {
   }
 
   public async uploadToR2(
-    fileBuffer: Buffer,
-    originalName: string,
-    contentType: string,
+    file: Express.Multer.File,
     directory?: R2DirectoryType
   ): Promise<string> {
     let key = "";
     try {
+      const fileBuffer = file.buffer;
+      const originalName = file.originalname;
+      const contentType = file.mimetype;
+
       if (!fileBuffer) throw new Error("File is required");
 
       const fileName = Date.now() + "-" + originalName;
@@ -44,6 +46,25 @@ export class R2Service {
       return key
         ? `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${process.env.R2_BUCKET_NAME}/${key}`
         : "";
+    }
+  }
+
+  public async uploadFilesToR2(
+    files: Express.Multer.File[],
+    directory?: R2DirectoryType
+  ) {
+    let uploadedUrls: string[] = [];
+    try {
+      const uploadPromises: Promise<string>[] = [];
+      files.forEach((file) =>
+        uploadPromises.push(this.uploadToR2(file, directory))
+      );
+
+      uploadedUrls = await Promise.all(uploadPromises);
+    } catch (e) {
+      console.error("Fail to upload files", e);
+    } finally {
+      return uploadedUrls;
     }
   }
 
