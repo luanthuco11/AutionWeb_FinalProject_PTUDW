@@ -1,66 +1,117 @@
-import axios  from "axios";
+import axios from "axios";
 import { api, safeRequest } from "../config/axios.config";
 import API_ROUTES from "../../shared/src/api";
-import { Product, ProductAnswer, ProductPreview, ProductQuestion } from "../../shared/src/types";
+import {
+  CreateAnswer,
+  CreateProduct,
+  CreateQuestion,
+  Product,
+  ProductAnswer,
+  ProductPreview,
+  ProductQuestion,
+} from "../../shared/src/types";
 
 // Một hàm để tạo kết nối tới endpoint bên backend
 // Không được biết gì về frontend cả
 // NO COUPLING
 
 export class ProductService {
-  static async getProducts(): Promise<any>{
+  static async getProducts(): Promise<any> {
     return safeRequest(async () => {
       const res = await api.get(API_ROUTES.product.getProducts);
       return res.data;
     });
   }
 
-  static async getProductTop():  Promise<any> {
+  static async getProductTop(): Promise<any> {
     return safeRequest(async () => {
       const res = await api.get(API_ROUTES.product.getProductTop);
       return res.data;
     });
   }
 
-  static async getProductById(id: number):  Promise<any> {
+  static async getTopEndingSoonProduct(
+    limit: number,
+    page: number
+  ): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(
+        API_ROUTES.product.getTopEndingSoonProduct(limit, page)
+      );
+      return res.data;
+    });
+  }
+
+  static async getTopBiddingProduct(): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(API_ROUTES.product.getTopBiddingProduct);
+      return res.data;
+    });
+  }
+
+  static async getTopPriceProduct(): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(API_ROUTES.product.getTopPriceProduct);
+      return res.data;
+    });
+  }
+
+  static async getProductById(id: number): Promise<any> {
     return safeRequest(async () => {
       const res = await api.get(API_ROUTES.product.getProductById(id));
       return res.data;
     });
   }
 
-  static async createProduct(payload: Product):  Promise<any> {
+  static async getSoldProduct(): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(API_ROUTES.product.getSoldProduct);
+      return res.data;
+    });
+  }
+
+  static async createProduct(payload: CreateProduct): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.product.createProduct, payload);
       return res.data;
     });
   }
-  static async updateProductDescription(id: number, description: string):  Promise<any> {
+  static async updateProductDescription(
+    id: number,
+    description: string
+  ): Promise<any> {
     return safeRequest(async () => {
       const res = await api.patch(
-        API_ROUTES.product.updateProductDescription(id), {description}
+        API_ROUTES.product.updateProductDescription(id),
+        { description }
       );
       return res.data;
     });
   }
 
-  static async deleteProductById(id: number):  Promise<any> {
+  static async deleteProductById(id: number): Promise<any> {
     return safeRequest(async () => {
       const res = await api.delete(API_ROUTES.product.deleteProductById(id));
       return res.data;
     });
   }
 
-  static async getProductQuestion(id: number):  Promise<any>{
+  static async getProductQuestion(id: number): Promise<any> {
     return safeRequest(async () => {
       const res = await api.get(API_ROUTES.product.geProductQuestion(id));
       return res.data;
     });
   }
 
-  static async createProductQuestion(id: number, data: ProductQuestion):  Promise<any> {
+  static async createProductQuestion(
+    id: number,
+    data: CreateQuestion
+  ): Promise<any> {
     return safeRequest(async () => {
-      const res = await api.post(API_ROUTES.product.createProductQuestion(id), data);
+      const res = await api.post(
+        API_ROUTES.product.createProductQuestion(id),
+        data
+      );
       return res.data;
     });
   }
@@ -68,19 +119,25 @@ export class ProductService {
   static async createProductAnswer(
     idProduct: number,
     idQuestion: number,
-    data: ProductAnswer
-  ):  Promise<any> {
+    data: CreateAnswer
+  ): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(
-        API_ROUTES.product.createProductAnswer(idProduct, idQuestion), data
+        API_ROUTES.product.createProductAnswer(idProduct, idQuestion),
+        data
       );
       return res.data;
     });
   }
 
-  static async updateProductExtend(id: number, auto_extend: boolean):  Promise<any> {
+  static async updateProductExtend(
+    id: number,
+    auto_extend: boolean
+  ): Promise<any> {
     return safeRequest(async () => {
-      const res = await api.patch(API_ROUTES.product.updateProductExtend(id), {auto_extend});
+      const res = await api.patch(API_ROUTES.product.updateProductExtend(id), {
+        auto_extend,
+      });
       return res.data;
     });
   }

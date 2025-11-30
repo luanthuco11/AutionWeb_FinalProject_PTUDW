@@ -1,4 +1,4 @@
-import { BidLog } from "../../../shared/src/types/Bid";
+import { BidLog, CreateBidLog } from "../../../shared/src/types/Bid";
 import { BaseController } from "./BaseController";
 import { Request, Response, NextFunction } from "express";
 
@@ -13,9 +13,8 @@ export class BidController extends BaseController {
     return { bid_logs: bid_logs };
   }
   async createBid(req: Request, res: Response) {
-    const bid: BidLog = {
-      id: -1,
-      user: req.body.user.id,
+    const bid: CreateBidLog = {
+      user_id: parseInt(req.headers["user-id"] as string),
       product_id: req.body.product_id,
       price: req.body.price,
     };

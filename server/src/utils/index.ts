@@ -1,7 +1,15 @@
-import { Product, ProductAnswer, ProductQuestion } from './../../../shared/src/types/Product';
-import Database from '../config/db';
+import {
+  Product,
+  ProductAnswer,
+  ProductQuestion,
+} from "./../../../shared/src/types/Product";
+import Database from "../config/db";
+import { nanoid } from "nanoid";
+import slugify from "slugify";
+const uniquePart = nanoid(3);
+
 export const getProductColumns = async () => {
-    const pool = Database.getInstance();
+  const pool = Database.getInstance();
   const sql = `
     SELECT column_name
     FROM information_schema.columns
@@ -14,11 +22,11 @@ export const getProductColumns = async () => {
   `;
 
   const result = await pool.query(sql);
-  return result.rows.map(r => r.column_name);
+  return result.rows.map((r) => r.column_name);
 };
 
 export const getProductQuestionColumns = async () => {
-   const pool = Database.getInstance();
+  const pool = Database.getInstance();
   const sql = `
     SELECT column_name
     FROM information_schema.columns
@@ -30,12 +38,11 @@ export const getProductQuestionColumns = async () => {
   `;
 
   const result = await pool.query(sql);
-  return result.rows.map(r => r.column_name);
-}
-
+  return result.rows.map((r) => r.column_name);
+};
 
 export const getProductAnswerColumns = async () => {
-   const pool = Database.getInstance();
+  const pool = Database.getInstance();
   const sql = `
     SELECT column_name
     FROM information_schema.columns
@@ -47,71 +54,63 @@ export const getProductAnswerColumns = async () => {
   `;
 
   const result = await pool.query(sql);
-  return result.rows.map(r => r.column_name);
-}
-
-
+  return result.rows.map((r) => r.column_name);
+};
 
 export const getProductValue = (data: Product) => {
-  const  {
-    slug, 
+  const {
+    slug,
     seller,
     category_id,
     main_image,
     extra_images,
     name,
-    initial_price, 
+    initial_price,
     buy_now_price,
     top_bidder,
     end_time,
     description,
-    auto_extend, 
-    price_increment
-  } = data
+    auto_extend,
+    price_increment,
+  } = data;
 
   return [
-    slug, 
-    seller?.id, 
-    category_id, 
+    slug,
+    seller?.id,
+    category_id,
     main_image,
-    extra_images, 
-    name, 
+    extra_images,
+    name,
     initial_price,
-    buy_now_price, 
-    top_bidder?.id, 
+    buy_now_price,
+    top_bidder?.id,
     end_time,
     description,
-    auto_extend, 
-    price_increment
-]
+    auto_extend,
+    price_increment,
+  ];
 };
 
 export const getProductQuestionValue = (data: ProductQuestion) => {
-  const  {
-    product_id,
-    user,
-    comment,
-  } = data
+  const { product_id, user, comment } = data;
 
-  return [
-    product_id,
-    user.id,
-    comment,
-]
+  return [product_id, user.id, comment];
 };
 
-
-
 export const getProductAnswerValue = (data: ProductAnswer) => {
-  const  {
-    question_id,
-    user,
-    comment,
-  } = data
+  const { question_id, user, comment } = data;
 
-  return [
-    question_id,
-    user.id,
-    comment,
-]
+  return [question_id, user.id, comment];
+};
+
+export const createSlugUnique = (name: string) => {
+  return (
+    slugify(name, {
+      lower: true,
+      strict: true,
+      locale: "vi",
+    }) +
+    "-" +
+    uniquePart
+  );
 };

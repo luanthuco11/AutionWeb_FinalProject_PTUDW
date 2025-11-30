@@ -25,9 +25,6 @@ const FavoriteProductPage = () => {
       {error && <div>{error.message}</div>}
       {!isLoading && !error && (
         <div className="mt-2 grid grid-cols-5 gap-3">
-          {/* <div>
-            <pre>{JSON.stringify(favoriteProducts, null, 2)}</pre>
-          </div> */}
           {favoriteProducts.map((item) => {
             return (
               <div key={item.id} className="mt-3">

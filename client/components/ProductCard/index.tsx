@@ -2,12 +2,14 @@
 
 import React from "react";
 import FavoriteButton from "../FavoriteButton";
-import { Product, ProductPreview } from "../../../shared/src/types";
+import {  ProductPreview } from "../../../shared/src/types";
 import { getTimeDifference } from "@/app/utils";
 import Link from "next/link";
 import Image from "next/image";
 import FavoriteHook from "@/hooks/useFavorite";
 import LoadingSpinner from "../LoadingSpinner";
+
+const defaultImage = "https://img.freepik.com/premium-photo/white-colors-podium-abstract-background-minimal-geometric-shape-3d-rendering_48946-113.jpg?semt=ais_hybrid&w=740&q=80";
 
 export default function ProductCard({
   product,
@@ -15,7 +17,8 @@ export default function ProductCard({
 }: {
   product: ProductPreview;
   isFavorite: boolean;
-}) {
+}) 
+{
   const { mutate: addFavorite, isPending: isAdding } =
     FavoriteHook.useAddFavorite();
   const { mutate: removeFavorite, isPending: isRemoving } =
@@ -36,7 +39,7 @@ export default function ProductCard({
   return (
     <div className="group relative w-full h-123 rounded-lg border-2 border-gray-200 bg-white shadow-md hover:shadow-2xl hover:border-blue-500 transition-all duration-200 select-none">
       <Image
-        src={product.main_image}
+        src={product.main_image || defaultImage}
         width={50}
         height={123}
         alt={product.name}

@@ -1,6 +1,6 @@
 import { api, safeRequest } from "../config/axios.config";
 import API_ROUTES from "../../shared/src/api";
-import { BidLog } from "../../shared/src/types";
+import { BidLog, CreateBidLog } from "../../shared/src/types";
 
 export class BidService {
   static async getBidlogs(product_id: number): Promise<any> {
@@ -10,7 +10,7 @@ export class BidService {
     });
   }
 
-  static async createBid(payload: BidLog): Promise<any> {
+  static async createBid(payload: CreateBidLog): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.bid.createBid, payload);
       return res.data;

@@ -20,3 +20,6 @@ logs
 
 # Shared
 /shared/dist
+
+# package
+package-lock.jsons

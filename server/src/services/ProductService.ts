@@ -1,9 +1,11 @@
 import {
+  CreateAnswer,
+  CreateProduct,
+  CreateQuestion,
   Product,
   ProductPreview,
   ProductQuestion,
 } from "./../../../shared/src/types/Product";
-import { profile } from "console";
 import {
   getProductAnswerColumns,
   getProductAnswerValue,
@@ -15,6 +17,9 @@ import {
 import { BaseService } from "./BaseService";
 import { Request, Response, NextFunction } from "express";
 import { ShortUser, User } from "../../../shared/src/types";
+
+import { createSlugUnique } from "../utils";
+
 export class ProductService extends BaseService {
   private static instance: ProductService;
 
@@ -42,19 +47,20 @@ export class ProductService extends BaseService {
     return bidder[0] ? bidder[0] : null;
   }
 
-  async getBidCount(productId: number): Promise<number> {
+  async getBidCount(productId: number): Promise<number | undefined> {
     const sql = `  
-    SELECT COUNT(*) AS bid_count
+    SELECT COUNT(DISTINCT(user_id)) AS bid_count
     FROM auction.bid_logs bl 
     WHERE bl.product_id = $1
     `;
     const bidCount: { bid_count: number }[] = await this.safeQuery(sql, [
       productId,
     ]);
-    return Number(bidCount[0]?.bid_count ?? 0);
+    // return Number(bidCount[0]?.bid_count ?? 0);
+    return bidCount[0]?.bid_count;
   }
 
-  async getCurrentPrice(productId: number): Promise<number | null> {
+  async getCurrentPrice(productId: number): Promise<number | undefined | null> {
     const sql = `  
     SELECT MAX(bl.price) AS current_price
     FROM auction.bid_logs bl 
@@ -62,9 +68,10 @@ export class ProductService extends BaseService {
     `;
     const currentPrice: { current_price: number | null }[] =
       await this.safeQuery(sql, [productId]);
-    return currentPrice[0]?.current_price
-      ? Number(currentPrice[0].current_price)
-      : null;
+    // return currentPrice[0]?.current_price
+    //   ? Number(currentPrice[0].current_price)
+    //   : null;
+    return currentPrice[0]?.current_price;
   }
 
   async getStatus(productId: number): Promise<string> {
@@ -118,16 +125,16 @@ export class ProductService extends BaseService {
     `;
 
     let products: any = await this.safeQuery<Product>(sql, [productId]);
-    products[0].id = products[0].id ? Number(products[0].id) : null;
-    products[0].initial_price = products[0].initial_price
-      ? Number(products[0].initial_price)
-      : null;
-    products[0].buy_now_price = products[0].buy_now_price
-      ? Number(products[0].buy_now_price)
-      : null;
-    products[0].price_increment = products[0].price_increment
-      ? Number(products[0].price_increment)
-      : null;
+    // products[0].id = products[0].id ? Number(products[0].id) : null;
+    // products[0].initial_price = products[0].initial_price
+    //   ? Number(products[0].initial_price)
+    //   : null;
+    // products[0].buy_now_price = products[0].buy_now_price
+    //   ? Number(products[0].buy_now_price)
+    //   : null;
+    // products[0].price_increment = products[0].price_increment
+    //   ? Number(products[0].price_increment)
+    //   : null;
     if (current_price == null) {
       current_price = products[0].initial_price;
     }
@@ -170,16 +177,16 @@ export class ProductService extends BaseService {
     `;
 
     let products: any = await this.safeQuery<ProductPreview>(sql, [productId]);
-    products[0].id = products[0].id ? Number(products[0].id) : null;
-    products[0].initial_price = products[0].initial_price
-      ? Number(products[0].initial_price)
-      : null;
-    products[0].buy_now_price = products[0].buy_now_price
-      ? Number(products[0].buy_now_price)
-      : null;
-    products[0].price_increment = products[0].price_increment
-      ? Number(products[0].price_increment)
-      : null;
+    // products[0].id = products[0].id ? Number(products[0].id) : null;
+    // products[0].initial_price = products[0].initial_price
+    //   ? Number(products[0].initial_price)
+    //   : null;
+    // products[0].buy_now_price = products[0].buy_now_price
+    //   ? Number(products[0].buy_now_price)
+    //   : null;
+    // products[0].price_increment = products[0].price_increment
+    //   ? Number(products[0].price_increment)
+    //   : null;
     if (current_price == null) {
       current_price = products[0].initial_price;
     }
@@ -196,7 +203,7 @@ export class ProductService extends BaseService {
 
   async getProducts(): Promise<ProductPreview[]> {
     const sql = `SELECT id FROM product.products order by id asc  `;
-    let products = await this.safeQuery<ProductPreview>(sql);
+    let products: ProductPreview[] = await this.safeQuery(sql);
 
     const newProducts = await Promise.all(
       products.map(async (item: any) => {
@@ -206,13 +213,23 @@ export class ProductService extends BaseService {
     );
 
     return newProducts;
-    // const result = await this.safeQuery<User>(sql, [id]); (cung duoc)
-    // const users = await this.safeQuery(sql, params);
+  }
+
+  async getTotalProducts(): Promise<number | undefined> {
+    let sql = `
+    SELECT COUNT(*) AS total
+    FROM product.products
+    `;
+    let totalProducts: { total: number }[] = await this.safeQuery(sql);
+    return totalProducts[0]?.total;
   }
 
   // Ko chuyen limit cung
-  async getTopEndingSoonProducts(limit?: number): Promise<ProductPreview[]> {
-    let sql = `
+  async getTopEndingSoonProducts(
+    limit?: number,
+    page?: number
+  ): Promise<ProductPreview[]> {
+    let sqlData = `
     SELECT id
     FROM product.products
     ORDER BY product.products.end_time ASC
@@ -220,11 +237,19 @@ export class ProductService extends BaseService {
 
     const params: any[] = [];
     if (limit) {
-      sql += `LIMIT $1 \n`;
+      sqlData += `LIMIT $1 \n`;
       params.push(limit);
     }
+    if (page && limit) {
+      const offset = (page - 1) * limit;
+      sqlData += "OFFSET $2 \n";
+      params.push(offset);
+    }
 
-    const endTimeProducts = await this.safeQuery<ProductPreview>(sql, params);
+    const endTimeProducts = await this.safeQuery<ProductPreview>(
+      sqlData,
+      params
+    );
 
     const newEndtimeProducts = await Promise.all(
       endTimeProducts.map(async (item: any) => {
@@ -232,22 +257,17 @@ export class ProductService extends BaseService {
         return productType;
       })
     );
-
     return newEndtimeProducts;
   }
 
-  // Ko chuyen limit cung
   async getTopBiddingProducts(limit?: number): Promise<ProductPreview[]> {
     let sql = `
-  SELECT products.id 
-  FROM product.products AS products 
-  WHERE products.id IN (
+  
   SELECT products.id
   FROM product.products AS products 
   JOIN auction.bid_logs  AS bid_logs ON bid_logs.product_id = products.id 
   GROUP BY products.id 
   ORDER BY COUNT(DISTINCT bid_logs.user_id) DESC
-  )
   `;
     const params: any[] = [];
     if (limit) {
@@ -296,15 +316,12 @@ export class ProductService extends BaseService {
   }
 
   // check productId phai la number
-  async getProductById(req: Request): Promise<Product | undefined> {
-    const productId = req.params.productId;
-
+  async getProductById(productId: number): Promise<Product | undefined> {
     const sql = `
     SELECT id
     FROM product.products 
     WHERE id = $1
     `;
-
     const product = await this.safeQuery<Product>(sql, [productId]);
 
     const newProduct = await Promise.all(
@@ -316,38 +333,78 @@ export class ProductService extends BaseService {
     return newProduct[0];
   }
 
-  async createProduct(req: Request) {
-    const keys = await getProductColumns();
-    const values = getProductValue(req.body);
-    const params = keys.map((_, i) => `$${i + 1}`);
-
+  async getSoldProducts(): Promise<ProductPreview[] | undefined> {
     const sql = `
-    INSERT INTO product.products(${keys.join(",")})
-    VALUES (${params.join(",")})
+   SELECT o.product_id as id
+  FROM auction.orders o 
+  where  o.status = 'completed'
+    `;
+
+    const product = await this.safeQuery<ProductPreview>(sql);
+
+    const soldProduct = await Promise.all(
+      product.map(async (item: any) => {
+        const productType = this.getProductPreviewType(item.id);
+        return productType;
+      })
+    );
+    return soldProduct;
+  }
+
+  async createProduct(product: CreateProduct, userId: number) {
+    const slug = createSlugUnique(product.name);
+    const sql = `
+    INSERT INTO product.products(
+    slug, 
+    seller_id,
+    category_id, 
+    main_image, 
+    extra_images, 
+    name, 
+    initial_price, 
+    buy_now_price, 
+    end_time, 
+    description, 
+    auto_extend, 
+    price_increment,
+    created_at
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW())
     RETURNING * 
     `;
-    const newProduct = await this.safeQuery(sql, values);
+    const newProduct = await this.safeQuery(sql, [
+      slug,
+      userId,
+      product.category_id,
+      null,
+      null,
+      product.name,
+      product.initial_price,
+      product.buy_now_price,
+      product.end_time,
+      product.description,
+      product.auto_extend,
+      product.price_increment,
+    ]);
     return newProduct;
   }
 
-  async updateProductDescription(req: Request) {
-    const productId = req.params.productId;
-    const description = req.body.description;
+  async updateProductDescription(productId: number, description: string) {
     const sql = `
     UPDATE product.products
     SET description = 
         CASE
             WHEN description IS NULL THEN $1
             ELSE description || E'\n\n' || $1
-        END
+        END,
+        updated = NOW()
     WHERE id = $2
     RETURNING *;
     `;
     const updateProduct = await this.safeQuery(sql, [description, productId]);
     return updateProduct;
   }
-  async deleteProductById(req: Request) {
-    const productId = req.params.productId;
+  async deleteProductById(productId: number) {
     const sql = `
     DELETE FROM product.products 
     WHERE id = $1
@@ -357,8 +414,7 @@ export class ProductService extends BaseService {
     return deleteProduct;
   }
 
-  async getQuestions(req: Request): Promise<ProductQuestion[]> {
-    const productId = Number(req.params.productId);
+  async getQuestions(productId: number): Promise<ProductQuestion[]> {
     const sql = `
     SELECT 
           pq.id, 
@@ -395,40 +451,58 @@ export class ProductService extends BaseService {
     return questions;
   }
 
-  async createQuestion(req: Request) {
-    const key = await getProductQuestionColumns();
-    const data = getProductQuestionValue(req.body);
-    const params = key.map((_, i) => `$${i + 1}`);
+  async createQuestion(
+    createQuestion: CreateQuestion,
+    userId: number,
+    productId: number
+  ) {
     const sql = `
-    INSERT INTO feedback.product_questions(${key.join(",")})
-    VALUES (${params})
+    INSERT INTO feedback.product_questions(
+    product_id, 
+    user_id,
+    comment,
+    created_at
+    )
+    VALUES ($1, $2, $3, NOW())
     RETURNING *
     `;
-    const question = await this.safeQuery(sql, data);
+    const question = await this.safeQuery(sql, [
+      productId,
+      userId,
+      createQuestion.comment,
+    ]);
     return question[0];
   }
 
-  async createAnswer(req: Request) {
-    const key = await getProductAnswerColumns();
-    const data = getProductAnswerValue(req.body);
-    const params = key.map((_, i) => `$${i + 1}`);
+  async createAnswer(
+    createAnswer: CreateAnswer,
+    userId: number,
+    questionId: number
+  ) {
     const sql = `
-    INSERT INTO feedback.product_answers(${key.join(",")})
-    VALUES (${params})
+    INSERT INTO feedback.product_answers(
+    question_id,
+    user_id,
+    comment, 
+    created_at
+    )
+    VALUES ($1, $2, $3, NOW())
     RETURNING *
     `;
-    const answer = await this.safeQuery(sql, data);
+    const answer = await this.safeQuery(sql, [
+      questionId,
+      userId,
+      createAnswer.comment,
+    ]);
     return answer[0];
   }
 
-  async updateProductExtend(req: Request) {
-    const productId = req.params.productId;
-    const auto_extend = req.body.auto_extend;
+  async updateProductExtend(productId: number, auto_extend: boolean) {
     const sql = `
     UPDATE product.products
-    SET auto_extend = $1
+    SET auto_extend = $1, 
+        updated = NOW()
     WHERE id = $2
-
     RETURNING * 
     `;
 
@@ -436,47 +510,3 @@ export class ProductService extends BaseService {
     return productExtend;
   }
 }
-
-/*
-- Can tim hieu async, await , Promise.all
-*/
-
-/*
-{
-  "slug": "Tri-ne",
-  "seller": {
-    "id": 1,
-    "name": "Tri"
-  },
-  "main_image": "Tri",
-  "extra_images": ["123"],
-  "description": "Hello ba",
-  "auto_extend": true,
-  "price_increment": 30,
-  "initial_price": 10,
-  "buy_now_price": 10,
-  "category_id": 1,
-  "name": "Do da banh",
-  "status": true,
-  "top_bidder": {
-    "id": 1
-  }
-}
-*/
-
-/*
-⚡ Async / Await — Ý chính
-async luôn trả về Promise (dù bạn return gì).
-await chỉ tạm “pause” trong hàm async, không block event loop.
-await làm code tuần tự → dễ đọc nhưng chậm nếu không cần phụ thuộc.
-Lỗi khi await ném ra → throw như lỗi bình thường, bắt bằng try/catch.
-await trong vòng lặp lớn (forEach/map) → dễ tạo vấn đề performance.
-⚡ Promise.all — Ý chính
-Chạy song song nhiều Promise → nhanh nhất khi các tác vụ độc lập.
-Nếu một Promise reject → tất cả reject.
-Không phù hợp nếu bạn muốn xử lý lỗi từng phần.
-Tốt nhất dùng với:
-Gọi nhiều API độc lập
-Query DB song song
-Nhiều tác vụ async không phụ thuộc nhau
-*/

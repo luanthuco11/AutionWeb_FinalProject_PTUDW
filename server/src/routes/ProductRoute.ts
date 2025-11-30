@@ -13,6 +13,10 @@ export class ProductRoute extends BaseRoute {
   initRoutes() {
     this.router.get("/",BaseController.handleRequest(this.controller.getProducts.bind(this.controller)));
     this.router.get("/top",BaseController.handleRequest(this.controller.getTopProduct.bind(this.controller)));
+    this.router.get("/sold",BaseController.handleRequest(this.controller.getSoldProducts.bind(this.controller)));
+    this.router.get("/top_end",BaseController.handleRequest(this.controller.getTopEndingSoonProducts.bind(this.controller)));
+    this.router.get("/top_bid",BaseController.handleRequest(this.controller.getTopBiddingProducts.bind(this.controller)));
+    this.router.get("/top_price",BaseController.handleRequest(this.controller.getTopPriceProducts.bind(this.controller)));
     this.router.get("/:productId",BaseController.handleRequest(this.controller.getProductById.bind(this.controller)));
     this.router.post("/",BaseController.handleRequest(this.controller.createProduct.bind(this.controller)));
     this.router.delete("/:productId",BaseController.handleRequest(this.controller.deleteProductById.bind(this.controller)));

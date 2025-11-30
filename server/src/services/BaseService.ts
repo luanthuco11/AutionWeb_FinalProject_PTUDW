@@ -1,4 +1,5 @@
 import Database from "../config/db";
+
 export class BaseService {
   protected pool = Database.getInstance();
 
@@ -17,8 +18,3 @@ export class BaseService {
     }
   }
 }
-/*
-const sql const param return this.safequery(sql, param)
-*/
-
-// Image ben ant-design

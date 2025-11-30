@@ -1,7 +1,7 @@
 "use client";
 import { ArrowRight } from "@/components/icons";
 import Link from "next/link";
-import { Product } from "../../shared/src/types";
+import { ProductPreview } from "../../../shared/src/types";
 import ProductCard from "@/components/ProductCard";
 import ProductHook from "@/hooks/useProduct";
 import LoadingSpinner from "@/components/LoadingSpinner";
@@ -9,49 +9,49 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 interface PageItem {
   title: string;
   href?: string;
-  products: Product[];
+  products: ProductPreview[];
 }
 
 function Page() {
   const {
     data: productTop,
-    isLoading: isLoadingTopProduct,
-    error: errorTopProduct,
-  } = ProductHook.useGetProductTop();
+    isLoading: isLoadingTopPriceProduct,
+    error: errorTopPriceProduct,
+  } = ProductHook.useGetTopPriceProduct();
 
-  if (isLoadingTopProduct)
+  if (isLoadingTopPriceProduct)
     return (
       <>
         <LoadingSpinner />
       </>
     );
-  if (errorTopProduct) {
-    return <>{errorTopProduct.message};</>;
+  if (errorTopPriceProduct) {
+    return <>{errorTopPriceProduct.message};</>;
   }
 
   console.log(productTop);
 
-  const pageItems: PageItem[] = [
-    {
-      title: "Sản phẩm sắp kết thúc",
-      href: "/top_end_product",
-      products: productTop.topEndingSoonProducts,
-    },
-    {
-      title: "Sản phẩm nhiều lượt đấu giá nhất",
-      href: "/top_bid_product",
-      products: productTop.topBiddingProducts,
-    },
-    {
-      title: "Sản phẩm giá cao nhất",
-      href: "/top_price_product",
-      products: productTop.topPriceProducts,
-    },
-  ];
+  // const pageItems: PageItem[] = [
+  //   {
+  //     title: "Sản phẩm sắp kết thúc",
+  //     href: "/top_end_product",
+  //     products: productTop.topEndingSoonProducts,
+  //   },
+  //   {
+  //     title: "Sản phẩm nhiều lượt đấu giá nhất",
+  //     href: "/top_bid_product",
+  //     products: productTop.topBiddingProducts,
+  //   },
+  //   {
+  //     title: "Sản phẩm giá cao nhất",
+  //     href: "/top_price_product",
+  //     products: productTop.topPriceProducts,
+  //   },
+  // ];
 
   return (
     <>
-      <div>
+      {/* <div>
         <div className="text-center w-full">
           <h1 className="text-4xl">Chào mừng đến AuctionHub</h1>
           <div className="mt-2 text-gray-500">
@@ -85,7 +85,8 @@ function Page() {
             </div>
           );
         })}
-      </div>
+      </div> */}
+      <div>Tri</div>
     </>
   );
 }

@@ -1,4 +1,7 @@
 const BASE_API = "http://localhost:8080/api";
+const USER_API = `${BASE_API}/user`;
+const UPGRADE_API =`${BASE_API}/upgrade`;
+const RATING_API = `${BASE_API}/rating`;
 const PRODUCT_API = `${BASE_API}/product`;
 const CATEGORY_API = `${BASE_API}/category`;
 const BID_API = `${BASE_API}/bid`;
@@ -13,6 +16,15 @@ const API_ROUTES = {
     updateUser: (id: number) => `${BASE_API}/users${id}`,
     deleteUser: (id: number) => `${BASE_API}/users${id}`,
     createUSer: `${BASE_API}/users`,
+    getProfile: () => `${USER_API}/profile`, //GET
+    updateProfile: `${USER_API}/profile`, //PATCH
+    updatePassword: `${USER_API}/password`, //PATCH 
+  },
+  upgrade: {
+    createSellerRequest: `${UPGRADE_API}/request`, //POST
+    getRequestStatus:(id: string) =>  `${UPGRADE_API}/status/${id}`, //GET
+    updateApproveRequest: `${UPGRADE_API}/approve`, //PATCH
+    updateRejectRequest: `${UPGRADE_API}/reject`, //PATCH
   },
   category: {
     getCategories: `${CATEGORY_API}`, //GET
@@ -27,16 +39,24 @@ const API_ROUTES = {
     createBid: `${BID_API}`, //POST
     createReject: `${BID_API}/reject`, //POST
   },
+  rating: {
+    getRating: (userId: number) => `${RATING_API}/${userId}`, //GET
+    createRating: `${RATING_API}`, //POST
+  },
   product: {
     getProducts: `${PRODUCT_API}`, // GET
-    getProductTop: `${PRODUCT_API}/top`, // GET 
+    getProductTop: `${PRODUCT_API}/top`, // GET
     getProductById: (id: number) => `${PRODUCT_API}/${id}`, // GET
+    getSoldProduct: `${PRODUCT_API}/sold`, // GET
+    getTopEndingSoonProduct: (limit: number, page: number) => `${PRODUCT_API}/top_end?limit=${limit}&page=${page}`, // GET
+    getTopBiddingProduct: `${PRODUCT_API}/top_bid`, // GET
+    getTopPriceProduct: `${PRODUCT_API}/top_price`, // GET
     createProduct: `${PRODUCT_API}`, // POST
-    updateProductDescription: (id: number) => `${PRODUCT_API}/${id}/description`, // PATCH
+    updateProductDescription: (id: number) =>`${PRODUCT_API}/${id}/description`, // PATCH
     deleteProductById: (id: number) => `${PRODUCT_API}/${id}`, // DELETE
     geProductQuestion: (id: number) => `${PRODUCT_API}/${id}/questions`, // GET
     createProductQuestion: (id: number) => `${PRODUCT_API}/${id}/questions`, // POST
-    createProductAnswer: (idProduct: number, idQuestion: number) => `${PRODUCT_API}/${idProduct}/${idQuestion}/answers`, // POST
+    createProductAnswer: (idProduct: number, idQuestion: number) =>`${PRODUCT_API}/${idProduct}/${idQuestion}/answers`, // POST
     updateProductExtend: (id: number) => `${PRODUCT_API}/${id}/extend`, // PATCH
   },
   favorite: {
@@ -48,12 +68,11 @@ const API_ROUTES = {
     getOrder: ORDER_API, // GET
     getOrderById: (productId: number) => `${ORDER_API}/${productId}`, // GET
     createOrder: ORDER_API, // POST
-    updateOrderStatus: (productId: number, status: string) => `/${ORDER_API}/${productId}/${status}`, // PATCH
+    updateOrderStatus: (productId: number, status: string) =>
+      `/${ORDER_API}/${productId}/${status}`, // PATCH
     getOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // GET
-    createOrderChat: (productId: number) =>  `${ORDER_API}/${productId}/chat` // POST
-  }
+    createOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // POST
+  },
 };
 
 export default API_ROUTES;
-
-

@@ -12,7 +12,7 @@
     "paths": {
       "@shared/*": ["shared/src/*"]
     },
-    "types": ["node"]
+    "types": ["node", "express", "multer"]
   },
   "include": ["server", "client", "shared"]
 }

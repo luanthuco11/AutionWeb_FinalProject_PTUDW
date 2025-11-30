@@ -1,7 +1,11 @@
 import { BaseController } from "./BaseController";
 import { Request, Response, NextFunction } from "express";
 import { Pagination } from "../../../shared/src/types/Pagination";
-import { ProductCategoryTree } from "../../../shared/src/types/Product";
+import {
+  CreateCategory,
+  ProductCategoryTree,
+  UpdateCategory,
+} from "../../../shared/src/types/Product";
 
 export class CategoryController extends BaseController {
   constructor(service: any) {
@@ -23,19 +27,16 @@ export class CategoryController extends BaseController {
     return products;
   }
   async createCategory(req: Request, res: Response) {
-    const category: ProductCategoryTree = {
-      id: -1,
+    const category: CreateCategory = {
       name: req.body.name,
-      slug: req.body.slug,
       parent_id: req.body.parent_id,
     };
     await this.service.createCategory(category);
   }
   async updateCategory(req: Request, res: Response) {
-    const category: ProductCategoryTree = {
+    const category: UpdateCategory = {
       id: parseInt(req.params.id as string),
       name: req.body.name,
-      slug: req.body.slug,
     };
     await this.service.updateCategory(category);
   }

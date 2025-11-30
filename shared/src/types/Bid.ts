@@ -8,7 +8,11 @@ export type BidLog = {
   created_at?: Date;
   updated_at?: Date;
 };
-
+export type CreateBidLog = {
+  user_id: number;
+  price: number;
+  product_id: number;
+};
 export type BidHistory = {
   product_id: number;
   logs: BidLog[];

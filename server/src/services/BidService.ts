@@ -1,4 +1,4 @@
-import { BidLog } from "../../../shared/src/types/Bid";
+import { BidLog, CreateBidLog } from "../../../shared/src/types/Bid";
 import { BaseService } from "./BaseService";
 import { MutationResult } from "../../../shared/src/types/Mutation";
 export class BidService extends BaseService {
@@ -19,14 +19,14 @@ export class BidService extends BaseService {
     const logs: BidLog[] = await this.safeQuery(sql, [id]);
     return logs;
   }
-  async createBid(bid: BidLog): Promise<MutationResult> {
+  async createBid(bid: CreateBidLog): Promise<MutationResult> {
     let sql = `SELECT COUNT(*) as total FROM auction.black_list as bl WHERE bl.user_id = $1 AND bl.product_id = $2`;
-    const totalBl = await this.safeQuery(sql, [bid.user, bid.product_id]);
+    const totalBl = await this.safeQuery(sql, [bid.user_id, bid.product_id]);
     if (totalBl.length > 0) return { success: false };
     sql = `INSERT INTO auction.bid_logs (user_id, product_id, price, created_at, updated_at)
                 VALUES
                 ($1, $2, $3, NOW(), NOW() )`;
-    await this.safeQuery(sql, [bid.user, bid.product_id, bid.price]);
+    await this.safeQuery(sql, [bid.user_id, bid.product_id, bid.price]);
     return { success: true };
   }
   async createReject(bid: BidLog): Promise<MutationResult> {
