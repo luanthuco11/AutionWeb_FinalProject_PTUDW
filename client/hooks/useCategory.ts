@@ -2,10 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { STALE_10_MIN } from "@/config/query.config";
 import { CategoryService } from "@/services/categoryService";
 import { Pagination } from "../../shared/src/types/Pagination";
-import {
-  CreateCategory,
-  UpdateCategory,
-} from "../../shared/src/types";
+import { CreateCategory, UpdateCategory } from "../../shared/src/types";
 
 class CategoryHook {
   static useCategories() {
@@ -18,10 +15,29 @@ class CategoryHook {
       },
     });
   }
-  static useProductsByCategorySlug(slug: string, page: number, limit: number, sort: string) {
+
+  static useCategoryDetailById(id: number) {
+    return useQuery({
+      queryKey: ["category_by_id", id],
+      enabled: !!id,
+      queryFn: () => CategoryService.getCategoryDetailById(id),
+      staleTime: STALE_10_MIN,
+      select: (data) => {
+        return data.data.category;
+      },
+    });
+  }
+
+  static useProductsByCategorySlug(
+    slug: string,
+    page: number,
+    limit: number,
+    sort: string
+  ) {
     return useQuery({
       queryKey: ["products_by_category", slug, page, limit, sort],
-      queryFn: () => CategoryService.getProductsByCategorySlug(slug, page, limit, sort),
+      queryFn: () =>
+        CategoryService.getProductsByCategorySlug(slug, page, limit, sort),
       staleTime: STALE_10_MIN,
       select: (data) => {
         return data.data;
@@ -29,7 +45,7 @@ class CategoryHook {
     });
   }
 
-   static useProductsByCategoryId(pagination: Pagination) {
+  static useProductsByCategoryId(pagination: Pagination) {
     return useQuery({
       queryKey: ["products_by_category", pagination],
       queryFn: () => CategoryService.getProductsByCategoryId(pagination),
@@ -39,7 +55,6 @@ class CategoryHook {
       },
     });
   }
-
 
   static useCreateCategory() {
     const queryClient = useQueryClient();
@@ -71,7 +86,7 @@ class CategoryHook {
     const queryClient = useQueryClient();
 
     return useMutation({
-      mutationFn: (id: number) => CategoryService.deeleteCategory(id),
+      mutationFn: (id: number) => CategoryService.deleteCategory(id),
       onSuccess: (_, params) => {
         queryClient.invalidateQueries({
           queryKey: ["categories"],

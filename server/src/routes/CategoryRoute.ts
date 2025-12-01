@@ -18,10 +18,16 @@ export class CategoryRoute extends BaseRoute {
         this.controller.getCategories.bind(this.controller)
       )
     );
-      this.router.get(
+    this.router.get(
       "/:id",
       BaseController.handleRequest(
         this.controller.getProductsByCategoryId.bind(this.controller)
+      )
+    );
+    this.router.get(
+      "/detail/:id",
+      BaseController.handleRequest(
+        this.controller.getCategoryDetailById.bind(this.controller)
       )
     );
     this.router.get(

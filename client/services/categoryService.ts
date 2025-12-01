@@ -7,7 +7,6 @@ import {
   UpdateCategory,
 } from "../../shared/src/types";
 
-
 export class CategoryService {
   static async getCategories(): Promise<any> {
     return safeRequest(async () => {
@@ -15,7 +14,20 @@ export class CategoryService {
       return res.data;
     });
   }
-  static async getProductsByCategorySlug(slug: string, page: number, limit: number, sort: string): Promise<any> {
+
+  static async getCategoryDetailById(id: number): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(API_ROUTES.category.getCategoryDetailById(id));
+      return res.data;
+    });
+  }
+
+  static async getProductsByCategorySlug(
+    slug: string,
+    page: number,
+    limit: number,
+    sort: string
+  ): Promise<any> {
     return safeRequest(async () => {
       const res = await api.get(
         API_ROUTES.category.getProductsByCategorySlug(slug, page, limit, sort)
@@ -24,7 +36,7 @@ export class CategoryService {
     });
   }
 
-    static async getProductsByCategoryId(pagination: Pagination): Promise<any> {
+  static async getProductsByCategoryId(pagination: Pagination): Promise<any> {
     return safeRequest(async () => {
       const res = await api.get(
         API_ROUTES.category.getProductsByCategoryId(pagination)

@@ -136,11 +136,7 @@ const CreateProductPage = () => {
       alert("Yêu cầu có ảnh chính");
       return;
     }
-    if (
-      (extraImages && extraImages.length < 2) ||
-      (extraImages && extraImages.length > 4) ||
-      !extraImages
-    ) {
+    if ((extraImages && extraImages.length < 3) || !extraImages) {
       alert("Số lượng ảnh phụ không phù hợp");
       return;
     }
@@ -191,7 +187,7 @@ const CreateProductPage = () => {
             Hình ảnh sản phẩm
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            Tải lên 1 hình ảnh chính và ít nhất 2 ảnh phụ, tối đa 4 hình
+            Tải lên 1 hình ảnh chính và ít nhất 3 ảnh phụ
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
             <label className="border-2 border-dashed border-gray-300 rounded-lg p-4 cursor-pointer hover:border-amber-400 hover:bg-amber-50 transition flex items-center justify-center">

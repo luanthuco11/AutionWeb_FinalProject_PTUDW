@@ -28,6 +28,12 @@ export class CategoryController extends BaseController {
     return products;
   }
 
+  async getCategoryDetailById(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const category = await this.service.getCategoryDetailById(id);
+    return { category: category };
+  }
+
   async getProductsByCategorySlug(req: Request, res: Response) {
     const page = Number(req.query.page) || null;
     const limit = Number(req.query.limit) || null;

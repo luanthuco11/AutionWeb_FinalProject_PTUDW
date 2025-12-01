@@ -28,6 +28,7 @@ const API_ROUTES = {
   },
   category: {
     getCategories: `${CATEGORY_API}`, //GET
+    getCategoryDetailById: (id: number) => `${CATEGORY_API}/detail/${id}`, // GET
     getProductsByCategoryId: (pagination: Pagination) =>
       `${CATEGORY_API}/${pagination.id}/products?page${pagination.page}&limit=${pagination.limit}&sort=${pagination.sort}`, //GET
     getProductsByCategorySlug: (
