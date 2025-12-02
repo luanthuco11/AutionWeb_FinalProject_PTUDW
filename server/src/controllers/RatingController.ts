@@ -7,9 +7,14 @@ export class RatingController extends BaseController {
     }
 
     async getRating(req: Request, res: Response) {
-        console.log(req.params, "gap", req.body)
         const { userId, offset } = req.params
-        const result = await this.service.getRating({userId, offset});
+        const result = await this.service.getRating({ userId, offset });
+        return { result };
+    }
+
+    async getTotalRating(req: Request, res: Response) {
+        const { userId } = req.params
+        const result = await this.service.getAllRating(userId);
         return { result };
     }
 

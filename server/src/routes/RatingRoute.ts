@@ -13,13 +13,20 @@ export class RatingRoute extends BaseRoute {
 
     initRoutes() {
         this.router.get(
-            "/:userId/:offset", 
+            "/total/:userId",
+            BaseController.handleRequest(
+                this.controller.getTotalRating.bind(
+                    this.controller
+                )));
+
+        this.router.get(
+            "/:userId/:offset",
             BaseController.handleRequest(
                 this.controller.getRating.bind(
                     this.controller
                 )));
 
-        this.router.post("/", 
+        this.router.post("/",
             BaseController.handleRequest(
                 this.controller.createRating.bind(
                     this.controller
