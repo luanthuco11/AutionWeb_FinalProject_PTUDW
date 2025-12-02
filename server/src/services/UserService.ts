@@ -1,12 +1,13 @@
+import { createSlugUnique } from "../utils";
 import { BaseService } from "./BaseService";
-import { User } from "../../../shared/src/types";
+import { R2Service } from "./R2Service";
 
-interface UpdateUserPayload extends User {
+interface UpdateUserPayload {
     id: number;
     name: string | "";
     email: string | "";
     address: string | "";
-    profile_img: string | "";
+    profile_image: Express.Multer.File;
 }
 
 export class UserService extends BaseService {
@@ -46,6 +47,12 @@ export class UserService extends BaseService {
     }
 
     async updateProfile(payload: UpdateUserPayload) {
+        const r2 = R2Service.getInstance();
+        const filesArray = payload.profile_image ? [payload.profile_image] : [];
+        const [avatarUrl] = await r2.uploadFilesToR2(
+            filesArray,
+            "user"
+        );
         const sql =
             `
             UPDATE admin.users
@@ -55,8 +62,8 @@ export class UserService extends BaseService {
                 profile_img = $4
             WHERE id = $5
             `
-        const {name, email, address, profile_img, id} = payload
-        const params = [name, email, address, profile_img, id]
+        const {name, email, address, id} = payload
+        const params = [name, email, address, avatarUrl, id]
         const result = await this.safeQuery(sql, params);
 
         return result;
