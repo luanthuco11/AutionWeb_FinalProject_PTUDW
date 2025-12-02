@@ -8,6 +8,7 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { EditProfileInputs, EditProfileSchema } from "./validation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { User } from "../../../../shared/src/types";
+import { url } from "inspector";
 
 interface EditDetailProps {
     user: User;
@@ -21,7 +22,8 @@ export default function EditDetail({ user, onProfileSubmit, setIsSaving, onSaveS
 
     // --- State ---
     const [isEditingPassword, setIsEditingPassword] = useState<boolean>(false);
-
+    const [avatar, setAvatar] = useState<String>(user.profile_img);
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
     // --- Custom Hook ---
     const { mutate: updateProfile, isPending: isLoading } = UserHook.useUpdateProfile();
     const {
@@ -35,21 +37,23 @@ export default function EditDetail({ user, onProfileSubmit, setIsSaving, onSaveS
             name: user.name || '',
             email: user.email || '',
             address: user.address || '',
-            profile_img: user.profile_img || '',
         },
         mode: 'onChange'
     });
 
     // --- Define handler ---
     const onSubmit: SubmitHandler<EditProfileInputs> = useCallback((data) => {
-        const payload = {
-            name: data.name,
-            email: data.email,
-            address: data.address,
-            profile_img: data.profile_img,
-        };
+        
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("email", data.email);
+        formData.append("address", data.address);
 
-        updateProfile(payload, {
+        if (avatarFile) {
+            formData.append("profile_img", avatarFile); // file object
+        }
+
+        updateProfile(formData, {
             onSuccess: () => {
                 alert("Cập nhật profile thành công!");
                 onSaveSuccess();
@@ -59,7 +63,12 @@ export default function EditDetail({ user, onProfileSubmit, setIsSaving, onSaveS
                 alert("Cập nhật profile thất bại. Vui lòng kiểm tra console.");
             }
         })
-    }, [updateProfile, onSaveSuccess]);
+    }, [updateProfile, onSaveSuccess, avatarFile]);
+
+    const handleChangeAvatar = useCallback((data: { file: File, url: String }) => {
+        setAvatar(data.url);
+        setAvatarFile(data.file);
+    }, [])
 
     // --- React Hooks  ---
     useEffect(() => {
@@ -75,7 +84,6 @@ export default function EditDetail({ user, onProfileSubmit, setIsSaving, onSaveS
             setValue('name', user.name || '');
             setValue('email', user.email || '');
             setValue('address', user.address || '');
-            setValue('profile_img', user.profile_img || '');
         }
     }, [user, setValue]);
 
@@ -91,8 +99,9 @@ export default function EditDetail({ user, onProfileSubmit, setIsSaving, onSaveS
                 <Avatar
                     allowEdit={true}
                     imageProps={{
-                        src: user.profile_img || 'https://via.placeholder.com/150' // Thêm URL placeholder
+                        src: avatar as string// Thêm URL placeholder
                     }}
+                    onSubmit={handleChangeAvatar}
                 />
             </div>
             <div className="grid grid-cols-2">

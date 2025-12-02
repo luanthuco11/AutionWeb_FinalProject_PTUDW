@@ -23,7 +23,7 @@ export default function ViewDetail({ user }: { user: User }) {
                 <Avatar
                     allowEdit={false}
                     imageProps={{
-                        src: "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTyhgwFBBuEqiLB5BAjQR4hCDCoJYefwwYtelRMap_8uXFoyisZLRptYiqLuXet0zX9X9Z4z_UAxYbYCcyD9Pm8i2iEe1ljOiYaXfrieWMo7cAQCVQZQ8iYoWz5pDdJFY67SAOckK9jv-c&s=19",
+                        src: user.profile_img,
                         alt: "avatar",
                         width: 100,
                         height: 100
