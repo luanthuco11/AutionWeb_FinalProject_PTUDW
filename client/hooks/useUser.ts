@@ -6,7 +6,7 @@ interface UpdateUserPayload {
     name: string | '';
     email: string | '';
     address: string | '';
-    profile_img: string | '';
+    profile_img: File | null;
 }
 
 class UserHook {
@@ -28,7 +28,7 @@ class UserHook {
         const queryClient = useQueryClient();
 
         return useMutation({
-            mutationFn: (data: UpdateUserPayload) =>
+            mutationFn: (data: FormData) =>
                 UserService.updateProfile(data),
 
             onSuccess: () => {

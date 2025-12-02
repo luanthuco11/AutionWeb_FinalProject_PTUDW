@@ -5,7 +5,7 @@ interface UpdateUserPayload {
     name: string | '';
     email: string | '';
     address: string | '';
-    profile_img: string | '';
+    profile_img: File | null;
 }
 
 export class UserService {
@@ -16,7 +16,8 @@ export class UserService {
     })
   }
 
-  static async updateProfile(data: UpdateUserPayload): Promise<any> {
+  static async updateProfile(data: FormData): Promise<any> {
+    console.log(data);
     return safeRequest(async () => {
       const res = await api.patch(API_ROUTES.user.updateProfile, data);
       return res.data;
