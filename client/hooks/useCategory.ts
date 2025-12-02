@@ -15,6 +15,19 @@ class CategoryHook {
       },
     });
   }
+
+  static useCategoryDetailById(id: number) {
+    return useQuery({
+      queryKey: ["category_by_id", id],
+      enabled: !!id,
+      queryFn: () => CategoryService.getCategoryDetailById(id),
+      staleTime: STALE_10_MIN,
+      select: (data) => {
+        return data.data.category;
+      },
+    });
+  }
+
   static useProductsByCategorySlug(
     slug: string,
     page: number,

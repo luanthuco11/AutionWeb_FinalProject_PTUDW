@@ -50,6 +50,32 @@ export class CategoryService extends BaseService {
     return categories;
   }
 
+  async getCategoryDetailById(id: number): Promise<ProductCategoryTree | null> {
+    const sql = `
+    SELECT pp.id, 
+      pp.slug, 
+      pp.name ,
+      COALESCE(
+      json_agg(
+        json_build_object(
+          'id', pc.id,
+          'slug', pc.slug,
+          'parent_id', pc.parent_id,
+          'name', pc.name
+        )
+      ) FILTER (WHERE pc.id IS NOT NULL),
+      '[]'
+    ) as children FROM product.product_categories as pp
+      LEFT JOIN product.product_categories as pc ON pc.parent_id = pp.id
+      WHERE pp.id = $1
+      GROUP BY pp.id`;
+
+    const category = (
+      await this.safeQuery<ProductCategoryTree>(sql, [id])
+    )?.[0];
+    return category || null;
+  }
+
   async createCategory(category: CreateCategory): Promise<MutationResult> {
     const slug = createSlugUnique(category.name);
     const sql = `INSERT INTO product.product_categories (slug, parent_id, name, created_at, updated_at)
