@@ -82,7 +82,7 @@ export default function Avatar({
         }
 
         setIsEditModal(false);
-        
+
         onSubmit?.({
             file: updateImage,
             url: imageUrl,
@@ -119,13 +119,21 @@ export default function Avatar({
 
             {/* Hover Edit Icon */}
             {allowEdit && (
-                <div
-                    className="cursor-pointer"
-                    onClick={() => setIsAvatarClicked(true)}
-                >
-                    <div className="absolute inset-0 bg-gray-800 opacity-0 group-hover:opacity-60 transition-opacity rounded-full" />
+                <div className="absolute top-0 left-0 w-full h-full rounded-full overflow-hidden group cursor-pointer">
+                    {/* Overlay chỉ hiện khi hover */}
+                    <div className="w-full h-full bg-gray-800 opacity-0 group-hover:opacity-60 transition-opacity rounded-full" />
 
-                    <EditIcon className="text-white absolute opacity-0 group-hover:opacity-100 transition-opacity top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                    {/* Edit Icon */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                        <EditIcon/>
+                    </div>
+
+                    {/* Click handler */}
+                    <button
+                        type="button"
+                        className="absolute inset-0 w-full h-full bg-transparent"
+                        onClick={() => setIsAvatarClicked(true)}
+                    />
                 </div>
             )}
 
@@ -134,7 +142,6 @@ export default function Avatar({
                 <div className="absolute flex flex-col min-w-max border border-gray-200 shadow-md bg-white rounded-lg mt-2 z-[50]">
                     <p className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleViewImage}>Xem ảnh</p>
                     <p className="p-2 hover:bg-gray-100 cursor-pointer" onClick={handleClickUpdateImage}>Chỉnh sửa ảnh</p>
-                    <p className="p-2 hover:bg-gray-100 cursor-pointer">Gỡ ảnh</p>
                 </div>
             )}
 
