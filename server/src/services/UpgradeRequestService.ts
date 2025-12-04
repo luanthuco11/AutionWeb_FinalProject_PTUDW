@@ -30,7 +30,9 @@ export class UpgradeService extends BaseService {
             `
                 SELECT * 
                 FROM admin.user_upgrade_requests
-                WHERE id = $1;
+                WHERE bidder_id = $1
+                ORDER BY created_at DESC
+                LIMIT 1
                 `
         const params = [id];
 
