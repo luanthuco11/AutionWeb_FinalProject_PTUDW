@@ -4,6 +4,19 @@ import { STALE_10_MIN } from "@/config/query.config";
 import { Pagination } from "../../shared/src/types/Pagination";
 
 class FavoriteHook {
+  static useAllFavorite() {
+    return useQuery({
+      queryKey: ["favorite_product"],
+
+      queryFn: () => FavoriteService.getAllFavorite(),
+
+      staleTime: STALE_10_MIN,
+
+      select: (data) => {
+        return data.data.allFavorite;
+      },
+    });
+  }
   static useFavorite(pagination: Pagination) {
     return useQuery({
       queryKey: ["favorite_product", pagination.page, pagination.limit],

@@ -51,7 +51,7 @@ class CategoryHook {
       queryFn: () => CategoryService.getProductsByCategoryId(pagination),
       staleTime: STALE_10_MIN,
       select: (data) => {
-        return data.data;
+        return data.data.products;
       },
     });
   }

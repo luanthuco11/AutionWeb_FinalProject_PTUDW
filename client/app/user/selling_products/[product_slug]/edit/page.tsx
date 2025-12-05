@@ -64,7 +64,7 @@ const EditProductPage = () => {
   const handleAddDes = (productId: number, description: string) => {
     updateProductDescription({ id: productId, description: description });
   };
-  
+
   return (
     <div className="bg-[#F8FAFC] w-full">
       {(isLoadingProduct ||
@@ -169,12 +169,26 @@ const EditProductPage = () => {
                   height: 500,
                   menubar: false,
                   skin: "oxide",
-                  content_css: "oxide",
                   readonly: false,
                   plugins: [
-                    "advlist autolink lists link image charmap print preview anchor",
-                    "searchreplace visualblocks code fullscreen",
-                    "insertdatetime media table paste code help wordcount",
+                    "advlist",
+                    "autolink",
+                    "lists",
+                    "link",
+                    "image",
+                    "charmap",
+                    "preview",
+                    "anchor",
+                    "searchreplace",
+                    "visualblocks",
+                    "code",
+                    "fullscreen",
+                    "insertdatetime",
+                    "media",
+                    "table",
+                    "code",
+                    "help",
+                    "wordcount",
                   ],
                   toolbar:
                     "undo redo | blocks fontfamily fontsize backcolor forecolor  | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
