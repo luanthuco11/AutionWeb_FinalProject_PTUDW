@@ -23,7 +23,6 @@ export class CategoryController extends BaseController {
       limit: parseInt(req.query.limit as string) || 10,
       sort: (req.query.sort as string) || "",
     };
-    console.log(pagination);
     const products = await this.service.getProductsByCategoryId(pagination);
     return products;
   }

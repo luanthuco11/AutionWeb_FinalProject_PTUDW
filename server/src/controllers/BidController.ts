@@ -13,7 +13,6 @@ export class BidController extends BaseController {
     return { bid_logs: bid_logs };
   }
   async createBid(req: Request, res: Response) {
-    console.log(req.headers["user-id"]);
     const bid: CreateBidLog = {
       user_id: parseInt(req.headers["user-id"] as string),
       product_id: req.body.product_id,

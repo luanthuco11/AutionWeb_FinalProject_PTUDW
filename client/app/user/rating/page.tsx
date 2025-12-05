@@ -45,7 +45,6 @@ const RatingPage = () => {
         const positiveCount = userRating.logs.filter((log: any) => log.rating > 0).length;
         const total = userRating.logs.length;
 
-        console.log('kk', positiveCount, total)
         return Math.round((positiveCount / total) * 100);
     }, [userRating]);
 

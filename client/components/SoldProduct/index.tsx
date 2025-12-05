@@ -26,7 +26,6 @@ const SoldProduct = ({ product, rater_id }: SoldProps) => {
         rating,
         comment: comment,
       };
-      console.log(ratingData);
       createRating(ratingData);
       alert("Thanh cong");
     } else {

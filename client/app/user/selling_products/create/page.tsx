@@ -150,8 +150,6 @@ const CreateProductPage = () => {
       return;
     }
 
-    console.log(payload);
-
     const formData = new FormData();
     formData.append("main-image", mainImage);
     formData.append("extra-images-count", String(extraImages.length));

@@ -13,7 +13,6 @@ export class ProductController extends BaseController {
 
   async getCategoryProductList(req: Request, res: Response) {
     const products = await this.service.getCategoryProductList();
-    console.log(products);
     return {
       categoryProducts: products,
     };

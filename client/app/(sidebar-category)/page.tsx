@@ -68,8 +68,6 @@ function Page() {
     ];
   }
 
-  console.log(favoriteIds);
-
   return (
     <>
       <div>
