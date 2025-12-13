@@ -2,6 +2,7 @@ import { User } from "../../../shared/src/types";
 import { MutationResult } from "../../../shared/src/types/Mutation";
 import { createSlugUnique } from "../utils";
 import { BaseService } from "./BaseService";
+import { ProductService } from "./ProductService";
 import { R2Service } from "./R2Service";
 
 interface UpdateUserPayload {
@@ -79,17 +80,10 @@ export class UserService extends BaseService {
     return result;
   }
   async deleteUser(id: number): Promise<MutationResult> {
-
-    const sql = `
-
-                  
-                  DELETE  
-                  FROM admin.users
-                  WHERE users.id = $1
-                  `;
     const params = [id];
-
+    const sql = " DELETE FROM admin.users WHERE users.id = $1";
     await this.safeQuery(sql, params);
+
     return {
       success: true,
     };

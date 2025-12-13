@@ -13,7 +13,7 @@ import { Pagination } from "../../shared/src/types/Pagination";
 class ProductHook {
   static useGetProduct(pagination: Pagination) {
     return useQuery({
-      queryKey: ["product", pagination.page, pagination.limit],
+      queryKey: ["products", pagination.page, pagination.limit],
       queryFn: () => ProductService.getProducts(pagination),
       staleTime: STALE_10_MIN,
       select: (data) => {
@@ -72,7 +72,7 @@ class ProductHook {
   }
   static useGetProductBySlug(slug: string) {
     return useQuery({
-      queryKey: ["product_by_slug", slug],
+      queryKey: ["products", slug],
 
       queryFn: () => ProductService.getProductBySlug(slug),
 
@@ -119,7 +119,7 @@ class ProductHook {
   }
   static useGetProductsBySearch(query: string, limit: number, page: number) {
     return useQuery({
-      queryKey: ["product_by_search", query, limit, page],
+      queryKey: ["products", query, limit, page],
 
       queryFn: () => ProductService.getProductsBySearch(query, limit, page),
 
@@ -135,7 +135,7 @@ class ProductHook {
 
   static useGetProductsBySearchSuggestion(query: string, limit: number) {
     return useQuery({
-      queryKey: ["product_by_search_suggestion", query, limit],
+      queryKey: ["products", query, limit],
 
       queryFn: () => ProductService.getProductsBySearchSuggestion(query, limit),
 

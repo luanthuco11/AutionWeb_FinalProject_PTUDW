@@ -6,6 +6,7 @@ import { Pagination as PaginationType } from "../../../../shared/src/types/Pagin
 import Pagination from "@/components/Pagination";
 import UpgradeRequestHook from "@/hooks/useUpgrade";
 import { formatDate } from "@/app/utils";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 interface PopupProps {
   title: string;
@@ -91,11 +92,17 @@ export const Request = () => {
   const router = useRouter();
   const [isPopupAccept, setIsPopupAccept] = useState(false);
   const [isPopupDelete, setIsPopupDelete] = useState(false);
-
+  const {
+    mutate: updateApprovalRequest,
+    isPending: isUpdatingApprovalRequest,
+  } = UpgradeRequestHook.useUpdateApproveRequest();
+  const { mutate: updateRejectRequest, isPending: isUpdatingRejectRequest } =
+    UpgradeRequestHook.useUpdateRejectRequest();
   const pagination: PaginationType = {
     page: Number(page),
     limit: Number(limit),
   };
+  const [selectedRequest, setSelectedRequest] = useState<number>();
 
   const { data, isLoading } = UpgradeRequestHook.useUpgradeRequests(pagination);
   const handlePageChange = (page: number) => {
@@ -115,144 +122,156 @@ export const Request = () => {
     totalPages = Math.ceil(Number(data.totalRequests) / Number(limit));
   }
 
-  const handleOnDelete = () => {
+  const handleOnDelete = (id: number) => {
+    setSelectedRequest(id);
     setIsPopupDelete(true);
   };
-  const handleOnAccept = () => {
+  const handleOnAccept = (id: number) => {
+    setSelectedRequest(id);
     setIsPopupAccept(true);
   };
   const handleDeleteRequest = () => {
-    console.log("huy");
+    if (selectedRequest) {
+      updateRejectRequest(selectedRequest);
+    }
     setIsPopupDelete(false);
   };
   const handleAcceptRequest = () => {
-    console.log("dy");
-
+    if (selectedRequest) {
+      updateApprovalRequest(selectedRequest);
+    }
     setIsPopupAccept(false);
   };
   return (
     <>
-      <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
-        <div className="bg-white rounded-lg border border-surface overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-surface border-b border-surface">
-                <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-text">
-                    Tên
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold text-text">
-                    Email
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold text-text">
-                    Điểm uy tín
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold text-text">
-                    Ngày tham gia
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold text-text">
-                    Ngày yêu cầu
-                  </th>
-                  <th className="px-4 py-3 text-center font-semibold text-text">
-                    Hành động
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {requests.map((r: UpgradeRequestPreview, index: number) => {
-                  const point = Math.round(
-                    (Number(r.bidder.positive_points) /
-                      (Number(r.bidder.positive_points) +
-                        Number(r.bidder.negative_points))) *
-                      100
-                  );
-                  return (
-                    <tr className="border-b border-surface hover:bg-bg transition-colors">
-                      <td className="px-4 py-3 text-text font-medium">
-                        {r.bidder.name}
-                      </td>
-                      <td className="px-4 py-3 text-text-light">
-                        {r.bidder.email}
-                      </td>
-                      <td
-                        className={`px-4 py-3 font-bold ${
-                          point <= 60
-                            ? "text-red-500"
-                            : point < 80
-                            ? "text-yellow-400"
-                            : "text-green-500"
-                        }`}
+      {isLoading || isUpdatingApprovalRequest || isUpdatingRejectRequest ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+          <div className="bg-white rounded-lg border border-surface overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-surface border-b border-surface">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold text-text">
+                      Tên
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-text">
+                      Email
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-text">
+                      Điểm uy tín
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-text">
+                      Ngày tham gia
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-text">
+                      Ngày yêu cầu
+                    </th>
+                    <th className="px-4 py-3 text-center font-semibold text-text">
+                      Hành động
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {requests.map((r: UpgradeRequestPreview, index: number) => {
+                    const point = Math.round(
+                      (Number(r.bidder.positive_points) /
+                        (Number(r.bidder.positive_points) +
+                          Number(r.bidder.negative_points))) *
+                        100
+                    );
+                    return (
+                      <tr
+                        key={index}
+                        className="border-b border-surface hover:bg-bg transition-colors"
                       >
-                        {point}%
-                      </td>
-                      <td className="px-4 py-3">
-                        {formatDate(r.bidder.created_at)}
-                      </td>
-                      <td className="px-4 py-3 text-text-light ">
-                        {formatDate(r.created_at)}
-                      </td>
-                      <td className="px-4 py-3 text-center flex flex-row items-center justify-center">
-                        <button
-                          onClick={handleOnAccept}
-                          className="p-2  hover:bg-green-50 rounded transition-colors cursor-pointer"
+                        <td className="px-4 py-3 text-text font-medium">
+                          {r.bidder.name}
+                        </td>
+                        <td className="px-4 py-3 text-text-light">
+                          {r.bidder.email}
+                        </td>
+                        <td
+                          className={`px-4 py-3 font-bold ${
+                            point <= 60
+                              ? "text-red-500"
+                              : point < 80
+                              ? "text-yellow-400"
+                              : "text-green-500"
+                          }`}
                         >
-                          <svg
-                            className="w-5 h-5 text-green-600 dark:text-white"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={20}
-                            height={20}
-                            fill="none"
-                            viewBox="0 0 24 24"
+                          {point}%
+                        </td>
+                        <td className="px-4 py-3">
+                          {formatDate(r.bidder.created_at)}
+                        </td>
+                        <td className="px-4 py-3 text-text-light ">
+                          {formatDate(r.created_at)}
+                        </td>
+                        <td className="px-4 py-3 text-center flex flex-row items-center justify-center">
+                          <button
+                            onClick={() => handleOnAccept(r.id)}
+                            className="p-2  hover:bg-green-50 rounded transition-colors cursor-pointer"
                           >
-                            <path
+                            <svg
+                              className="w-5 h-5 text-green-600 dark:text-white"
+                              aria-hidden="true"
+                              xmlns="http://www.w3.org/2000/svg"
+                              width={20}
+                              height={20}
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 11.917 9.724 16.5 19 7.5"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleOnDelete(r.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width={24}
+                              height={24}
+                              viewBox="0 0 24 24"
+                              fill="none"
                               stroke="currentColor"
+                              strokeWidth={2}
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 11.917 9.724 16.5 19 7.5"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={handleOnDelete}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width={24}
-                            height={24}
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth={2}
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="lucide lucide-trash2 w-4 h-4"
-                          >
-                            <path d="M3 6h18" />
-                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                            <line x1={10} x2={10} y1={11} y2={17} />
-                            <line x1={14} x2={14} y1={11} y2={17} />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                              className="lucide lucide-trash2 w-4 h-4"
+                            >
+                              <path d="M3 6h18" />
+                              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                              <line x1={10} x2={10} y1={11} y2={17} />
+                              <line x1={14} x2={14} y1={11} y2={17} />
+                            </svg>
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="w-full flex flex-row justify-center my-4">
+            <Pagination
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              currentPage={Number(page)}
+            />
           </div>
         </div>
-        <div className="w-full flex flex-row justify-center my-4">
-          <Pagination
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            currentPage={Number(page)}
-          />
-        </div>
-      </div>
+      )}
 
       {/* Confirm */}
       {isPopupDelete ? (
@@ -260,6 +279,7 @@ export const Request = () => {
           title="Bạn có chắc chắn muốn từ chối yêu cầu này không"
           handleAccept={handleDeleteRequest}
           handleCancel={() => {
+            setSelectedRequest(undefined);
             setIsPopupDelete(false);
           }}
         />
@@ -272,6 +292,7 @@ export const Request = () => {
           title="Bạn có chắc chắn muốn đồng ý yêu cầu này không"
           handleAccept={handleAcceptRequest}
           handleCancel={() => {
+            setSelectedRequest(undefined);
             setIsPopupAccept(false);
           }}
         />

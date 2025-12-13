@@ -16,6 +16,7 @@ import { ShortUser } from "../../../shared/src/types";
 import { createSlugUnique } from "../utils";
 import { R2Service } from "./R2Service";
 import { Pagination } from "../../../shared/src/types/Pagination";
+import { PoolClient } from "pg";
 
 export class ProductService extends BaseService {
   private static instance: ProductService;
@@ -646,25 +647,20 @@ WHERE pc.parent_id is not null
     return updateProduct;
   }
   async deleteProductById(productId: number) {
-    const sql = `
-    DELETE FROM product.products 
-    WHERE id = $1
-    RETURNING MAIN_IMAGE, EXTRA_IMAGES
-    `;
+    const params = [productId];
+
+    const sql =
+      "DELETE FROM product.products WHERE id = $1 RETURNING MAIN_IMAGE, EXTRA_IMAGES";
     const result = await this.safeQuery<{
       main_image: string;
       extra_images: string[];
     }>(sql, [productId]);
-
     if (result.length == 0) {
       throw new Error(`Không thể tìm thấy sản phẩm có id = ${productId}`);
     }
-
     const { main_image, extra_images = [] } = result[0]!;
     const r2 = R2Service.getInstance();
     await r2.deleteFilesFromR2([main_image, ...extra_images]);
-
-    return result;
   }
 
   async getQuestions(productId: number): Promise<ProductQuestion[]> {

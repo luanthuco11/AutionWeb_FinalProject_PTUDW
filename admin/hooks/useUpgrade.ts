@@ -6,7 +6,7 @@ import { Pagination } from "../../shared/src/types/Pagination";
 class UpgradeRequestHook {
   static useGetRequestStatus(userId: number) {
     return useQuery({
-      queryKey: ["request_status", userId],
+      queryKey: ["request", userId],
 
       queryFn: () => UpgradeRequestService.getRequestStatus(userId),
 
@@ -51,12 +51,12 @@ class UpgradeRequestHook {
     const queryClient = useQueryClient();
 
     return useMutation({
-      mutationFn: (id: string) =>
+      mutationFn: (id: number) =>
         UpgradeRequestService.updateApproveRequest(id),
 
       onSuccess: (_, id) => {
         queryClient.invalidateQueries({
-          queryKey: ["request_status", id],
+          queryKey: ["request"],
         });
       },
     });
@@ -66,11 +66,11 @@ class UpgradeRequestHook {
     const queryClient = useQueryClient();
 
     return useMutation({
-      mutationFn: (id: string) => UpgradeRequestService.updateRejectRequest(id),
+      mutationFn: (id: number) => UpgradeRequestService.updateRejectRequest(id),
 
       onSuccess: (_, id) => {
         queryClient.invalidateQueries({
-          queryKey: ["request_status", id],
+          queryKey: ["request"],
         });
       },
     });

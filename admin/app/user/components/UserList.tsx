@@ -54,7 +54,7 @@ export const UserList = () => {
   };
   return (
     <>
-      {isLoading ? (
+      {isLoading || isDeletingUser ? (
         <LoadingSpinner />
       ) : (
         users && (

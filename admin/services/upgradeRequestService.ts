@@ -24,16 +24,20 @@ export class UpgradeRequestService {
     });
   }
 
-  static async updateApproveRequest(id: string): Promise<any> {
+  static async updateApproveRequest(id: number): Promise<any> {
     return safeRequest(async () => {
-      const res = await api.post(API_ROUTES.upgrade.updateApproveRequest, id);
+      const res = await api.patch(API_ROUTES.upgrade.updateApproveRequest, {
+        id,
+      });
       return res.data;
     });
   }
 
-  static async updateRejectRequest(id: string): Promise<any> {
+  static async updateRejectRequest(id: number): Promise<any> {
     return safeRequest(async () => {
-      const res = await api.post(API_ROUTES.upgrade.updateRejectRequest, id);
+      const res = await api.patch(API_ROUTES.upgrade.updateRejectRequest, {
+        id,
+      });
       return res.data;
     });
   }

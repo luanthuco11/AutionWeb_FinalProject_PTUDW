@@ -35,7 +35,7 @@ class CategoryHook {
     sort: string
   ) {
     return useQuery({
-      queryKey: ["products_by_category", slug, page, limit, sort],
+      queryKey: ["products", slug, page, limit, sort],
       queryFn: () =>
         CategoryService.getProductsByCategorySlug(slug, page, limit, sort),
       staleTime: STALE_10_MIN,
