@@ -11,6 +11,20 @@ interface DecodedUser extends JwtPayload {
 }
 
 const authService = AuthService.getInstance();
+/**
+ * Middleware bảo vệ route (Authentication)
+ *
+ * @description
+ * - Lấy access token từ header Authorization (Bearer token)
+ * - Xác thực và giải mã JWT
+ * - Truy vấn user từ database dựa trên userId trong token
+ * - Gắn thông tin user vào req.user
+ *
+ * @throws 401 Không có token / token không hợp lệ / user không tồn tại
+ *
+ * @example
+ * router.get("/me", protectedRoutes, fetchMe)
+ */
 export const protectedRoutes = (
   req: Request,
   res: Response,

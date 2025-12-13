@@ -15,7 +15,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
-const ACCESS_TOKEN_TTL = "30m"; // chinh 15p
+const ACCESS_TOKEN_TTL = "10s"; // chinh 15p
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days (ms)
 export class AuthController extends BaseController {
   constructor(service: any) {
@@ -153,22 +153,21 @@ export class AuthController extends BaseController {
 
     const accessToken = jwt.sign(
       {
-      userId: refreshToken.user_id,
-    },
-     process.env.ACCESS_TOKEN_SECRET as string,
-     {
-      expiresIn: ACCESS_TOKEN_TTL
-     }
-  );
+        userId: refreshToken.user_id,
+      },
+      process.env.ACCESS_TOKEN_SECRET as string,
+      {
+        expiresIn: ACCESS_TOKEN_TTL,
+      }
+    );
 
-  return {
-    accessToken: accessToken
-  };
-
+    return {
+      accessToken: accessToken,
+    };
   }
 }
 
-export const authMe = async (req: Request, res: Response) => {
+export const fetchMe = async (req: Request, res: Response) => {
   try {
     const user = req.user; // lấy từ authMiddleware
 

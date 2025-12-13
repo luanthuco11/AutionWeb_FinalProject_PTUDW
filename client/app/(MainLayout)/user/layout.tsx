@@ -4,6 +4,7 @@ import CategoryHook from "@/hooks/useCategory";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import UserCategoryTable from "@/components/UserCategoryTable";
 import { userCategories } from "@/app/const";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 export default function SidebarLayout({
   children,
 }: {
@@ -19,10 +20,12 @@ export default function SidebarLayout({
       {error && <div>Error...</div>}
       {data && (
         <>
-          <aside>
-            <UserCategoryTable userCategories={userCategories} />
-          </aside>
-          <main className="w-full">{children}</main>
+          <ProtectedRoute>
+            <aside>
+              <UserCategoryTable userCategories={userCategories} />
+            </aside>
+            <main className="w-full">{children}</main>
+          </ProtectedRoute>
         </>
       )}
     </>

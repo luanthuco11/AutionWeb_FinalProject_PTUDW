@@ -11,12 +11,13 @@ export class UserController extends BaseController {
     const users = await this.service.getUsers();
     return { user: users };
   }
-  authMe(req: Request, res: Response){
-    const user  = req.user;
-    return {user: user};
+  authMe(req: Request, res: Response) {
+    const user = req.user;
+    return { user: user };
   }
   async getProfile(req: Request, res: Response) {
-    const userId = req.headers["user-id"];
+    const userId = req.user?.id;
+    console.log(userId);
     const profile = await this.service.getProfile(userId);
     return { profile };
   }

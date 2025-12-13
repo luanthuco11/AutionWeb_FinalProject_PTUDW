@@ -3,6 +3,7 @@
 import { EditIcon } from "@/components/icons";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { defaultImage } from "@/app/const";
 
 type ImageProps = {
   src: string;
@@ -93,7 +94,7 @@ export default function Avatar({
     <div ref={avatarRef} className="group relative inline-block w-fit">
       {/* Main Avatar */}
       <Image
-        src={imageUrl}
+        src={imageUrl || defaultImage}
         alt="Avatar"
         width={120}
         height={120}
@@ -108,7 +109,7 @@ export default function Avatar({
           onClick={() => setViewAvatar(false)}
         >
           <Image
-            src={imageUrl}
+            src={imageUrl || defaultImage}
             alt="Avatar"
             width={600}
             height={600}

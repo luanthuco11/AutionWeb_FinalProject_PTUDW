@@ -5,7 +5,6 @@ import "../globals.css";
 import Header from "@/components/Header";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function RootLayout({
   children,
@@ -14,13 +13,11 @@ export default function RootLayout({
 }) {
   return (
     <>
-      <ProtectedRoute>
         <Header />
         <div className="mt-[100px] flex container-layout gap-8 mb-[50px]">
           {children}
         </div>
         <Footer />
-      </ProtectedRoute>
     </>
   );
 }

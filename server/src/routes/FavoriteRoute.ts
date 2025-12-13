@@ -3,6 +3,7 @@ import { FavoriteService } from "../services/FavoriteService";
 import { BaseRoute } from "./BaseRoute";
 import { BaseController } from "../controllers/BaseController";
 import multer from "multer";
+import { protectedRoutes } from "../middlewares/authMiddleware";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -16,6 +17,7 @@ export class FavoriteRoute extends BaseRoute {
     this.initRoutes();
   }
   initRoutes() {
+    this.router.use(protectedRoutes);
     this.router.get(
       "/",
       BaseController.handleRequest(
