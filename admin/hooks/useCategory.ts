@@ -16,6 +16,17 @@ class CategoryHook {
     });
   }
 
+  static useCountProducts() {
+    return useQuery({
+      queryKey: ["admin_count_product"],
+      queryFn: () => CategoryService.getCountProduct(),
+      staleTime: STALE_10_MIN,
+      select: (data) => {
+        return data.data.result;
+      },
+    });
+  }
+
   static useCreateCategory() {
     const queryClient = useQueryClient();
 
