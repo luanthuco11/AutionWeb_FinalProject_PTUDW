@@ -112,11 +112,15 @@ export class BidService extends BaseService {
       const getProductBidStatusSql = `
         SELECT 
           P.top_bidder_id,
-          ( SELECT BLOG.price::INT
-            FROM AUCTION.BID_LOGS BLOG
-            WHERE BLOG.product_id = P.id AND BLOG.user_id = P.top_bidder_id
-            ORDER BY BLOG.price desc
-            LIMIT 1
+          COALESCE(
+            (
+              SELECT BLOG.price::INT
+              FROM AUCTION.BID_LOGS BLOG
+              WHERE BLOG.product_id = P.id AND BLOG.user_id = P.top_bidder_id
+              ORDER BY BLOG.price DESC
+              LIMIT 1
+            ),
+            P.initial_price::INT
           ) AS current_price,
           BID.max_price::INT,
           P.price_increment::INT
@@ -211,8 +215,8 @@ export class BidService extends BaseService {
         console.log("Commit thành công");
         return { success: true };
       }
-      if (productBidStatus.top_bidder_id == 0) {
-        // TH1: Sản phẩm chưa có lượt đấu giá -> user là top_bidder
+      if (!productBidStatus.top_bidder_id) {
+        //TH1: Sản phẩm chưa có lượt đấu giá -> user là top_bidder
         const updateTopBidderPromise = updateTopBidderId(bid.user_id);
         const writeBidLogPromise = createBidLog(
           bid.user_id,
