@@ -25,6 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   CreateBidLog,
+  NewOrderRequest,
   Product,
   ProductCategoryTree,
   ProductPreview,
@@ -36,6 +37,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import CategoryHook from "@/hooks/useCategory";
 import { formatPrice, parseNumber } from "@/utils";
 import { X } from "lucide-react";
+import OrderHook from "@/hooks/useOrder";
 
 function isLessThreeDays(dateA: Date, dateB: Date): boolean {
   const diffMs = Math.abs(dateA.getTime() - dateB.getTime()); // hiệu số milliseconds
@@ -89,6 +91,8 @@ export default function ProductPage() {
   const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState<boolean>();
   const [setFavorites, setSetFavorites] = useState<Set<number>>();
+  const [isBid, setIsBid] = useState(false);
+  const [openBuyNowModal, setOpenBuyNowModal] = useState<boolean>(false);
 
   const schemaBid = z.object({
     price: z
@@ -127,6 +131,8 @@ export default function ProductPage() {
 
   const { mutate: createBid, isPending: isCreatingBid } =
     BidHook.useCreateBid();
+  const { mutate: createOrder, isPending: isCreatingOrder } =
+    OrderHook.useCreateOrder();
 
   const { mutate: addFavorite, isPending: isAddFavorite } =
     FavoriteHook.useAddFavorite();
@@ -152,8 +158,6 @@ export default function ProductPage() {
     setValue("price", "");
   }, []);
 
-  const [isBid, setIsBid] = useState(false);
-
   const handleOnclickBid = () => {
     setIsBid(true);
   };
@@ -164,7 +168,7 @@ export default function ProductPage() {
 
   const handleBid: SubmitHandler<{ price: number }> = (data) => {
     const bid: CreateBidLog = {
-      user_id: parseInt(user?.id as string),
+      user_id: user?.id || 0,
       price: data.price,
       product_id: product.id,
       product_slug: product_slug as string | undefined,
@@ -175,6 +179,14 @@ export default function ProductPage() {
     });
     reset();
     setIsBid(false);
+  };
+
+  const handleOrder = () => {
+    const newOrder: NewOrderRequest = {
+      product_id: product.id,
+      shipping_address: "",
+    };
+    createOrder({ payload: newOrder });
   };
 
   const handleLike = () => {
@@ -189,7 +201,7 @@ export default function ProductPage() {
     }
   };
   const handleBuyNow = () => {
-    console.log("Đã nhấn mua ngay");
+    setOpenBuyNowModal(true);
   };
 
   console.log(watch("price"));
@@ -325,7 +337,7 @@ export default function ProductPage() {
 
                 <EndTime endTime={new Date(product.end_time || "")} />
 
-                <div className="pb-6 border-b  mb-6 border-slate-200 gap-4 flex flex-col">
+                <div className="pb-6 border-b mb-6 border-slate-200 gap-4 flex flex-col">
                   <div className="relative">
                     <PrimaryButton
                       backgroundColor="#2563eb"
@@ -460,13 +472,63 @@ export default function ProductPage() {
                   </div>
 
                   <div>
-                    <SecondaryButton
-                      text={
-                        "Mua ngay " + formatCurrency(product.buy_now_price || 0)
-                      }
+                    <button
                       onClick={handleBuyNow}
-                    />
+                      className="w-full flex items-center gap-2 justify-center border border-red-600 text-red-600 py-2 font-medium rounded-lg hover:bg-red-400 hover:border-red-400 hover:text-white transition-colors duration-200"
+                    >
+                      {"Mua ngay " + formatCurrency(product.buy_now_price || 0)}
+                    </button>
                   </div>
+
+                  {openBuyNowModal && (
+                    <>
+                      <div className="z-1000 fixed inset-0 w-screen h-screen bg-black opacity-50 flex justify-center items-center"></div>
+                      <div className="z-1001 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-lg px-4 py-4 shadow-lg max-w-md">
+                        <p className="text-2xl font-bold text-center">
+                          Xác nhận mua ngay
+                        </p>
+                        <p className="text-lg mt-5 text-center">
+                          Bạn xác nhận đồng ý mua ngay sản phẩm với giá
+                        </p>
+                        <p className="text-red-500 text-4xl font-medium text-center">
+                          {formatCurrency(product.buy_now_price)}
+                        </p>
+                        <p className="mt-3">
+                          Sau khi mua ngay, bạn có 24 giờ để thanh toán và nhập
+                          thông tin nhận hàng.
+                        </p>
+                        {product.top_bidder?.id == userBid.user_id &&
+                          userBid?.max_price && (
+                            <p className="mt-3 font-medium text-slate-600">
+                              Nhắc nhở: Bạn vẫn đang dẫn đầu đấu giá với{" "}
+                              <span className="text-blue-600">
+                                {formatCurrency(userBid.max_price)}
+                              </span>
+                            </p>
+                          )}
+                        <div className="grid grid-cols-2 gap-2 mt-5">
+                          <button
+                            onClick={handleOrder}
+                            className="font-medium mx-auto block text-white bg-[#1447E6] box-border border border-blue-300 rounded-4xl hover:bg-[#2957e3] hover:cursor-pointer  shadow-xs  leading-5  text-sm w-full py-2.5"
+                          >
+                            Mua ngay
+                          </button>
+                          <button
+                            onClick={() => setOpenBuyNowModal(false)}
+                            className="font-medium mx-auto block text-white bg-gray-500 box-border border border-gray-200 rounded-4xl hover:bg-gray-400 hover:cursor-pointer  shadow-xs  leading-5  text-sm w-full py-2.5"
+                          >
+                            Hủy
+                          </button>
+                        </div>
+                        <button
+                          onClick={(e) => setOpenBuyNowModal(false)}
+                          className="absolute top-2.5 right-3 "
+                        >
+                          <X className="text-gray-500 hover:text-red-600 cursor-pointer" />
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
                 <div>
                   <div

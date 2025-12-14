@@ -34,7 +34,7 @@ export class OrderService extends BaseService {
       SELECT
         O.*,
         P.SELLER_ID,
-        P.TOP_BIDDER_ID
+        O.BUYER_ID
       FROM AUCTION.ORDERS O
       JOIN PRODUCT.PRODUCTS P ON P.ID = O.PRODUCT_ID
       WHERE
@@ -43,7 +43,7 @@ export class OrderService extends BaseService {
 
     type OrderWithUsers = Order & {
       seller_id: number;
-      top_bidder_id: number;
+      buyer_id: number;
     };
 
     const order = (await this.safeQuery<OrderWithUsers>(sql, [productId]))?.[0];
@@ -52,13 +52,13 @@ export class OrderService extends BaseService {
     const seller = await this.Helper.getUserById(order.seller_id);
     if (!seller) return undefined;
 
-    const bidder = await this.Helper.getUserById(order.top_bidder_id);
-    if (!bidder) return undefined;
+    const buyer = await this.Helper.getUserById(order.buyer_id);
+    if (!buyer) return undefined;
 
     return {
       product_id: order.product_id,
       seller,
-      bidder,
+      buyer,
       status: order.status,
       shipping_address: order.shipping_address,
       payment_invoice: order.payment_invoice,
@@ -67,18 +67,30 @@ export class OrderService extends BaseService {
     };
   }
 
-  async createOrder(payload: NewOrderRequest): Promise<MutationResult> {
+  async createOrder(
+    buyer_id: number,
+    payload: NewOrderRequest
+  ): Promise<MutationResult> {
     const { product_id, shipping_address } = payload;
 
     const sql = `
-      INSERT INTO AUCTION.ORDERS (PRODUCT_ID, STATUS, SHIPPING_ADDRESS, PAYMENT_INVOICE, CREATED_AT, UPDATED_AT)
-      VALUES ($1, 'pending', $2, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+      INSERT INTO AUCTION.ORDERS (PRODUCT_ID, BUYER_ID, STATUS, SHIPPING_ADDRESS, PAYMENT_INVOICE, CREATED_AT, UPDATED_AT)
+      SELECT $1, $2, 'pending', $3, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+      FROM PRODUCT.PRODUCTS P
+      WHERE P.id = $1 AND P.seller_id != $2
+      ON CONFLICT(product_id) DO NOTHING
+      RETURNING *
     `;
 
-    await this.safeQuery(sql, [product_id, shipping_address]);
-    return {
-      success: true,
-    };
+    const result = await this.safeQuery<any>(sql, [
+      product_id,
+      buyer_id,
+      shipping_address,
+    ]);
+    if (result.length == 0) {
+      console.log("Seller không thể mua sản phẩm của chính mình");
+      return { success: false };
+    } else return { success: true };
   }
 
   async updateOrderStatus(

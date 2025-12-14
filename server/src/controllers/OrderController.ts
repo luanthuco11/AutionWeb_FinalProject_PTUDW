@@ -6,24 +6,25 @@ export class OrderController extends BaseController {
     super(service);
   }
 
-  async getOrder (req: Request, res: Response) {
+  async getOrder(req: Request, res: Response) {
     const orders = await this.service.getOrder();
-    return orders ;
+    return orders;
   }
 
-  async getOrderById (req: Request, res: Response) {  
+  async getOrderById(req: Request, res: Response) {
     const productId = Number(req.params.productId);
 
     const order = await this.service.getOrderById(productId);
     return order;
   }
 
-  async createOrder (req: Request, res: Response) {
-    const result = await this.service.createOrder(req.body);
+  async createOrder(req: Request, res: Response) {
+    const buyer_id = req.headers["user-id"];
+    const result = await this.service.createOrder(buyer_id, req.body);
     return result;
   }
-  
-  async updateOrderStatus (req: Request, res: Response) {
+
+  async updateOrderStatus(req: Request, res: Response) {
     const productId = Number(req.params.productId);
     const status = req.params.status;
 
@@ -31,14 +32,14 @@ export class OrderController extends BaseController {
     return result;
   }
 
-  async getOrderChat (req: Request, res: Response) {
+  async getOrderChat(req: Request, res: Response) {
     const productId = Number(req.params.productId);
 
     const chat = await this.service.getOrderChat(productId);
     return { order_chat: chat };
   }
 
-  async createOrderChat (req: Request, res: Response) {
+  async createOrderChat(req: Request, res: Response) {
     const productId = Number(req.params.productId);
 
     const result = await this.service.createOrderChat(productId, req.body);

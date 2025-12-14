@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 interface User {
-  id: string;
+  id: number;
   email: string;
 }
 
@@ -15,7 +15,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: {
-    id: "1",
+    id: 1,
     email: "mock@example.com",
   },
   setUser: (user) => set({ user }),
@@ -23,7 +23,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   mockLogin: () =>
     set({
       user: {
-        id: "1",
+        id: 1,
         email: "mock@example.com",
       },
     }),

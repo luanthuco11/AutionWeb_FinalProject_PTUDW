@@ -31,11 +31,7 @@ const SoldProductPage = () => {
             soldProducts &&
             user &&
             soldProducts.map((bP, index) => (
-              <SoldProduct
-                key={index}
-                product={bP}
-                rater_id={parseInt(user.id as string)}
-              />
+              <SoldProduct key={index} product={bP} rater_id={user.id} />
             ))
           )}
         </div>
