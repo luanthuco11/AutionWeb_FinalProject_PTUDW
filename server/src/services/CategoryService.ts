@@ -45,7 +45,8 @@ export class CategoryService extends BaseService {
     LEFT JOIN product.product_categories as pc 
     ON  pc.parent_id = pp.id
       WHERE pp.parent_id IS NULL 
-      GROUP BY pp.id`;
+      GROUP BY pp.id
+    ORDER BY pp.name`;
     const categories: ProductCategoryTree[] = await this.safeQuery(sql);
     return categories;
   }
@@ -113,6 +114,35 @@ export class CategoryService extends BaseService {
     let totalProducts: { total: number }[] = await this.safeQuery(sql, [slug]);
     return totalProducts[0]?.total;
   }
+
+  async getCountProductsByCategory(): Promise<
+    { category_id: number; total: number }[] 
+  > {
+  const sql = `
+      WITH RECURSIVE category_tree AS (
+      SELECT id AS root_id, id AS category_id
+      FROM product.product_categories
+
+      UNION ALL
+
+      SELECT ct.root_id, pc.id
+      FROM category_tree ct
+      JOIN product.product_categories pc
+        ON pc.parent_id = ct.category_id
+    )
+    SELECT
+      ct.root_id AS category_id,
+      COALESCE(COUNT(p.id), 0) AS total
+    FROM category_tree ct
+    LEFT JOIN product.products p
+      ON p.category_id = ct.category_id
+    GROUP BY ct.root_id
+    ORDER BY ct.root_id;
+  `;
+
+  return this.safeQuery<{ category_id: number; total: number }>(sql);
+}
+
 
   async getCategoryNameBySlug(slug: string): Promise<string | undefined> {
     let sql = `

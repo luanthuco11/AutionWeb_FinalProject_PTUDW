@@ -14,7 +14,7 @@ export default function RootLayout({
       <body>
         <Providers>
           <Header />
-          <div className="mt-[100px] flex container gap-8 mb-[50px]">
+          <div className="mt-[100px] flex container-layer gap-8 mb-[50px]">
             {children}
           </div>
           <Footer />

@@ -40,8 +40,6 @@ class Database {
 
       console.log("🔥 PostgreSQL Pool initialized");
     }
-    console.log("🔍 Current pool totalCount:", global._pgPool.totalCount);
-
     return global._pgPool;
   }
 }

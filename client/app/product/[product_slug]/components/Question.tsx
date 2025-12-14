@@ -55,7 +55,9 @@ function QuestionItem({
   return (
     <>
       <div className="flex flex-row justify-between">
-        <p className="font-medium text-gray-900">{user.name}</p>
+        <p className="font-medium text-gray-900">
+            {user.name}
+        </p>
         {created_at && (
           <p className="text-xs text-gray-600"> {formatDate(date)}</p>
         )}

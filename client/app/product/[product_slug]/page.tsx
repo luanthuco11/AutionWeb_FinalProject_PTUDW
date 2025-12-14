@@ -265,9 +265,11 @@ export default function ProductPage() {
                       Người ra giá cao nhất
                     </p>
                     {product.top_bidder ? (
-                      <p className=" ml-4 text-[16px] font-semibold text-slate-900">
-                        {product.top_bidder.name}
-                      </p>
+                      product.top_bidder.id === user?.id ? (
+                        `${product.top_bidder.name} (Bạn)`
+                      ) : (
+                        `${product.top_bidder.name[0]}***`
+                      )
                     ) : (
                       <p className=" ml-4 text-[16px] font-semibold text-slate-900">
                         Chưa có

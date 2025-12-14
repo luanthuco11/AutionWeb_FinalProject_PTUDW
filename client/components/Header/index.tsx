@@ -5,16 +5,12 @@ import Link from "next/link";
 import { Menu, X, ShoppingCart, User } from "lucide-react";
 import { SearchBar } from "../SearchBar";
 
-
 const Header = () => {
-  
-
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 shadow-sm z-50">
-      <div className="container">
+      <div className="container-layer">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="shrink-0">
             <div className="text-2xl font-bold text-blue-600">
@@ -23,7 +19,7 @@ const Header = () => {
           </Link>
 
           <div className="hidden md:flex flex-1 max-w-md mx-8 relative">
-            <SearchBar/>
+            <SearchBar />
           </div>
 
           <div className="hidden md:flex items-center gap-6">

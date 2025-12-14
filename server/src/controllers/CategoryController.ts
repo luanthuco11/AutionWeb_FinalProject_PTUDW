@@ -16,6 +16,10 @@ export class CategoryController extends BaseController {
     const categories = await this.service.getCategories();
     return { categories: categories };
   }
+  async getCountProduct(req: Request, res: Response) {
+    const result = await this.service.getCountProductsByCategory();
+    return { result: result };
+  }
   async getProductsByCategoryId(req: Request, res: Response) {
     const pagination: Pagination = {
       id: Number(req.params.id),

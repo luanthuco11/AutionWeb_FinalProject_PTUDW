@@ -6,6 +6,7 @@ import BidHook from "@/hooks/useBid";
 import { BidLog } from "../../../../../shared/src/types";
 import { formatCurrency, formatDate } from "./Question";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ProductId {
   productId: number;
@@ -14,8 +15,7 @@ export const BidHistory = ({ productId }: ProductId) => {
   const { data: bidLogs, isLoading: isLoadingBigLogs } = BidHook.useBidLogs(
     productId
   ) as { data: BidLog[]; isLoading: boolean };
-  console.log(productId);
-  console.log("bidlog", bidLogs);
+  const { user } = useAuth();
   return (
     <div className="relative bg-white rounded-lg p-6 mb-8 border border-slate-200">
       {isLoadingBigLogs && <LoadingSpinner />}
@@ -47,7 +47,9 @@ export const BidHistory = ({ productId }: ProductId) => {
                   {formatDate(his.created_at)}
                 </td>
                 <td className="py-3 px-1 sm:px-3 truncate max-w-[90px] text-[12px] sm:text-sm font-medium text-gray-700">
-                  {his.user.name}
+                  {user?.id === String(his.user.id)
+                    ? `${his.user.name} (Bạn)`
+                    : `${his.user.name[0]}***`}
                 </td>
                 <td className="py-3 px-1 sm:px-3 truncate text-[12px] sm:text-sm font-bold text-blue-600 text-right">
                   {formatCurrency(his.price)}
