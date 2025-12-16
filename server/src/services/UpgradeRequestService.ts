@@ -17,10 +17,10 @@ export class UpgradeService extends BaseService {
 
   async createSellerRequest(id: number) {
     const sql = `
-                INSERT INTO admin.user_upgrade_requests (bidder_id)
-                VALUES ($1);
+                INSERT INTO admin.user_upgrade_requests (bidder_id, status, created_at, updated_at)
+                VALUES ($1, $2, NOW(), NOW());
                 `;
-    const params = [id];
+    const params = [id, "pending"];
 
     return this.safeQuery(sql, params);
   }
@@ -70,7 +70,7 @@ export class UpgradeService extends BaseService {
                 SELECT r.id,r.created_at, u.name as bidder_name, u.email as bidder_email, u.positive_points ,u.negative_points, u.created_at as bidder_created_at
                 FROM admin.user_upgrade_requests as r
                 JOIN admin.users as u ON u.id = r.bidder_id 
-                WHERE r.status = $1
+                WHERE r.status = $1 AND r.created_at + INTERVAL '7 days' > NOW()
                 ORDER BY  r.created_at desc
                 OFFSET $2
                 LIMIT $3
