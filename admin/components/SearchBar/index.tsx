@@ -7,6 +7,7 @@ import Image from "next/image";
 import { SearchProduct } from "../../../shared/src/types";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import ProductHook from "@/hooks/useProduct";
 
 const defaultImage =
   "https://img.freepik.com/premium-photo/white-colors-podium-abstract-background-minimal-geometric-shape-3d-rendering_48946-113.jpg?semt=ais_hybrid&w=740&q=80";
@@ -15,15 +16,15 @@ export const SearchBar = () => {
   const router = useRouter();
   const per_page = 10;
   const [query, setQuery] = useState("");
-  // const {
-  //   data: suggestionData,
-  //   isLoading: isLoadingSuggestion,
-  //   error: isErrorSuggestion,
-  // } = ProductHook.useGetProductsBySearchSuggestion(query, per_page) as {
-  //   data: SearchProduct[];
-  //   isLoading: boolean;
-  //   error: any;
-  // };
+  const {
+    data: suggestionData,
+    isLoading: isLoadingSuggestion,
+    error: isErrorSuggestion,
+  } = ProductHook.useGetProductsBySearchSuggestion(query, per_page) as {
+    data: SearchProduct[];
+    isLoading: boolean;
+    error: any;
+  };
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +34,7 @@ export const SearchBar = () => {
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && query.length > 0) {
-      router.push(`/search?query=${query}`);
+      router.push(`/product/search?query=${query}`);
       setShowSuggestions(false);
       setQuery("");
     }

@@ -215,10 +215,12 @@ export class CategoryService extends BaseService {
       p.end_time,
       p.auto_extend,
       p.created_at,
-      p.initial_price
-
+      p.initial_price,
+      u.email as seller_email,
+      c.name as category_name
     FROM product.products p 
     JOIN admin.users u on u.id = p.seller_id 
+    JOIN product.product_categories c on c.id = p.category_id
     WHERE p.id = $1
     `;
 
@@ -236,12 +238,19 @@ export class CategoryService extends BaseService {
     if (current_price == null) {
       current_price = products[0].initial_price;
     }
+    const { seller_email, category_name, ...rest } = products[0];
 
     products = {
-      ...products[0],
+      ...rest,
       top_bidder_name: top_bidder ? top_bidder.name : null,
       current_price: current_price,
       bid_count: bid_count,
+      seller: {
+        email: seller_email,
+      },
+      category: {
+        name: category_name,
+      },
     };
 
     return products;
@@ -348,6 +357,7 @@ export class CategoryService extends BaseService {
       const offset = (page - 1) * limit;
       sql += "OFFSET $3 \n";
       params.push(offset);
+      console.log("vo limit");
     }
 
     const products = await this.safeQuery<ProductPreview>(sql, params);
@@ -358,6 +368,8 @@ export class CategoryService extends BaseService {
         return productType;
       })
     );
+    console.log("page:", page);
+
     return newProducts;
   }
 }

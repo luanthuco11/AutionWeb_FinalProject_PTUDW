@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Menu, X, User } from "lucide-react";
 
-const HeaderCopy = () => {
+const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openLogout, setOpenLogout] = useState(false);
   const logoutRef = useRef<HTMLDivElement>(null);
@@ -26,7 +26,7 @@ const HeaderCopy = () => {
   }, []);
   return (
     <header className=" md:flex bg-white border-b border-gray-200 shadow-sm z-50 h-full w-full items-center">
-      <div className="container">
+      <div className="container-layer">
         <div className="flex items-center justify-between  ">
           <Link href="/" className="shrink-0">
             <div className="text-2xl font-bold text-blue-600">
@@ -132,4 +132,4 @@ const HeaderCopy = () => {
   );
 };
 
-export default HeaderCopy;
+export default Header;

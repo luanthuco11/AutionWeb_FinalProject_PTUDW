@@ -16,6 +16,8 @@ import { ShortUser } from "../../../shared/src/types";
 
 import { createSlugUnique } from "../utils";
 import { R2Service } from "./R2Service";
+import { Pagination } from "../../../shared/src/types/Pagination";
+import { PoolClient } from "pg";
 
 export class ProductService extends BaseService {
   private static instance: ProductService;
@@ -157,21 +159,29 @@ export class ProductService extends BaseService {
       p.end_time,
       p.auto_extend,
       p.created_at,
-      p.initial_price
-
+      p.initial_price,
+      u.email as seller_email,
+      c.name as category_name
     FROM product.products p 
     JOIN admin.users u on u.id = p.seller_id 
+    JOIN product.product_categories c on c.id = p.category_id
     WHERE p.id = $1
     `;
 
     let products: any = await this.safeQuery<ProductPreview>(sql, [productId]);
-
+    const { seller_email, category_name, ...rest } = products[0];
     products = {
-      ...products[0],
+      ...rest,
       top_bidder_name: top_bidder ? top_bidder.name : null,
       current_price: current_price ? current_price : products[0].initial_price,
       bid_count: bid_count,
       status: status,
+      seller: {
+        email: seller_email,
+      },
+      category: {
+        name: category_name,
+      },
     };
 
     return products;
@@ -259,9 +269,9 @@ export class ProductService extends BaseService {
     page?: number
   ): Promise<ProductPreview[]> {
     let sql = `
-    SELECT id
-    FROM product.products
-    ORDER BY product.products.end_time ASC
+        SELECT id
+        FROM product.products
+        ORDER BY product.products.end_time ASC
     `;
 
     const params: any[] = [];
@@ -637,25 +647,20 @@ WHERE pc.parent_id is not null
     return updateProduct;
   }
   async deleteProductById(productId: number) {
-    const sql = `
-    DELETE FROM product.products 
-    WHERE id = $1
-    RETURNING MAIN_IMAGE, EXTRA_IMAGES
-    `;
+    const params = [productId];
+
+    const sql =
+      "DELETE FROM product.products WHERE id = $1 RETURNING MAIN_IMAGE, EXTRA_IMAGES";
     const result = await this.safeQuery<{
       main_image: string;
       extra_images: string[];
     }>(sql, [productId]);
-
     if (result.length == 0) {
       throw new Error(`Không thể tìm thấy sản phẩm có id = ${productId}`);
     }
-
     const { main_image, extra_images = [] } = result[0]!;
     const r2 = R2Service.getInstance();
     await r2.deleteFilesFromR2([main_image, ...extra_images]);
-
-    return result;
   }
 
   async getQuestions(productId: number): Promise<ProductQuestion[]> {
@@ -920,5 +925,26 @@ WHERE pc.parent_id is not null
       })
     );
     return productHavePrice;
+  }
+
+  async getProducts(pagination: Pagination): Promise<ProductPreview[]> {
+    const sql = `
+                SELECT p.id 
+                FROM product.products p
+                ORDER BY created_at desc
+                LIMIT $1
+                OFFSET $2
+                  `;
+    const offset = (pagination.page - 1) * pagination.limit;
+    const params = [pagination.limit, offset];
+    const product = await this.safeQuery<ProductPreview>(sql, params);
+
+    const productPreview = await Promise.all(
+      product.map(async (item: any) => {
+        const productType = this.getProductPreviewType(item.id);
+        return productType;
+      })
+    );
+    return productPreview;
   }
 }

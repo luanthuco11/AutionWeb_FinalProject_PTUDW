@@ -23,6 +23,11 @@ export type Product = {
   updated_at: Date | null;
 };
 
+export type Category = {
+  id: number;
+  slug: string;
+  name: string;
+};
 export type ProductPreview = Pick<
   Product,
   | "id"
@@ -40,6 +45,8 @@ export type ProductPreview = Pick<
   | "status"
 > & {
   top_bidder_name: string | null;
+  category: Pick<Category, "name">;
+  seller: Pick<User, "email">;
 };
 
 export type SearchProduct = Pick<

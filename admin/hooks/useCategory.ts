@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { STALE_10_MIN } from "@/config/query.config";
-import { Pagination } from "../../shared/src/types/Pagination";
 import { CreateCategory, UpdateCategory } from "../../shared/src/types";
 import { CategoryService } from "@/services/categoryService";
+import { Pagination } from "../../shared/src/types/Pagination";
 
 class CategoryHook {
   static useCategories() {
@@ -23,6 +23,45 @@ class CategoryHook {
       staleTime: STALE_10_MIN,
       select: (data) => {
         return data.data.result;
+      },
+    });
+  }
+  static useCategoryDetailById(id: number) {
+    return useQuery({
+      queryKey: ["category_by_id", id],
+      enabled: !!id,
+      queryFn: () => CategoryService.getCategoryDetailById(id),
+      staleTime: STALE_10_MIN,
+      select: (data) => {
+        return data.data.category;
+      },
+    });
+  }
+
+  static useProductsByCategorySlug(
+    slug: string,
+    page: number,
+    limit: number,
+    sort: string
+  ) {
+    return useQuery({
+      queryKey: ["products", slug, page, limit, sort],
+      queryFn: () =>
+        CategoryService.getProductsByCategorySlug(slug, page, limit, sort),
+      staleTime: STALE_10_MIN,
+      select: (data) => {
+        return data.data;
+      },
+    });
+  }
+
+  static useProductsByCategoryId(pagination: Pagination) {
+    return useQuery({
+      queryKey: ["products_by_category", pagination],
+      queryFn: () => CategoryService.getProductsByCategoryId(pagination),
+      staleTime: STALE_10_MIN,
+      select: (data) => {
+        return data.data.products;
       },
     });
   }

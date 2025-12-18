@@ -215,8 +215,8 @@ h6 {
   width: 0;
 }
 
-.container {
-  @apply mx-auto px-10 sm:px-12 lg:px-14;
+.container-layer {
+  @apply w-full px-10 sm:px-12 lg:px-14;
 }
 
 .background-user {

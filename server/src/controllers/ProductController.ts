@@ -3,6 +3,7 @@ import {
   CreateProduct,
   CreateQuestion,
 } from "../../../shared/src/types";
+import { Pagination } from "../../../shared/src/types/Pagination";
 import { BaseController } from "./BaseController";
 import { Request, Response, NextFunction } from "express";
 
@@ -280,6 +281,23 @@ export class ProductController extends BaseController {
     return {
       products: products,
       totalProducts: totalProducts,
+    };
+  }
+  async getProducts(req: Request, res: Response) {
+    const userId = req.headers["user-id"];
+
+    const pagination: Pagination = {
+      limit: Number(req.query.limit || "5"),
+      page: Number(req.query.page || "1"),
+    };
+
+    const products = await this.service.getProducts(pagination);
+    const totalProducts = await this.service.getTotalProducts();
+    return {
+      products: products,
+      totalProducts: totalProducts,
+      limit: pagination.limit,
+      page: pagination.page,
     };
   }
 }

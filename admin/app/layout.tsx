@@ -3,7 +3,7 @@
 import "./globals.css";
 import { Providers } from "./providers";
 
-import HeaderCopy from "@/components/Header copy";
+import Header from "@/components/Header";
 import { NavigationBar } from "@/components/NavigationBar";
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
         <Providers>
           <div className="flex flex-col">
             <header className="fixed top-0 left-0 right-0 h-[70px] bg-white z-50 shadow">
-              <HeaderCopy />
+              <Header />
             </header>
 
             <div className="flex pl-60">

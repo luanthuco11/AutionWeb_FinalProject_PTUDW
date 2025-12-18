@@ -4,7 +4,7 @@ import CategoryCard from "@/components/CategoryCard";
 import AdminHeader from "@/components/AdminHeader/AdminHeader";
 import { useMemo, useState } from "react";
 import CategoryHook from "@/hooks/useCategory";
-import { ProductCategoryTree } from "../../../../shared/src/types";
+import { ProductCategoryTree } from "../../../shared/src/types";
 import Pagination from "@/components/Pagination";
 import Fuse from "fuse.js"
 import { CategoryWithProductCount } from "@/components/CategoryCard";

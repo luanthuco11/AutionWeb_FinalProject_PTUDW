@@ -19,10 +19,39 @@ export class CategoryService {
     return safeRequest(async () => {
       const res = await api.get(API_ROUTES.category.getCountProduct);
       return res.data;
+    }
+    )
+  }
+  static async getCategoryDetailById(id: number): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(API_ROUTES.category.getCategoryDetailById(id));
+      return res.data;
     });
   }
 
 
+  static async getProductsByCategorySlug(
+    slug: string,
+    page: number,
+    limit: number,
+    sort: string
+  ): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(
+        API_ROUTES.category.getProductsByCategorySlug(slug, page, limit, sort)
+      );
+      return res.data;
+    });
+  }
+
+  static async getProductsByCategoryId(pagination: Pagination): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(
+        API_ROUTES.category.getProductsByCategoryId(pagination)
+      );
+      return res.data;
+    });
+  }
   static async createCategory(payload: CreateCategory): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.category.createCategory, payload);

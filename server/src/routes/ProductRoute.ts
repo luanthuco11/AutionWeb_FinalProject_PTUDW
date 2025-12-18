@@ -17,6 +17,12 @@ export class ProductRoute extends BaseRoute {
 
   initRoutes() {
     this.router.get(
+      "/",
+      BaseController.handleRequest(
+        this.controller.getProducts.bind(this.controller)
+      )
+    );
+    this.router.get(
       "/category",
       BaseController.handleRequest(
         this.controller.getCategoryProductList.bind(this.controller)

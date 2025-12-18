@@ -85,11 +85,11 @@ export const NavigationBar = () => {
     <aside className="w-64 h-full bg-white border-r border-surface shadow-sm flex flex-col">
       <nav className="flex-1 p-2">
         {sections.map((sec, index) => {
-          const isActive = pathname.startsWith(`/admin/${sec.href}`);
+          const isActive = pathname.startsWith(`/${sec.href}`);
           return (
             <Link
               key={index}
-              href={`/admin/${sec.href}`}
+              href={`/${sec.href}`}
               className={`block w-full px-4 py-3 rounded-lg mb-2 text-lg font-medium hover:text-green-700/60 hover:border-l-4 hover:border-green-500/60 transition-colors duration-200 ${
                 isActive
                   ? "bg-green-100 text-green-700 border-l-4 border-green-500"

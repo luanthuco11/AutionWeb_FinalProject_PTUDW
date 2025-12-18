@@ -11,16 +11,18 @@ import { Pagination } from "../types/Pagination";
 
 const API_ROUTES = {
   user: {
-    getUsers: `${BASE_API}/users`,
+    getUsers: (pagination: Pagination) =>
+      `${USER_API}?page=${pagination.page}&limit=${pagination.limit}`, //GET
     getUser: (id: number) => `${BASE_API}/users${id}`,
     updateUser: (id: number) => `${BASE_API}/users${id}`,
-    deleteUser: (id: number) => `${BASE_API}/users${id}`,
+    deleteUser: (id: number) => `${USER_API}/${id}`,
     createUSer: `${BASE_API}/users`,
     getProfile: () => `${USER_API}/profile`, //GET
     updateProfile: `${USER_API}/profile`, //PATCH
     updatePassword: `${USER_API}/password`, //PATCH
   },
   upgrade: {
+    getUpgradeRequests: (pagination: Pagination) => `${UPGRADE_API}/request`, //GET
     createSellerRequest: `${UPGRADE_API}/request`, //POST
     getRequestStatus: (id: number) => `${UPGRADE_API}/status/${id}`, //GET
     updateApproveRequest: `${UPGRADE_API}/approve`, //PATCH
@@ -31,13 +33,16 @@ const API_ROUTES = {
     getCountProduct: `${CATEGORY_API}/count`, //GET
     getCategoryDetailById: (id: number) => `${CATEGORY_API}/detail/${id}`, // GET
     getProductsByCategoryId: (pagination: Pagination) =>
-      `${CATEGORY_API}/${pagination.id}/products?page${pagination.page}&limit=${pagination.limit}&sort=${pagination.sort}`, //GET
+      `${CATEGORY_API}/${pagination.id}/products?page=${pagination.page}&limit=${pagination.limit}&sort=${pagination.sort}`, //GET
     getProductsByCategorySlug: (
       slug: string,
       page: number,
       limit: number,
       sort: string
-    ) => `${CATEGORY_API}/slug/${slug}?page${page}&limit=${limit}&sort=${sort}`, //GET
+    ) => {
+      console.log("page:,", page);
+      return `${CATEGORY_API}/slug/${slug}?page=${page}&limit=${limit}&sort=${sort}`;
+    }, //GET
     createCategory: `${CATEGORY_API}`, //POST
     updateCategory: (id: number) => `${CATEGORY_API}/${id}`, //PATCH
     deleteCategory: (id: number) => ` ${CATEGORY_API}/${id}`, //DELETE
@@ -55,6 +60,8 @@ const API_ROUTES = {
     createRating: `${RATING_API}`, //POST
   },
   product: {
+    getProducts: (pagination: Pagination) =>
+      `${PRODUCT_API}?page=${pagination.page}&limit=${pagination.limit}`, //GET
     getCategoryProductList: `${PRODUCT_API}/category`,
     getProductTop: `${PRODUCT_API}/top`, // GET
     getProductsBySearch: (query: string, limit: number, page: number) =>

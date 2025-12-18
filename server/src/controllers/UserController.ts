@@ -8,8 +8,12 @@ export class UserController extends BaseController {
   }
 
   async getUsers(req: Request, res: Response) {
-    const users = await this.service.getUsers();
-    return { user: users };
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const users = await this.service.getUsers(page, limit);
+    const totalUsers = await this.service.getTotalUser();
+    return { users: users, totalUsers };
   }
 
   async getProfile(req: Request, res: Response) {
@@ -26,6 +30,11 @@ export class UserController extends BaseController {
       ...req.body,
       id: userId,
     });
+    return { result };
+  }
+  async deleteUser(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    const result = await this.service.deleteUser(id);
     return { result };
   }
 }
