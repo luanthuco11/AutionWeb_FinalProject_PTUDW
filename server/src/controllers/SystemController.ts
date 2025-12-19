@@ -6,6 +6,10 @@ export class SystemController extends BaseController {
     super(service);
   }
 
+  async getProductRenewTime(req: Request, res: Response) {
+    const result = await this.service.getProductRenewTime();
+    return { result };
+  }
   async updateProductRenewTime(req: Request, res: Response) {
     const result = await this.service.updateProductRenewTime(
       req.body.time
