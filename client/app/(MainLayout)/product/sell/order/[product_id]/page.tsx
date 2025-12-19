@@ -2,21 +2,22 @@
 
 import OrderHook from "@/hooks/useOrder";
 import { useAuthStore } from "@/store/auth.store";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import {
   Order,
   OrderStatus,
   Product,
-} from "../../../../../../shared/src/types";
+} from "../../../../../../../shared/src/types";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import UnauthorizedAccess from "@/components/UnauthorizedAccess";
 import { Stepper } from "@mantine/core";
 import PaymentStep from "./PaymentStep";
 import BuyingProductCard from "./BuyingProductCard";
 import ProductHook from "@/hooks/useProduct";
-import WaitingConfirmStep from "./WaitingConfirmStep";
+import ConfirmStep from "./ConfirmStep";
 import DeliveringStep from "./DeliveringStep";
+import { useRouter } from "next/navigation";
 import FinishStep from "./FinishStep";
 
 const stepperIndexDict: Record<OrderStatus, number> = {
@@ -52,14 +53,14 @@ const ProductOrderPage = () => {
     setActive(stepperIndexDict[order.status]);
   }, [order]);
 
-  console.log(active);
-
   useEffect(() => {
     if (!router || !user || !order) return;
 
-    if (user.id == order.seller?.id)
-      router.replace(`/product/sell/order/${product.id}`);
+    if (user.id == order.buyer?.id)
+      router.replace(`/product/order/${product.id}`);
   }, [router, user, order]);
+
+  console.log(active);
 
   return (
     <div className="w-full flex flex-col gap-5">
@@ -67,7 +68,7 @@ const ProductOrderPage = () => {
         <div className="w-full h-150">
           <LoadingSpinner />
         </div>
-      ) : user && order && user.id === order.buyer?.id ? (
+      ) : user && order && user.id === order.seller?.id ? (
         <>
           <h1 className="text-2xl">Thông tin đơn hàng</h1>
           <div className="w-full grid grid-cols-12 gap-5">
@@ -77,22 +78,22 @@ const ProductOrderPage = () => {
 
               <Stepper active={active} className="mt-8">
                 <Stepper.Step
-                  label="Thanh toán"
-                  description={`Thông tin nhận hàng`}
+                  label="Chờ thanh toán"
+                  description={`Người mua thanh toán`}
                   className="mb-4"
                 >
-                  <PaymentStep setActive={setActive} order={order} />
+                  <PaymentStep order={order} />
                 </Stepper.Step>
                 <Stepper.Step
                   label="Chuẩn bị hàng"
-                  description="Người bán đóng gói hàng"
+                  description={`Đóng gói đơn hàng`}
                   className="mb-4"
                 >
-                  <WaitingConfirmStep order={order} />
+                  <ConfirmStep setActive={setActive} order={order} />
                 </Stepper.Step>
                 <Stepper.Step
-                  label="Nhận hàng"
-                  description="Vận chuyển đơn hàng"
+                  label="Giao hàng"
+                  description="Vận chuyển tới người nhận"
                   className="mb-4"
                 >
                   <DeliveringStep order={order} />

@@ -3,7 +3,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import BidHook from "@/hooks/useBid";
-import { BidLog } from "../../../../../../shared/src/types";
+import { BidLog } from "../../../../../../../shared/src/types";
 import { formatCurrency, formatDate } from "./Question";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/hooks/useAuth";
@@ -49,7 +49,7 @@ export const BidHistory = ({ productId }: ProductId) => {
                 <td className="py-3 px-1 sm:px-3 truncate max-w-[90px] text-[12px] sm:text-sm font-medium text-gray-700">
                   {user?.id === his.user.id
                     ? `${his.user.name} (Bạn)`
-                    : `${his.user.name[0]}***`}
+                    : `${his.user.name}`}
                 </td>
                 <td className="py-3 px-1 sm:px-3 truncate text-[12px] sm:text-sm font-bold text-blue-600 text-right">
                   {formatCurrency(his.price)}

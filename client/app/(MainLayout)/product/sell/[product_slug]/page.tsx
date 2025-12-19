@@ -30,13 +30,13 @@ import {
   Product,
   ProductCategoryTree,
   UserBidInfo,
-} from "../../../../../shared/src/types";
+} from "../../../../../../shared/src/types";
 import BidHook from "@/hooks/useBid";
 import FavoriteHook from "@/hooks/useFavorite";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import CategoryHook from "@/hooks/useCategory";
 import { formatPrice, parseNumber } from "@/utils";
-import { X } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import OrderHook from "@/hooks/useOrder";
 import Link from "next/link";
 import { defaultImage } from "@/app/const";
@@ -169,8 +169,8 @@ export default function ProductPage() {
   useEffect(() => {
     if (!router || !user || !product) return;
 
-    if (user.id == product.seller.id) {
-      router.replace(`/product/sell/${product_slug}`);
+    if (user.id !== product.seller.id) {
+      router.replace(`/product/${product_slug}`);
     }
   }, [router, user, product]);
 
@@ -238,8 +238,7 @@ export default function ProductPage() {
       isLoadingFavoriteProducts ||
       isLoadingProductCategory ||
       isLoadingOrder ||
-      isLoadingUserBid ||
-      isCreatingOrder ? (
+      isLoadingUserBid ? (
         <LoadingSpinner />
       ) : (
         <>
@@ -259,7 +258,7 @@ export default function ProductPage() {
                   images={[product.main_image, ...(product.extra_images || [])]}
                 />
               </div>
-              <div className="bg-white border  border-gray-200 rounded-lg p-4 sm:p-8 w-full">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-8 w-full">
                 <div className="pb-6 border-b mb-6  border-slate-200">
                   <h1 className="text-2xl font-bold mb-4 text-slate-900">
                     {product.name}
@@ -308,7 +307,7 @@ export default function ProductPage() {
                       product.top_bidder.id === user?.id ? (
                         `${product.top_bidder.name} (Bạn)`
                       ) : (
-                        `${product.top_bidder.name[0]}***`
+                        `${product.top_bidder.name}`
                       )
                     ) : (
                       <p className=" ml-4 text-[16px] font-semibold text-slate-900">
@@ -365,232 +364,40 @@ export default function ProductPage() {
 
                 <EndTime endTime={new Date(product.end_time || "")} />
 
-                <div className="pb-6 border-b mb-6 border-slate-200 gap-4 flex flex-col">
-                  {product.status == "available" ? (
-                    <>
-                      <div className="relative">
-                        <PrimaryButton
-                          backgroundColor="#2563eb"
-                          hoverBackgroundColor="#3376eb"
-                          text="Đặt lệnh đấu giá"
-                          onClick={handleOnclickBid}
-                        />
-
-                        {isBid && (
-                          <>
-                            <div className="z-1000 fixed inset-0 w-screen h-screen bg-black opacity-50 flex justify-center items-center"></div>
-                            <div className="z-1001 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-lg px-4 py-4 shadow-lg">
-                              <div className="bg-white w-full">
-                                <form
-                                  className="px-2 w-full"
-                                  onSubmit={handleSubmitBid(handleBid)}
-                                >
-                                  <label
-                                    htmlFor="price"
-                                    className="block font-medium text-heading text-xl"
-                                  >
-                                    Đặt lệnh đấu giá
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="price"
-                                    value={formatPrice(
-                                      Number(watch("price") || undefined)
-                                    )}
-                                    onChange={(e) => {
-                                      const parsed = parseNumber(
-                                        e.target.value
-                                      );
-                                      setValue("price", String(parsed));
-                                    }}
-                                    autoComplete="off"
-                                    className="border border-gray-300 mt-4 rounded-2xl text-heading text-3xl! text-blue-500 rounded-base  w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-                                    placeholder={
-                                      product.current_price &&
-                                      userBid.max_price &&
-                                      userBid.max_price > product.current_price
-                                        ? formatCurrency(
-                                            Number(userBid.max_price) +
-                                              Number(product.price_increment)
-                                          )
-                                        : formatCurrency(
-                                            Number(product.current_price) +
-                                              Number(product.price_increment)
-                                          )
-                                    }
-                                  />
-                                  <span className="text-red-600 text-sm mt-1 block mb-2">
-                                    {formStateBid.errors.price
-                                      ? formStateBid.errors.price.message
-                                      : ""}
-                                  </span>
-
-                                  <div className="text-md mt-4">
-                                    <p>
-                                      <span className="">Giá hiện tại: </span>
-                                      <span className="ml-1 text-blue-600 font-medium text-lg">
-                                        {formatCurrency(product.current_price)}
-                                      </span>
-                                    </p>
-                                    <p>
-                                      <span className="">Bước nhảy: </span>
-                                      <span className="ml-2 text-blue-600 font-medium text-lg">
-                                        {formatCurrency(
-                                          product.price_increment
-                                        )}
-                                      </span>
-                                    </p>
-                                    {userBid?.max_price ? (
-                                      <p className="">
-                                        <span className="">Giá đấu cũ: </span>
-                                        <span className="ml-2 text-orange-600 font-medium text-lg">
-                                          {formatCurrency(userBid.max_price)}
-                                        </span>
-                                      </p>
-                                    ) : (
-                                      <p className="text-slate-600">
-                                        Bạn chưa từng đấu giá sản phẩm này
-                                      </p>
-                                    )}
-                                  </div>
-
-                                  <div className="mt-2">
-                                    {product.current_price &&
-                                    userBid.max_price &&
-                                    userBid.max_price >
-                                      product.current_price ? (
-                                      <p>
-                                        Bạn cần đặt giá lớn hơn{" "}
-                                        <span className="text-orange-600">
-                                          {formatCurrency(userBid.max_price)}
-                                        </span>
-                                      </p>
-                                    ) : (
-                                      <p>
-                                        Bạn cần đặt giá tối thiểu là{" "}
-                                        <span className="font-medium text-orange-600">
-                                          {formatCurrency(
-                                            Number(product.current_price) +
-                                              Number(product.price_increment)
-                                          )}
-                                        </span>
-                                      </p>
-                                    )}
-                                  </div>
-
-                                  <div className="grid grid-cols-2 gap-2 mt-5">
-                                    <button
-                                      type="submit"
-                                      className="font-medium mx-auto block text-white bg-[#1447E6] box-border border border-blue-300 rounded-4xl hover:bg-[#2957e3] hover:cursor-pointer  shadow-xs  leading-5  text-sm w-full py-2.5"
-                                    >
-                                      Xác nhận
-                                    </button>
-                                    <button
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        handleOnclickCancleBid();
-                                      }}
-                                      className="font-medium mx-auto block text-white bg-gray-500 box-border border border-gray-200 rounded-4xl hover:bg-gray-400 hover:cursor-pointer  shadow-xs  leading-5  text-sm w-full py-2.5"
-                                    >
-                                      Hủy
-                                    </button>
-                                  </div>
-                                </form>
-                              </div>
-                              <button
-                                onClick={(e) => setIsBid(false)}
-                                className="absolute top-2.5 right-3 "
-                              >
-                                <X className="text-gray-500 hover:text-red-600 cursor-pointer" />
-                              </button>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      <div>
-                        <button
-                          onClick={handleBuyNow}
-                          className="w-full flex items-center gap-2 justify-center border border-red-600 text-red-600 py-2 font-medium rounded-lg hover:bg-red-400 hover:border-red-400 hover:text-white transition-colors duration-200"
-                        >
-                          {"Mua ngay " +
-                            formatCurrency(product.buy_now_price || 0)}
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    <div>
-                      {order && order.buyer.id == user?.id ? (
-                        <div className="flex flex-row gap-2 justify-between items-center">
-                          <p className="text-blue-500 text-2xl font-medium">
-                            Bạn đã mua ngay sản phẩm này
-                          </p>
-                          <div className="">
-                            <Link
-                              href={`/product/order/${product.id}`}
-                              className="w-full flex items-center gap-2 justify-center border border-blue-600 text-blue-600 py-2 px-5 font-medium rounded-lg hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-colors duration-200"
-                            >
-                              Đi tới đơn hàng
-                            </Link>
-                          </div>
-                        </div>
-                      ) : (
-                        <p className="text-red-500 text-2xl font-medium">
-                          Đã có người mua ngay
+                {product.status == "available" ? (
+                  <></>
+                ) : (
+                  <div className="mb-8">
+                    {order && (
+                      <div className="flex flex-row gap-2 justify-between items-center">
+                        <p className="text-blue-500 text-2xl font-medium">
+                          {order.buyer.name} đã mua ngay
                         </p>
-                      )}
-                    </div>
-                  )}
-
-                  {openBuyNowModal && (
-                    <>
-                      <div className="z-1000 fixed inset-0 w-screen h-screen bg-black opacity-50 flex justify-center items-center"></div>
-                      <div className="z-1001 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-gray-200 rounded-lg px-4 py-4 shadow-lg max-w-md">
-                        <p className="text-2xl font-bold text-center">
-                          Xác nhận mua ngay
-                        </p>
-                        <p className="text-lg mt-5 text-center">
-                          Bạn xác nhận đồng ý mua ngay sản phẩm với giá
-                        </p>
-                        <p className="text-red-500 text-4xl font-medium text-center">
-                          {formatCurrency(product.buy_now_price)}
-                        </p>
-                        <p className="mt-3">
-                          Sau khi mua ngay, bạn có 24 giờ để thanh toán và nhập
-                          thông tin nhận hàng.
-                        </p>
-                        {product.top_bidder?.id == userBid.user_id &&
-                          userBid?.max_price && (
-                            <p className="mt-3 font-medium text-slate-600">
-                              Nhắc nhở: Bạn vẫn đang dẫn đầu đấu giá với{" "}
-                              <span className="text-blue-600">
-                                {formatCurrency(userBid.max_price)}
-                              </span>
-                            </p>
-                          )}
-                        <div className="grid grid-cols-2 gap-2 mt-5">
-                          <button
-                            onClick={handleOrder}
-                            className="font-medium mx-auto block text-white bg-[#1447E6] box-border border border-blue-300 rounded-4xl hover:bg-[#2957e3] hover:cursor-pointer  shadow-xs  leading-5  text-sm w-full py-2.5"
+                        <div className="">
+                          <Link
+                            href={`/product/sell/order/${product.id}`}
+                            className="w-full flex items-center gap-2 justify-center border border-blue-600 text-blue-600 py-2 px-5 font-medium rounded-lg hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-colors duration-200"
                           >
-                            Mua ngay
-                          </button>
-                          <button
-                            onClick={() => setOpenBuyNowModal(false)}
-                            className="font-medium mx-auto block text-white bg-gray-500 box-border border border-gray-200 rounded-4xl hover:bg-gray-400 hover:cursor-pointer  shadow-xs  leading-5  text-sm w-full py-2.5"
-                          >
-                            Hủy
-                          </button>
+                            Đi tới đơn hàng
+                          </Link>
                         </div>
-                        <button
-                          onClick={(e) => setOpenBuyNowModal(false)}
-                          className="absolute top-2.5 right-3 "
-                        >
-                          <X className="text-gray-500 hover:text-red-600 cursor-pointer" />
-                        </button>
                       </div>
-                    </>
-                  )}
+                    )}
+                  </div>
+                )}
+
+                <div className="pb-3 border-slate-200 gap-4 flex flex-col">
+                  <PrimaryButton
+                    backgroundColor="#2563eb"
+                    hoverBackgroundColor="#3376eb"
+                    icon={() => <Pencil width={20} height={20} />}
+                    text="Chỉnh sửa sản phẩm"
+                    onClick={() =>
+                      router.replace(
+                        `/user/selling_products/${product_slug}/edit`
+                      )
+                    }
+                  />
                 </div>
                 <div>
                   <div

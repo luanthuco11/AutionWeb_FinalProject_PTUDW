@@ -3,6 +3,7 @@ import API_ROUTES from "../../shared/src/api";
 import {
   NewOrderMessageRequest,
   NewOrderRequest,
+  OrderPayment,
   OrderStatus,
 } from "../../shared/src/types";
 
@@ -35,6 +36,25 @@ export class OrderService {
     return safeRequest(async () => {
       const res = await api.patch(
         API_ROUTES.order.updateOrderStatus(productId, status)
+      );
+      return res.data;
+    });
+  }
+
+  static async buyerPayOrder(productId: number, payment: OrderPayment) {
+    return safeRequest(async () => {
+      const res = await api.patch(
+        API_ROUTES.order.buyerPayOrder(productId),
+        payment
+      );
+      return res.data;
+    });
+  }
+
+  static async sellerConfirmOrder(productId: number, buyer_id: number) {
+    return safeRequest(async () => {
+      const res = await api.patch(
+        API_ROUTES.order.sellerConfirmOrder(productId, buyer_id)
       );
       return res.data;
     });

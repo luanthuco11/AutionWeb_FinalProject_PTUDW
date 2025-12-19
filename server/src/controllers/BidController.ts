@@ -13,14 +13,16 @@ export class BidController extends BaseController {
     return { bid_logs: bid_logs };
   }
   async getUserBid(req: Request, res: Response) {
-    const userId = Number(req.headers["user-id"]);
+    const userId = req.user?.id;
     const productId = parseInt(req.params.productId as string);
     const userBid = await this.service.getUserBid(userId, productId);
     return { userBid };
   }
   async createBid(req: Request, res: Response) {
+    if (!req?.user?.id) return;
+
     const bid: CreateBidLog = {
-      user_id: parseInt(req.headers["user-id"] as string),
+      user_id: req.user?.id,
       product_id: req.body.product_id,
       price: req.body.price,
     };

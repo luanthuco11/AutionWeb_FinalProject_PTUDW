@@ -7,6 +7,7 @@ import {
   OrderMessage,
   OrderConversation,
   NewOrderMessageRequest,
+  OrderPayment,
 } from "./../../../shared/src/types";
 
 import { MutationResult } from "../../../shared/src/types/Mutation";
@@ -29,16 +30,23 @@ export class OrderService extends BaseService {
     // Đâu cần api này nhỉ
   }
 
-  async getOrderById(productId: number): Promise<Order | undefined> {
+  async getOrderById(
+    userId: number,
+    productId: number
+  ): Promise<Order | undefined> {
     const sql = `
       SELECT
         O.*,
         P.SELLER_ID,
-        O.BUYER_ID
+        O.PRICE,
+        O.BUYER_ID,
+        O.PHONE_NUMBER
       FROM AUCTION.ORDERS O
       JOIN PRODUCT.PRODUCTS P ON P.ID = O.PRODUCT_ID
       WHERE
-        O.PRODUCT_ID = $1
+        O.PRODUCT_ID = $1 AND
+        O.STATUS != 'cancelled' AND
+        (O.BUYER_ID = $2 OR P.SELLER_ID = $2)
     `;
 
     type OrderWithUsers = Order & {
@@ -46,19 +54,25 @@ export class OrderService extends BaseService {
       buyer_id: number;
     };
 
-    const order = (await this.safeQuery<OrderWithUsers>(sql, [productId]))?.[0];
+    const order = (
+      await this.safeQuery<OrderWithUsers>(sql, [productId, userId])
+    )?.[0];
     if (!order) return undefined;
 
-    const seller = await this.Helper.getUserById(order.seller_id);
-    if (!seller) return undefined;
+    const promises = [
+      this.Helper.getUserById(order.seller_id),
+      this.Helper.getUserById(order.buyer_id),
+    ];
 
-    const buyer = await this.Helper.getUserById(order.buyer_id);
-    if (!buyer) return undefined;
+    const [seller, buyer] = await Promise.all(promises);
+    if (!seller || !buyer) return undefined;
 
     return {
       product_id: order.product_id,
+      price: order.price,
       seller,
       buyer,
+      phone_number: order.phone_number,
       status: order.status,
       shipping_address: order.shipping_address,
       payment_invoice: order.payment_invoice,
@@ -71,23 +85,35 @@ export class OrderService extends BaseService {
     buyer_id: number,
     payload: NewOrderRequest
   ): Promise<MutationResult> {
-    const { product_id, shipping_address } = payload;
+    const { product_id, shipping_address, price } = payload;
 
-    const sql = `
-      INSERT INTO AUCTION.ORDERS (PRODUCT_ID, BUYER_ID, STATUS, SHIPPING_ADDRESS, PAYMENT_INVOICE, CREATED_AT, UPDATED_AT)
-      SELECT $1, $2, 'pending', $3, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+    const orderExistedSql = `
+      SELECT 1
+      FROM AUCTION.ORDERS
+      WHERE status != 'cancelled' AND product_id = $1
+    `;
+
+    const orderExistedResult = await this.safeQuery<number>(orderExistedSql, [
+      product_id,
+    ]);
+    if (orderExistedResult.length != 0) return { success: false };
+
+    const createOrderSql = `
+      INSERT INTO AUCTION.ORDERS (PRODUCT_ID, BUYER_ID, STATUS, SHIPPING_ADDRESS, PAYMENT_INVOICE, PRICE, CREATED_AT, UPDATED_AT)
+      SELECT $1, $2, 'pending', $3, null, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
       FROM PRODUCT.PRODUCTS P
       WHERE P.id = $1 AND P.seller_id != $2
       ON CONFLICT(product_id) DO NOTHING
       RETURNING *
     `;
 
-    const result = await this.safeQuery<any>(sql, [
+    const createOrderResult = await this.safeQuery<any>(createOrderSql, [
       product_id,
       buyer_id,
       shipping_address,
+      price,
     ]);
-    if (result.length == 0) {
+    if (createOrderResult.length == 0) {
       console.log("Seller không thể mua sản phẩm của chính mình");
       return { success: false };
     } else return { success: true };
@@ -107,6 +133,55 @@ export class OrderService extends BaseService {
     return {
       success: true,
     };
+  }
+
+  async buyerPayOrder(
+    product_id: number,
+    payment: OrderPayment
+  ): Promise<MutationResult> {
+    const { is_paid, address, phone_number } = payment;
+
+    if (!is_paid) return { success: false };
+
+    const sql = `
+      UPDATE AUCTION.ORDERS
+      SET
+        SHIPPING_ADDRESS = $1,
+        PHONE_NUMBER = $2,
+        STATUS = 'paid',
+        UPDATED_AT = NOW()
+      WHERE PRODUCT_ID = $3
+    `;
+
+    const result = await this.safeQuery(sql, [
+      address,
+      phone_number,
+      product_id,
+    ]);
+
+    return { success: result?.length != 0 };
+  }
+
+  async sellerConfirmOrder(
+    product_id: number,
+    seller_id: number,
+    buyer_id: number
+  ): Promise<MutationResult> {
+    const sql = `
+      UPDATE AUCTION.ORDERS O
+      SET
+        STATUS = 'confirmed',
+        UPDATED_AT = NOW()
+      FROM PRODUCT.PRODUCTS P
+      WHERE 
+        P.ID = O.PRODUCT_ID AND
+        O.PRODUCT_ID = $1 AND
+        O.BUYER_ID = $2 AND
+        P.SELLER_ID = $3
+    `;
+
+    const result = await this.safeQuery(sql, [product_id, buyer_id, seller_id]);
+    return { success: result?.length != 0 };
   }
 
   async getOrderChat(

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   NewOrderMessageRequest,
   NewOrderRequest,
+  OrderPayment,
   OrderStatus,
 } from "../../shared/src/types";
 
@@ -57,6 +58,36 @@ class OrderHook {
     return useMutation({
       mutationFn: (params: { productId: number; status: OrderStatus }) =>
         OrderService.updateOrderStatus(params.productId, params.status),
+
+      onSuccess: (_, params) => {
+        queryClient.invalidateQueries({
+          queryKey: ["order_by_id", params.productId],
+        });
+      },
+    });
+  }
+
+  static useBuyerPayOrder() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: (params: { productId: number; payment: OrderPayment }) =>
+        OrderService.buyerPayOrder(params.productId, params.payment),
+
+      onSuccess: (_, params) => {
+        queryClient.invalidateQueries({
+          queryKey: ["order_by_id", params.productId],
+        });
+      },
+    });
+  }
+
+  static useSellerConfirmOrder() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: (params: { productId: number; buyerId: number }) =>
+        OrderService.sellerConfirmOrder(params.productId, params.buyerId),
 
       onSuccess: (_, params) => {
         queryClient.invalidateQueries({

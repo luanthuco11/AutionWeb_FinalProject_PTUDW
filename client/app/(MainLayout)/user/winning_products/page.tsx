@@ -4,8 +4,9 @@ import { useSearchParams, useRouter } from "next/navigation";
 import ProductHook from "@/hooks/useProduct";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import WinProduct from "@/components/WinProduct";
-import { WinningProduct } from "../../../../shared/src/types";
+import { WinningProduct } from "../../../../../shared/src/types";
 import Pagination from "@/components/Pagination";
+import Link from "next/link";
 
 const WinningProductPage = () => {
   const per_page = 5;

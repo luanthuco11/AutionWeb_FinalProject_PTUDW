@@ -1,10 +1,14 @@
 import Image from "next/image";
 import { WinningProduct } from "../../../shared/src/types";
 import { formatCurrency } from "@/app/(MainLayout)/product/[product_slug]/components/Question";
+import Link from "next/link";
 const WinProduct = ({ product }: { product: WinningProduct }) => {
   return (
     <div className="flex items-center justify-between bg-white border border-gray-100 rounded-lg shadow-xs p-4 w-full">
-      <div className="flex items-center gap-3">
+      <Link
+        href={`/product/order/${product.id}`}
+        className="flex items-center gap-3"
+      >
         <Image
           src={product.main_image}
           alt="Ảnh sản phẩm"
@@ -17,7 +21,7 @@ const WinProduct = ({ product }: { product: WinningProduct }) => {
             {product.name}
           </span>
         </div>
-      </div>
+      </Link>
       <div className="text-right flex flex-col gap-1">
         <span className="text-slate-500 font-stretch-10% text-sm">
           Giá đấu của bạn:

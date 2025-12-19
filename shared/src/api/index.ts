@@ -123,6 +123,10 @@ const API_ROUTES = {
     createOrder: ORDER_API, // POST
     updateOrderStatus: (productId: number, status: string) =>
       `/${ORDER_API}/${productId}/${status}`, // PATCH
+    buyerPayOrder: (productId: number) =>
+      `${ORDER_API}/${productId}/buyer/pay-order`, // PATCH
+    sellerConfirmOrder: (productId: number, buyerId: number) =>
+      `${ORDER_API}/${productId}/seller/confirm-order/${buyerId}`, // PATCH
     getOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // GET
     createOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // POST
   },

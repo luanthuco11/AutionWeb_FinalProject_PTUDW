@@ -3,6 +3,7 @@ import { ProductController } from "../controllers/ProductController";
 import { ProductService } from "../services/ProductService";
 import { BaseController } from "../controllers/BaseController";
 import multer from "multer";
+import { protectedRoutes } from "../middlewares/authMiddleware";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -72,12 +73,14 @@ export class ProductRoute extends BaseRoute {
     );
     this.router.get(
       "/winning",
+      protectedRoutes,
       BaseController.handleRequest(
         this.controller.getWinningProducts.bind(this.controller)
       )
     );
     this.router.get(
       "/bidding",
+      protectedRoutes,
       BaseController.handleRequest(
         this.controller.getBiddingProducts.bind(this.controller)
       )

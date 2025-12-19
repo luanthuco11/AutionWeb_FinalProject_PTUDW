@@ -12,14 +12,15 @@ export class OrderController extends BaseController {
   }
 
   async getOrderById(req: Request, res: Response) {
+    const userId = req.user?.id;
     const productId = Number(req.params.productId);
 
-    const order = await this.service.getOrderById(productId);
+    const order = await this.service.getOrderById(userId, productId);
     return order;
   }
 
   async createOrder(req: Request, res: Response) {
-    const buyer_id = req.headers["user-id"];
+    const buyer_id = req.user?.id;
     const result = await this.service.createOrder(buyer_id, req.body);
     return result;
   }
@@ -29,6 +30,21 @@ export class OrderController extends BaseController {
     const status = req.params.status;
 
     const result = await this.service.updateOrderStatus(productId, status);
+    return result;
+  }
+
+  async buyerPayOrder(req: Request, res: Response) {
+    const productId = Number(req.params.productId);
+    const payment = req.body;
+    const result = await this.service.buyerPayOrder(productId, payment);
+    return result;
+  }
+
+  async sellerConfirmOrder(req: Request, res: Response) {
+    const sellerId = req.user?.id;
+    const productId = Number(req.params.productId);
+    const buyerId = Number(req.params.buyerId);
+    const result = await this.service.sellerConfirmOrder(productId, sellerId, buyerId);
     return result;
   }
 
