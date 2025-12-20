@@ -309,7 +309,7 @@ export default function ProductPage() {
                       product.top_bidder.id === user?.id ? (
                         `${product.top_bidder.name} (Bạn)`
                       ) : (
-                        `${product.top_bidder.name[0]}***`
+                        `${product.top_bidder.name[0]}***${product.top_bidder.name[product.top_bidder.name.length - 1]}`
                       )
                     ) : (
                       <p className=" ml-4 text-[16px] font-semibold text-slate-900">

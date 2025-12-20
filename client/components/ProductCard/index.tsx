@@ -89,7 +89,7 @@ export default function ProductCard({
             {product.top_bidder_name ? (
               <div>
                 <p className="text-sm">Người trả giá cao nhất</p>
-                <p className="font-medium">{product.top_bidder_name[0]}***</p>
+                <p className="font-medium">{product.top_bidder_name[0]}***{product.top_bidder_name[product.top_bidder_name.length - 1]}</p>
               </div>
             ) : (
               <div>
