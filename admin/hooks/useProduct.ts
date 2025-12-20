@@ -7,7 +7,7 @@ import {
   CreateQuestion,
 } from "../../shared/src/types";
 import { Pagination } from "../../shared/src/types/Pagination";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify"
 
 class ProductHook {
   static useGetProduct(pagination: Pagination) {
