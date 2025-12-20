@@ -45,7 +45,6 @@ export class OrderService extends BaseService {
       JOIN PRODUCT.PRODUCTS P ON P.ID = O.PRODUCT_ID
       WHERE
         O.PRODUCT_ID = $1 AND
-        O.STATUS != 'cancelled' AND
         (O.BUYER_ID = $2 OR P.SELLER_ID = $2)
     `;
 
@@ -103,7 +102,7 @@ export class OrderService extends BaseService {
       SELECT $1, $2, 'pending', $3, null, $4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
       FROM PRODUCT.PRODUCTS P
       WHERE P.id = $1 AND P.seller_id != $2
-      ON CONFLICT(product_id) DO NOTHING
+      ON CONFLICT(product_id, buyer_id) DO NOTHING
       RETURNING *
     `;
 
@@ -150,7 +149,7 @@ export class OrderService extends BaseService {
         PHONE_NUMBER = $2,
         STATUS = 'paid',
         UPDATED_AT = NOW()
-      WHERE PRODUCT_ID = $3
+      WHERE PRODUCT_ID = $3 AND STATUS = 'pending'
     `;
 
     const result = await this.safeQuery(sql, [
@@ -175,6 +174,7 @@ export class OrderService extends BaseService {
       FROM PRODUCT.PRODUCTS P
       WHERE 
         P.ID = O.PRODUCT_ID AND
+        O.STATUS = 'paid' AND
         O.PRODUCT_ID = $1 AND
         O.BUYER_ID = $2 AND
         P.SELLER_ID = $3
@@ -182,6 +182,67 @@ export class OrderService extends BaseService {
 
     const result = await this.safeQuery(sql, [product_id, buyer_id, seller_id]);
     return { success: result?.length != 0 };
+  }
+
+  async buyerConfirmShipped(
+    product_id: number,
+    buyer_id: number
+  ): Promise<MutationResult> {
+    const sql = `
+      UPDATE AUCTION.ORDERS O
+      SET
+        STATUS = 'shipped',
+        UPDATED_AT = NOW()
+      FROM PRODUCT.PRODUCTS P
+      WHERE 
+        P.ID = O.PRODUCT_ID AND
+        O.STATUS = 'confirmed' AND
+        O.PRODUCT_ID = $1 AND
+        O.BUYER_ID = $2
+    `;
+
+    const result = await this.safeQuery(sql, [product_id, buyer_id]);
+    return { success: result?.length != 0 };
+  }
+
+  async sellerRejectOrder(
+    product_id: number,
+    seller_id: number,
+    buyer_id: number
+  ): Promise<MutationResult> {
+    const cancelOrderSql = `
+      UPDATE AUCTION.ORDERS O
+      SET
+        STATUS = 'cancelled',
+        UPDATED_AT = NOW()
+      FROM PRODUCT.PRODUCTS P
+      WHERE 
+        P.ID = O.PRODUCT_ID AND
+        O.PRODUCT_ID = $1 AND
+        O.BUYER_ID = $2 AND
+        P.SELLER_ID = $3
+    `;
+
+    const insertToBlacklistSql = `
+      INSERT INTO AUCTION.BLACK_LIST (user_id, product_id, created_at, updated_at)
+      SELECT $1, P.id, NOW(), NOW()
+      FROM PRODUCT.PRODUCTS P
+      WHERE P.id = $2 AND P.seller_id = $3
+      ON CONFLICT (user_id, prodct_id) DO NOTHING;
+    `;
+
+    const promises = [
+      this.safeQuery(cancelOrderSql, [product_id, buyer_id, seller_id]),
+      this.safeQuery(insertToBlacklistSql, [buyer_id, seller_id]),
+    ];
+
+    const [cancelOrderResult, insertToBlacklistResult] = await Promise.all(
+      promises
+    );
+    return {
+      success:
+        cancelOrderResult?.length != 0 && insertToBlacklistResult?.length != 0,
+    };
   }
 
   async getOrderChat(

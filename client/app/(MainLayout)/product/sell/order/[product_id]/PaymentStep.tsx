@@ -12,14 +12,20 @@ type ComponentProps = {
 };
 
 const PaymentStep = ({ order }: ComponentProps) => {
+  const { mutate: sellerRejectOrder, isPending: isRejectingOrder } =
+    OrderHook.useSellerRejectOrder();
+
   const handleDeleteOrder = () => {
+    if (!order || !order.product_id || !order.buyer?.id) return;
     const isConfirmed: boolean = confirm(
       "Bạn có chắc chắn muốn xóa đơn hàng này?"
     );
 
     if (isConfirmed) {
-      // Thêm vào Blacklist
-      
+      sellerRejectOrder({
+        productId: order.product_id,
+        buyerId: order.buyer.id,
+      });
     }
   };
 

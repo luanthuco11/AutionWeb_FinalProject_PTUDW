@@ -127,6 +127,10 @@ const API_ROUTES = {
       `${ORDER_API}/${productId}/buyer/pay-order`, // PATCH
     sellerConfirmOrder: (productId: number, buyerId: number) =>
       `${ORDER_API}/${productId}/seller/confirm-order/${buyerId}`, // PATCH
+    buyerConfirmShipped: (productId: number) =>
+      `${ORDER_API}/${productId}/buyer/confirm-shipped`, // PATCH
+    sellerRejectOrder: (productId: number, buyerId: number) =>
+      `${ORDER_API}/${productId}/seller/reject-order/${buyerId}`, // PATCH
     getOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // GET
     createOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // POST
   },

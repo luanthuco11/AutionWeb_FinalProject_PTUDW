@@ -60,6 +60,24 @@ export class OrderService {
     });
   }
 
+  static async buyerConfirmShipped(productId: number) {
+    return safeRequest(async () => {
+      const res = await api.patch(
+        API_ROUTES.order.buyerConfirmShipped(productId)
+      );
+      return res.data;
+    });
+  }
+
+  static async sellerRejectOrder(productId: number, buyer_id: number) {
+    return safeRequest(async () => {
+      const res = await api.patch(
+        API_ROUTES.order.sellerRejectOrder(productId, buyer_id)
+      );
+      return res.data;
+    });
+  }
+
   static async getOrderChat(productId: number): Promise<any> {
     return safeRequest(async () => {
       const res = await api.get(API_ROUTES.order.getOrderChat(productId));

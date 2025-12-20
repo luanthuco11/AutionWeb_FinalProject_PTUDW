@@ -44,7 +44,30 @@ export class OrderController extends BaseController {
     const sellerId = req.user?.id;
     const productId = Number(req.params.productId);
     const buyerId = Number(req.params.buyerId);
-    const result = await this.service.sellerConfirmOrder(productId, sellerId, buyerId);
+    const result = await this.service.sellerConfirmOrder(
+      productId,
+      sellerId,
+      buyerId
+    );
+    return result;
+  }
+
+  async buyerConfirmShipped(req: Request, res: Response) {
+    const buyerId = req.user?.id;
+    const productId = Number(req.params.productId);
+    const result = await this.service.buyerConfirmShipped(productId, buyerId);
+    return result;
+  }
+
+  async sellerRejectOrder(req: Request, res: Response) {
+    const sellerId = req.user?.id;
+    const productId = Number(req.params.productId);
+    const buyerId = Number(req.params.buyerId);
+    const result = await this.service.sellerRejectOrder(
+      productId,
+      sellerId,
+      buyerId
+    );
     return result;
   }
 

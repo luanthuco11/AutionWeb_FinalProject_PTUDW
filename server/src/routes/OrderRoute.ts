@@ -18,6 +18,8 @@ export class OrderRoute extends BaseRoute {
     this.router.get("/", BaseController.handleRequest(this.controller.getOrder.bind(this.controller)));
     this.router.patch("/:productId/buyer/pay-order", BaseController.handleRequest(this.controller.buyerPayOrder.bind(this.controller)));
     this.router.patch("/:productId/seller/confirm-order/:buyerId", BaseController.handleRequest(this.controller.sellerConfirmOrder.bind(this.controller)));
+    this.router.patch("/:productId/buyer/confirm-shipped", BaseController.handleRequest(this.controller.buyerConfirmShipped.bind(this.controller)));
+    this.router.patch("/:productId/seller/reject-order/:buyerId", BaseController.handleRequest(this.controller.sellerRejectOrder.bind(this.controller)));
     this.router.get("/:productId", BaseController.handleRequest(this.controller.getOrderById.bind(this.controller)));
     this.router.post("/", BaseController.handleRequest(this.controller.createOrder.bind(this.controller)));
     this.router.patch("/:productId/:status", BaseController.handleRequest(this.controller.updateOrderStatus.bind(this.controller)));

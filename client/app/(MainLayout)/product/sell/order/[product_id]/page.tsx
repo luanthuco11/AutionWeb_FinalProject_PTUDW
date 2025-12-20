@@ -75,35 +75,43 @@ const ProductOrderPage = () => {
             <div className="col-span-8 border relative bg-white rounded-lg p-6 mb-8 border-slate-200">
               <p className="text-xl font-medium mb-4">Trạng thái đơn hàng</p>
               <BuyingProductCard product={product} order={order} />
+              {order.status == "cancelled" ? (
+                <div className="w-full h-100 flex justify-center items-center">
+                  <p className="text-red-500 text-3xl font-medium">
+                    Bạn đã hủy đơn hàng
+                  </p>
+                </div>
+              ) : (
+                <Stepper active={active} className="mt-8">
+                  <Stepper.Step
+                    label="Chờ thanh toán"
+                    description={`Người mua thanh toán`}
+                    className="mb-4"
+                  >
+                    <PaymentStep order={order} />
+                  </Stepper.Step>
+                  <Stepper.Step
+                    label="Chuẩn bị hàng"
+                    description={`Đóng gói đơn hàng`}
+                    className="mb-4"
+                  >
+                    <ConfirmStep setActive={setActive} order={order} />
+                  </Stepper.Step>
+                  <Stepper.Step
+                    label="Giao hàng"
+                    description="Vận chuyển tới người nhận"
+                    className="mb-4"
+                  >
+                    <DeliveringStep order={order} />
+                  </Stepper.Step>
 
-              <Stepper active={active} className="mt-8">
-                <Stepper.Step
-                  label="Chờ thanh toán"
-                  description={`Người mua thanh toán`}
-                  className="mb-4"
-                >
-                  <PaymentStep order={order} />
-                </Stepper.Step>
-                <Stepper.Step
-                  label="Chuẩn bị hàng"
-                  description={`Đóng gói đơn hàng`}
-                  className="mb-4"
-                >
-                  <ConfirmStep setActive={setActive} order={order} />
-                </Stepper.Step>
-                <Stepper.Step
-                  label="Giao hàng"
-                  description="Vận chuyển tới người nhận"
-                  className="mb-4"
-                >
-                  <DeliveringStep order={order} />
-                </Stepper.Step>
-
-                <Stepper.Completed>
-                  <FinishStep />
-                </Stepper.Completed>
-              </Stepper>
+                  <Stepper.Completed>
+                    <FinishStep />
+                  </Stepper.Completed>
+                </Stepper>
+              )}
             </div>
+
             <div className="col-span-4 border relative bg-white rounded-lg p-6 mb-8 border-slate-200">
               HELLO
             </div>

@@ -97,6 +97,36 @@ class OrderHook {
     });
   }
 
+  static useBuyerConfirmShipped() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: (params: { productId: number }) =>
+        OrderService.buyerConfirmShipped(params.productId),
+
+      onSuccess: (_, params) => {
+        queryClient.invalidateQueries({
+          queryKey: ["order_by_id", params.productId],
+        });
+      },
+    });
+  }
+
+  static useSellerRejectOrder() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: (params: { productId: number; buyerId: number }) =>
+        OrderService.sellerRejectOrder(params.productId, params.buyerId),
+
+      onSuccess: (_, params) => {
+        queryClient.invalidateQueries({
+          queryKey: ["order_by_id", params.productId],
+        });
+      },
+    });
+  }
+
   static useOrderChat(productId: number) {
     return useQuery({
       queryKey: ["order_chat", productId],
