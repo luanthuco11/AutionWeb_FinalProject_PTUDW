@@ -94,6 +94,12 @@ export class ProductService {
       return res.data;
     });
   }
+  static async getSellingProduct(): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.get(API_ROUTES.product.getSellingProduct);
+      return res.data;
+    });
+  }
   static async getBiddingProduct(limit: number, page: number): Promise<any> {
     return safeRequest(async () => {
       const res = await api.get(

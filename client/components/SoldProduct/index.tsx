@@ -2,7 +2,12 @@ import Image from "next/image";
 
 import { useState } from "react";
 import RatingPopup from "../RatingPopUp";
-import { CreateRating, Product } from "../../../shared/src/types";
+import {
+  CreateRating,
+  Product,
+  ProductPreview,
+  SoldProduct as SoldProductType,
+} from "../../../shared/src/types";
 import { RatingHook } from "@/hooks/useRating";
 interface User {
   id: string;
@@ -10,10 +15,9 @@ interface User {
 }
 
 interface SoldProps {
-  product: Product;
-  rater_id: number;
+  product: SoldProductType;
 }
-const SoldProduct = ({ product, rater_id }: SoldProps) => {
+const SoldProduct = ({ product }: SoldProps) => {
   const { mutate: createRating, isPending: isLoadingRating } =
     RatingHook.useCreateRating();
   const [openPopup, setOpenPopup] = useState(false);
@@ -22,14 +26,10 @@ const SoldProduct = ({ product, rater_id }: SoldProps) => {
     if (product.top_bidder) {
       const ratingData: CreateRating = {
         ratee: product.top_bidder,
-        rater_id,
         rating,
         comment: comment,
       };
       createRating(ratingData);
-      alert("Thanh cong");
-    } else {
-      alert("Chua co nguoi mua");
     }
     setOpenPopup(false);
   };
@@ -39,7 +39,7 @@ const SoldProduct = ({ product, rater_id }: SoldProps) => {
         isOpen={openPopup}
         onClose={() => setOpenPopup(false)}
         onSubmit={handleSubmitRating}
-        buyerName={product.top_bidder?.name ?? "Người mua"}
+        buyerName={product.top_bidder.name ?? "Người mua"}
       />
       <div className="flex items-center justify-between bg-white border border-gray-100 rounded-lg shadow-xs p-4 w-full">
         <div className="flex items-center gap-3">

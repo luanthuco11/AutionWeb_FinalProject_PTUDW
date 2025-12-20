@@ -7,16 +7,12 @@ import { toast } from "react-toastify";
 
 class FavoriteHook {
   static useAllFavorite() {
-    const user = useAuthStore((s) => s.user);
-    const userId = user?.id;
     return useQuery({
-      queryKey: ["favorite_product", userId],
+      queryKey: ["favorite_product"],
 
       queryFn: () => FavoriteService.getAllFavorite(),
 
       staleTime: STALE_10_MIN,
-
-      enabled: !!userId,
 
       select: (data) => {
         return data.data.allFavorite;
@@ -47,13 +43,14 @@ class FavoriteHook {
       mutationFn: (params: { productId: number }) =>
         FavoriteService.addFavorite(params.productId),
 
-      onSuccess: (_, params) => {
+      onSuccess: (data) => {
+        toast.success("Thêm vào sản phẩm yêu thích thành công");
         queryClient.invalidateQueries({
           queryKey: ["favorite_product"],
         });
       },
       onError: (error) => {
-        toast.error(error.message);
+        toast.error("Thêm vào sản phẩm yêu thích thất bại");
       },
     });
   }
@@ -65,10 +62,14 @@ class FavoriteHook {
       mutationFn: (params: { productId: number }) =>
         FavoriteService.removeFavorite(params.productId),
 
-      onSuccess: (_, params) => {
+      onSuccess: (data, params) => {
+        toast.success("Xóa khỏi sản phẩm yêu thích thành công");
         queryClient.invalidateQueries({
           queryKey: ["favorite_product"],
         });
+      },
+      onError: (error) => {
+        toast.error("Xóa khỏi sản phẩm yêu thích thất bại");
       },
     });
   }

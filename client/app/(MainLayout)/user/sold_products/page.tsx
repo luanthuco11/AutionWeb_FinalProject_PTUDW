@@ -4,7 +4,7 @@ import SoldProduct from "@/components/SoldProduct";
 import ProductHook from "@/hooks/useProduct";
 
 import { useState } from "react";
-import { Product } from "../../../../shared/src/types";
+import { SoldProduct as SoldProductType } from "../../../../../shared/src/types";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -12,7 +12,7 @@ const SoldProductPage = () => {
   const { user } = useAuth();
   const { data: soldProducts, isLoading: isLoadingSoldProducts } =
     ProductHook.useGetSoldProduct() as {
-      data: Product[] | undefined;
+      data: SoldProductType[];
       isLoading: boolean;
     };
 
@@ -31,7 +31,7 @@ const SoldProductPage = () => {
             soldProducts &&
             user &&
             soldProducts.map((bP, index) => (
-              <SoldProduct key={index} product={bP} rater_id={user.id} />
+              <SoldProduct key={index} product={bP} />
             ))
           )}
         </div>

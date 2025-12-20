@@ -3,6 +3,7 @@ import { STALE_10_MIN } from "@/config/query.config";
 import { CategoryService } from "@/services/categoryService";
 import { Pagination } from "../../shared/src/types/Pagination";
 import { CreateCategory, UpdateCategory } from "../../shared/src/types";
+import { toast } from "react-toastify";
 
 class CategoryHook {
   static useCategories() {
@@ -63,9 +64,14 @@ class CategoryHook {
       mutationFn: (category: CreateCategory) =>
         CategoryService.createCategory(category),
       onSuccess: (_, params) => {
+        toast.success("Tạo loại sản phẩm thành công");
         queryClient.invalidateQueries({
           queryKey: ["categories"],
         });
+      },
+
+      onError: (error) => {
+        toast.error("Tạo loại sản phẩm thất bại");
       },
     });
   }

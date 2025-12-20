@@ -139,12 +139,21 @@ export class ProductController extends BaseController {
     };
   }
   async getSoldProducts(req: Request, res: Response) {
-    const soldProducts = await this.service.getSoldProducts();
+    const userId = Number(req.user?.id);
+    const soldProducts = await this.service.getSoldProducts(userId);
     return {
       soldProducts: soldProducts,
     };
   }
-
+  async getSellingProducts(req: Request, res: Response) {
+    console.log("contro:", req.user);
+    const userId = Number(req.user?.id);
+    console.log("Controller:", userId);
+    const sellingProducts = await this.service.getSellingProducts(userId);
+    return {
+      sellingProducts: sellingProducts,
+    };
+  }
   async createProduct(req: Request, res: Response) {
     const userId = req.headers["user-id"];
 

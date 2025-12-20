@@ -101,7 +101,7 @@ export class FavoriteService extends BaseService {
       new_time: new Date(item.end_time),
       created_at: new Date(item.created_at),
     }));
-
+   
     return favoriteProducts;
   }
 

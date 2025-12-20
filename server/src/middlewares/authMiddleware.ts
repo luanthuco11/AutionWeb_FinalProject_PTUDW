@@ -60,7 +60,8 @@ export const protectedRoutes = (
         if (!user) {
           return res.status(404).json({ message: "Người dùng không tồn tại" });
         }
-
+        console.log("pa:", req.params);
+        console.log("middle:", user);
         // tra user trong req
         req.user = user;
         next();

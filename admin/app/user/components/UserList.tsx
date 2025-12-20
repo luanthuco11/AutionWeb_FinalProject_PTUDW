@@ -9,6 +9,8 @@ import { Pagination as PaginationType } from "../../../../shared/src/types/Pagin
 import Pagination from "@/components/Pagination";
 import { User } from "../../../../shared/src/types";
 import { formatDate } from "@/app/utils";
+import { DeleteCategoryModal } from "@/components/CategoryCard/DeleteCategoryModal";
+import { ConfirmPopup } from "@/components/ConfirmPopup";
 
 export const UserList = () => {
   const searchParams = useSearchParams();
@@ -18,7 +20,10 @@ export const UserList = () => {
   const limit = searchParams.get("limit") || 10;
   const router = useRouter();
   const [isPopup, setIsPopup] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<number>();
+  const [selectedUser, setSelectedUser] = useState<{
+    id: number;
+    content: string;
+  }>({ id: 0, content: "Chưa có" });
   const pagination: PaginationType = {
     page: Number(page),
     limit: Number(limit),
@@ -42,16 +47,17 @@ export const UserList = () => {
   if (data) {
     totalPages = Math.ceil(Number(data.totalUsers) / Number(limit));
   }
-  const handleOnDelete = (id: number) => {
-    setSelectedUser(id);
+  const handleOnDelete = (id: number, content: string) => {
+    setSelectedUser({ id, content });
     setIsPopup(true);
   };
   const handleDeleteUser = () => {
     if (selectedUser) {
-      deleteUser(selectedUser);
+      deleteUser(selectedUser.id);
     }
     setIsPopup(false);
   };
+  console.log(users);
   return (
     <>
       {isLoading || isDeletingUser ? (
@@ -86,12 +92,15 @@ export const UserList = () => {
                   </thead>
                   <tbody>
                     {users.map((item: User, index: number) => {
-                      const point = Math.round(
-                        (Number(item.positive_points) /
-                          (Number(item.positive_points) +
-                            Number(item.negative_points))) *
-                          100
-                      );
+                      let point = 100;
+                      if (item.positive_points + item.negative_points != 0)
+                        point = Math.round(
+                          (Number(item.positive_points) /
+                            (Number(item.positive_points) +
+                              Number(item.negative_points))) *
+                            100
+                        );
+
                       return (
                         <tr
                           key={index}
@@ -120,7 +129,9 @@ export const UserList = () => {
                           </td>
                           <td className="px-4 py-3 text-center">
                             <button
-                              onClick={() => handleOnDelete(item.id)}
+                              onClick={() =>
+                                handleOnDelete(item.id, "xóa" + item.name)
+                              }
                               className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
                             >
                               <svg
@@ -161,83 +172,12 @@ export const UserList = () => {
         )
       )}
       {/* Confirm */}
-      {isPopup ? (
-        <div className="  fixed inset-0   flex  top-0 right-0 left-0 z-50 justify-center items-center w-full  h-[calc(100%-1rem)] max-h-full">
-          <div className="relative  w-full max-w-md max-h-full inset-1">
-            <div className="relative border border-default rounded-base shadow-sm ">
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedUser(undefined);
-
-                  setIsPopup(false);
-                }}
-                className="absolute top-3 end-2.5 text-body bg-transparent hover:bg-red-100 hover:cursor-pointer hover:text-heading rounded-base text-sm w-9 h-9 ms-auto inline-flex justify-center items-center"
-              >
-                <svg
-                  className="w-5 h-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={24}
-                  height={24}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18 17.94 6M18 18 6.06 6"
-                  />
-                </svg>
-                <span className="sr-only">Close modal</span>
-              </button>
-              <div className=" p-4 md:p-5 text-center bg-white">
-                <svg
-                  className="mx-auto mb-4 text-fg-disabled w-12 h-12"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={24}
-                  height={24}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                </svg>
-                <h3 className="mb-6 text-body">
-                  Bạn có chắc chắn muốn xóa người dùng này không?
-                </h3>
-                <div className="flex items-center space-x-4 justify-center">
-                  <button
-                    type="button"
-                    onClick={handleDeleteUser}
-                    className="text-white hover:cursor-pointer bg-danger box-border border border-transparent hover:bg-danger-strong focus:ring-4 focus:ring-danger-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"
-                  >
-                    Đồng ý
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedUser(undefined);
-                      setIsPopup(false);
-                    }}
-                    className="text-body hover:cursor-pointer  box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"
-                  >
-                    Không
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <></>
-      )}
+      <ConfirmPopup
+        isOpen={isPopup}
+        onClose={() => setIsPopup(false)}
+        selected={selectedUser}
+        onConfirm={handleDeleteUser}
+      />
     </>
   );
 };

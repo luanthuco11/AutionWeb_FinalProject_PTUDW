@@ -2,34 +2,37 @@ import { BaseController } from "../controllers/BaseController";
 import { BaseRoute } from "./BaseRoute";
 import { RatingController } from "../controllers/RatingController";
 import { RatingService } from "../services/RatingService";
+import { protectedRoutes } from "../middlewares/authMiddleware";
 
 export class RatingRoute extends BaseRoute {
-    private controller: RatingController
-    constructor() {
-        super();
-        this.controller = new RatingController(RatingService.getInstance());
-        this.initRoutes();
-    }
+  private controller: RatingController;
+  constructor() {
+    super();
+    this.controller = new RatingController(RatingService.getInstance());
+    this.initRoutes();
+  }
 
-    initRoutes() {
-        this.router.get(
-            "/total/:userId",
-            BaseController.handleRequest(
-                this.controller.getTotalRating.bind(
-                    this.controller
-                )));
+  initRoutes() {
+    this.router.get(
+      "/total/:userId",
+      BaseController.handleRequest(
+        this.controller.getTotalRating.bind(this.controller)
+      )
+    );
 
-        this.router.get(
-            "/:userId/:offset",
-            BaseController.handleRequest(
-                this.controller.getRating.bind(
-                    this.controller
-                )));
+    this.router.get(
+      "/:userId/:offset",
+      BaseController.handleRequest(
+        this.controller.getRating.bind(this.controller)
+      )
+    );
 
-        this.router.post("/",
-            BaseController.handleRequest(
-                this.controller.createRating.bind(
-                    this.controller
-                )));
-    }
+    this.router.post(
+      "/",
+      protectedRoutes,
+      BaseController.handleRequest(
+        this.controller.createRating.bind(this.controller)
+      )
+    );
+  }
 }

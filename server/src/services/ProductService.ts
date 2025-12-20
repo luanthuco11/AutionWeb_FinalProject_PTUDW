@@ -10,6 +10,7 @@ import {
   SearchProduct,
   WinningProduct,
   ProductQuestionPagination,
+  SoldProduct,
 } from "./../../../shared/src/types/Product";
 import { BaseService } from "./BaseService";
 import { ShortUser } from "../../../shared/src/types";
@@ -186,7 +187,35 @@ export class ProductService extends BaseService {
 
     return products;
   }
+  async getSoldProductType(productId: number): Promise<SoldProduct> {
+    const result = await Promise.all([
+      this.getTopBidder(productId),
+      this.getCurrentPrice(productId),
+    ]);
 
+    const top_bidder: any = result[0];
+    let current_price = result[1];
+
+    const sql = `
+    SELECT 
+      p.id, 
+      p.main_image,
+      p.name,
+      p.initial_price
+    FROM product.products p 
+    WHERE p.id = $1
+    `;
+
+    let products: any = await this.safeQuery<SoldProduct>(sql, [productId]);
+
+    products = {
+      ...products[0],
+      top_bidder: top_bidder ? top_bidder : null,
+      current_price: current_price ? current_price : products[0].initial_price,
+    };
+
+    return products;
+  }
   async getTotalProductsBySearch(query: string): Promise<number | undefined> {
     let sql = `
        SELECT COUNT(*) as total
@@ -459,24 +488,44 @@ export class ProductService extends BaseService {
 
     return newProduct[0];
   }
-  async getSoldProducts(): Promise<ProductPreview[] | undefined> {
+  async getSoldProducts(userId: number): Promise<SoldProduct[] | undefined> {
     const sql = `
-   SELECT o.product_id as id
-  FROM auction.orders o 
-  WHERE  o.status = 'completed'
+    SELECT p.id
+    FROM product.products p 
+    WHERE  p.end_time < NOW() AND p.seller_id = $1
     `;
-
-    const product = await this.safeQuery<ProductPreview>(sql);
+    const params = [userId];
+    const product = await this.safeQuery<SoldProduct>(sql, params);
 
     const soldProduct = await Promise.all(
+      product.map(async (item: any) => {
+        const productType = this.getSoldProductType(item.id);
+        return productType;
+      })
+    );
+
+    return soldProduct;
+  }
+  async getSellingProducts(
+    userId: number
+  ): Promise<ProductPreview[] | undefined> {
+    const sql = `
+  SELECT p.id
+  FROM product.products p 
+  WHERE  p.end_time > NOW()  AND p.seller_id = $1
+    `;
+    const params = [userId];
+
+    const product = await this.safeQuery<ProductPreview>(sql, params);
+
+    const sellingProduct = await Promise.all(
       product.map(async (item: any) => {
         const productType = this.getProductPreviewType(item.id);
         return productType;
       })
     );
-    return soldProduct;
+    return sellingProduct;
   }
-
   async getCategoryProductList(): Promise<CategoryProduct[]> {
     let sql = `
 SELECT 

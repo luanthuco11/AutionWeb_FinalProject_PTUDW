@@ -21,13 +21,13 @@ export class RatingService extends BaseService {
     return RatingService.instance;
   }
 
-  async createRating(payload: CreateRating) {
-    const { rater_id, ratee, comment, rating } = payload;
+  async createRating(raterId: number, payload: CreateRating) {
+    const { ratee, comment, rating } = payload;
     const sql = `
                 INSERT INTO feedback.user_ratings (rater_id, ratee_id, comment, rating, created_at, updated_at)
                 VALUES ( $1, $2, $3, $4, NOW(), NOW() )
                 `;
-    const params = [rater_id, ratee.id, comment ? comment : "", rating];
+    const params = [raterId, ratee.id, comment ? comment : "", rating];
     return await this.safeQuery(sql, params);
   }
 
@@ -69,7 +69,10 @@ export class RatingService extends BaseService {
     return ratingHistory;
   }
 
-  async getRating(data: {userId: number, offset: number}): Promise<UserRatingHistory> {
+  async getRating(data: {
+    userId: number;
+    offset: number;
+  }): Promise<UserRatingHistory> {
     const sql = `
         SELECT 
             fur.id as rating_id, fur.rating, fur.comment, fur.created_at, fur.updated_at,

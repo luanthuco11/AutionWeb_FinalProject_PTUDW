@@ -10,12 +10,10 @@ export type UserRating = {
   updated_at: Date | null;
 };
 
-
 export type CreateRating = Omit<
   UserRating,
   "id" | "rater" | "created_at" | "updated_at"
-> & { rater_id: number };
-
+>;
 
 export type UserRatingHistory = {
   ratee_id: number;

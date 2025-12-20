@@ -37,7 +37,18 @@ export class UserService extends BaseService {
             LIMIT $3
             `;
     const params = ["admin", offset, limit];
-    const users: User[] = await this.safeQuery(sql, params);
+
+    const rawUsers: User[] = await this.safeQuery(sql, params);
+    const users = rawUsers.map((u) => {
+      const { negative_points, positive_points, ...rest } = u;
+      console.log( negative_points === null);
+      return {
+        ...rest,
+        negative_points: negative_points === null ? 0 : negative_points,
+        positive_points: positive_points === null ? 0 : positive_points,
+      };
+    });
+
     return users;
   }
   async getProfile(id: number) {

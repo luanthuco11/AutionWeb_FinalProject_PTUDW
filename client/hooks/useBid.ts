@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { STALE_10_MIN } from "@/config/query.config";
 import { BidService } from "@/services/bidService";
 import { BidLog, CreateBidLog } from "../../shared/src/types";
-
+import { toast } from "react-toastify";
+import { success } from "zod";
 class BidHook {
   static useBidLogs(product_id: number) {
     return useQuery({
@@ -34,12 +35,17 @@ class BidHook {
     return useMutation({
       mutationFn: (bid: CreateBidLog) => BidService.createBid(bid),
       onSuccess: (_, params) => {
+        toast.success("Đấu giá thành công");
         queryClient.invalidateQueries({
           queryKey: ["bid_logs", params.product_id],
         });
         queryClient.invalidateQueries({
           queryKey: ["product_by_slug", params.product_slug],
         });
+      },
+
+      onError: (error) => {
+        toast.error("Đấu giá thất bại");
       },
     });
   }
@@ -49,9 +55,14 @@ class BidHook {
     return useMutation({
       mutationFn: (bid: BidLog) => BidService.createReject(bid),
       onSuccess: (_, params) => {
+        toast.success("Từ chối đấu giá thành công");
         queryClient.invalidateQueries({
           queryKey: ["bid_logs"],
         });
+      },
+
+      onError: (error) => {
+        toast.error("Từ chối đấu giá thất bại");
       },
     });
   }

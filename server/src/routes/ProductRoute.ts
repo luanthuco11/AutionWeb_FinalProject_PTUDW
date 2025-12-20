@@ -43,8 +43,16 @@ export class ProductRoute extends BaseRoute {
     );
     this.router.get(
       "/sold",
+      protectedRoutes,
       BaseController.handleRequest(
         this.controller.getSoldProducts.bind(this.controller)
+      )
+    );
+    this.router.get(
+      "/selling",
+      protectedRoutes,
+      BaseController.handleRequest(
+        this.controller.getSellingProducts.bind(this.controller)
       )
     );
     this.router.get(

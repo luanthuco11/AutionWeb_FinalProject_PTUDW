@@ -7,6 +7,8 @@ import Pagination from "@/components/Pagination";
 import UpgradeRequestHook from "@/hooks/useUpgrade";
 import { formatDate } from "@/app/utils";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { DeleteCategoryModal } from "@/components/CategoryCard/DeleteCategoryModal";
+import { ConfirmPopup } from "@/components/ConfirmPopup";
 
 interface PopupProps {
   title: string;
@@ -102,7 +104,10 @@ export const Request = () => {
     page: Number(page),
     limit: Number(limit),
   };
-  const [selectedRequest, setSelectedRequest] = useState<number>();
+  const [selectedRequest, setSelectedRequest] = useState<{
+    id: number;
+    content: string;
+  }>({ id: 0, content: "Chưa có" });
 
   const { data, isLoading } = UpgradeRequestHook.useUpgradeRequests(pagination);
   const handlePageChange = (page: number) => {
@@ -122,23 +127,23 @@ export const Request = () => {
     totalPages = Math.ceil(Number(data.totalRequests) / Number(limit));
   }
 
-  const handleOnDelete = (id: number) => {
-    setSelectedRequest(id);
+  const handleOnDelete = (id: number, content: string) => {
+    setSelectedRequest({ id, content });
     setIsPopupDelete(true);
   };
-  const handleOnAccept = (id: number) => {
-    setSelectedRequest(id);
+  const handleOnAccept = (id: number, content: string) => {
+    setSelectedRequest({ id, content });
     setIsPopupAccept(true);
   };
   const handleDeleteRequest = () => {
     if (selectedRequest) {
-      updateRejectRequest(selectedRequest);
+      updateRejectRequest(selectedRequest.id);
     }
     setIsPopupDelete(false);
   };
   const handleAcceptRequest = () => {
     if (selectedRequest) {
-      updateApprovalRequest(selectedRequest);
+      updateApprovalRequest(selectedRequest.id);
     }
     setIsPopupAccept(false);
   };
@@ -175,12 +180,17 @@ export const Request = () => {
                 </thead>
                 <tbody>
                   {requests.map((r: UpgradeRequestPreview, index: number) => {
-                    const point = Math.round(
-                      (Number(r.bidder.positive_points) /
-                        (Number(r.bidder.positive_points) +
-                          Number(r.bidder.negative_points))) *
-                        100
-                    );
+                    let point = 100;
+                    if (
+                      r.bidder.positive_points + r.bidder.negative_points !=
+                      0
+                    )
+                      point = Math.round(
+                        (Number(r.bidder.positive_points) /
+                          (Number(r.bidder.positive_points) +
+                            Number(r.bidder.negative_points))) *
+                          100
+                      );
                     return (
                       <tr
                         key={index}
@@ -211,7 +221,12 @@ export const Request = () => {
                         </td>
                         <td className="px-4 py-3 text-center flex flex-row items-center justify-center">
                           <button
-                            onClick={() => handleOnAccept(r.id)}
+                            onClick={() =>
+                              handleOnAccept(
+                                r.id,
+                                "chấp nhận yêu cầu của " + r.bidder.name
+                              )
+                            }
                             className="p-2  hover:bg-green-50 rounded transition-colors cursor-pointer"
                           >
                             <svg
@@ -233,7 +248,12 @@ export const Request = () => {
                             </svg>
                           </button>
                           <button
-                            onClick={() => handleOnDelete(r.id)}
+                            onClick={() =>
+                              handleOnDelete(
+                                r.id,
+                                "xóa yêu cầu của " + r.bidder.name
+                              )
+                            }
                             className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
                           >
                             <svg
@@ -273,32 +293,18 @@ export const Request = () => {
         </div>
       )}
 
-      {/* Confirm */}
-      {isPopupDelete ? (
-        <Popup
-          title="Bạn có chắc chắn muốn từ chối yêu cầu này không"
-          handleAccept={handleDeleteRequest}
-          handleCancel={() => {
-            setSelectedRequest(undefined);
-            setIsPopupDelete(false);
-          }}
-        />
-      ) : (
-        <></>
-      )}
-      {/* Confirm */}
-      {isPopupAccept ? (
-        <Popup
-          title="Bạn có chắc chắn muốn đồng ý yêu cầu này không"
-          handleAccept={handleAcceptRequest}
-          handleCancel={() => {
-            setSelectedRequest(undefined);
-            setIsPopupAccept(false);
-          }}
-        />
-      ) : (
-        <></>
-      )}
+      <ConfirmPopup
+        isOpen={isPopupDelete}
+        onClose={() => setIsPopupDelete(false)}
+        selected={selectedRequest}
+        onConfirm={handleDeleteRequest}
+      />
+      <ConfirmPopup
+        isOpen={isPopupAccept}
+        onClose={() => setIsPopupAccept(false)}
+        selected={selectedRequest}
+        onConfirm={handleAcceptRequest}
+      />
     </>
   );
 };
