@@ -40,6 +40,7 @@ import { X } from "lucide-react";
 import OrderHook from "@/hooks/useOrder";
 import Link from "next/link";
 import { defaultImage } from "@/app/const";
+import { ConfirmPopup } from "@/app/(MainLayout)/product/[product_slug]/components/ConfirmPopup";
 
 function isLessThreeDays(dateA: Date, dateB: Date): boolean {
   const diffMs = Math.abs(dateA.getTime() - dateB.getTime()); // hiệu số milliseconds
@@ -97,7 +98,7 @@ export default function ProductPage() {
   const [setFavorites, setSetFavorites] = useState<Set<number>>();
   const [isBid, setIsBid] = useState(false);
   const [openBuyNowModal, setOpenBuyNowModal] = useState<boolean>(false);
-
+  const [isPopup, setIsPopup] = useState<boolean>(false);
   const schemaBid = z.object({
     price: z
       .string()
@@ -194,6 +195,7 @@ export default function ProductPage() {
       product_id: product.id,
       product_slug: product_slug as string | undefined,
     };
+
     createBid(bid);
     reset({
       price: "",
@@ -479,9 +481,10 @@ export default function ProductPage() {
                                     )}
                                   </div>
 
-                                  <div className="grid grid-cols-2 gap-2 mt-5">
+                                  <div className="grid grid-cols-2 gap-2 mt-5 ">
                                     <button
-                                      type="submit"
+                                      onClick={() => setIsPopup(true)}
+                                      type="button"
                                       className="font-medium mx-auto block text-white bg-[#1447E6] box-border border border-blue-300 rounded-4xl hover:bg-[#2957e3] hover:cursor-pointer  shadow-xs  leading-5  text-sm w-full py-2.5"
                                     >
                                       Xác nhận
@@ -632,6 +635,14 @@ export default function ProductPage() {
               favorite_products={setFavorites}
             />
           )}
+          <ConfirmPopup
+            isOpen={isPopup}
+            onClose={() => setIsPopup(false)}
+            onConfirm={() => {
+              handleSubmitBid(handleBid)();
+              setIsPopup(false);
+            }}
+          />
         </>
       )}
     </div>
