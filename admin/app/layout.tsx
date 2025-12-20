@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import { Providers } from "./providers";
-
+import { Toaster } from "react-hot-toast";
 import Header from "@/components/Header";
 import { NavigationBar } from "@/components/NavigationBar";
 
@@ -28,6 +28,7 @@ export default function RootLayout({
             </div>
           </div>
         </Providers>
+        <Toaster position="top-center" reverseOrder={false} />
       </body>
     </html>
   );

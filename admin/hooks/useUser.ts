@@ -2,6 +2,7 @@ import { STALE_10_MIN } from "@/config/query.config";
 import { UserService } from "@/services/userService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pagination } from "../../shared/src/types/Pagination";
+import toast from "react-hot-toast";
 
 interface UpdateUserPayload {
   name: string | "";
@@ -56,10 +57,15 @@ class UserHook {
     return useMutation({
       mutationFn: (id: number) => UserService.deleteUser(id),
       onSuccess: () => {
+        toast.success("Xóa người dùng thành công!")
         queryClient.invalidateQueries({
           queryKey: ["users"],
         });
       },
+      onError: (error) => {
+        toast.error("Xóa người dùng thất bại!")
+        console.log(error);
+      }
     });
   }
 }

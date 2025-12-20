@@ -3,6 +3,7 @@ import { STALE_10_MIN } from "@/config/query.config";
 import { CreateCategory, UpdateCategory } from "../../shared/src/types";
 import { CategoryService } from "@/services/categoryService";
 import { Pagination } from "../../shared/src/types/Pagination";
+import toast from "react-hot-toast";
 
 class CategoryHook {
   static useCategories() {
@@ -73,10 +74,15 @@ class CategoryHook {
       mutationFn: (category: CreateCategory) =>
         CategoryService.createCategory(category),
       onSuccess: (response) => {
+        toast.success("Tạo danh mục thành công!");
         queryClient.invalidateQueries({
           queryKey: ["admin_categories"],
         });
       },
+      onError: (error: any) => {
+        const message = error?.response?.data?.message || "Tạo danh mục thất bại.";
+        toast.error(message);
+      }
     });
   }
 
@@ -87,10 +93,15 @@ class CategoryHook {
       mutationFn: (category: UpdateCategory) =>
         CategoryService.updateCategory(category.id, category),
       onSuccess: (_, params) => {
+        toast.success("Cập nhật danh mục thành công!")
         queryClient.invalidateQueries({
           queryKey: ["admin_categories"],
         });
       },
+      onError: (error: any) => {
+        const message = error?.response?.data?.message || "Cập nhật danh mục thất bại.";
+        toast.error(message);
+      }
     });
   }
   static useDeleteCategory() {
@@ -99,10 +110,15 @@ class CategoryHook {
     return useMutation({
       mutationFn: (id: number) => CategoryService.deleteCategory(id),
       onSuccess: (_, params) => {
+        toast.success("Xóa danh mục thành công!");
         queryClient.invalidateQueries({
           queryKey: ["admin_categories"],
         });
       },
+      onError: (error: any) => {
+         const message = error?.response?.data?.message || "Xóa danh mục thất bại.";
+         toast.error(message);
+      }
     });
   }
 }

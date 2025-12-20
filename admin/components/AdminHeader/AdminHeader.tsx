@@ -1,17 +1,25 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Search } from "lucide-react"
 
 interface AdminHeaderProps {
   onSearch?: (query: string) => void
   onCreateClick?: () => void
+  defaultValue?: string 
 }
 
-export default function AdminHeader({ onSearch, onCreateClick }: AdminHeaderProps) {
-  const [searchQuery, setSearchQuery] = useState("")
+export default function AdminHeader({ 
+  onSearch, 
+  onCreateClick, 
+  defaultValue = "" 
+}: AdminHeaderProps) {
+  const [searchQuery, setSearchQuery] = useState(defaultValue)
+
+  useEffect(() => {
+    setSearchQuery(defaultValue)
+  }, [defaultValue])
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value
@@ -33,13 +41,14 @@ export default function AdminHeader({ onSearch, onCreateClick }: AdminHeaderProp
           />
         </div>
       </div>
-
-      <button
-        onClick={onCreateClick}
-        className="cursor-pointer ml-4 px-6 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-500 transition-colors"
-      >
-        Tạo
-      </button>
+      {onCreateClick ? (
+        <button
+            onClick={onCreateClick}
+            className="cursor-pointer ml-4 px-6 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-500 transition-colors"
+        >
+            Tạo
+        </button>
+      ) : <></>}
     </header>
   )
 }

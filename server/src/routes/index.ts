@@ -13,6 +13,7 @@ const resource = [
   `upgrade`,
   `rating`,
   `auth`,
+  `system`,
 ];
 
 resource.forEach((name) => {

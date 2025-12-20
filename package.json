@@ -23,6 +23,8 @@
     "tailwindcss": "^4.1.17"
   },
   "dependencies": {
+    "feather-icons": "^4.29.2",
+    "firebase": "^12.6.0",
     "lucide-react": "^0.553.0",
     "tinymce": "^8.2.1"
   }

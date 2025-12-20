@@ -7,9 +7,8 @@ import {
   CreateQuestion,
 } from "../../shared/src/types";
 import { Pagination } from "../../shared/src/types/Pagination";
+import { toast } from "react-hot-toast";
 
-// Một hàm xử lý logic REACT, và chỉ được biết tới REACT(FRONT END) thôi
-// Nó không được biết về api
 class ProductHook {
   static useGetProduct(pagination: Pagination) {
     return useQuery({
@@ -218,13 +217,17 @@ class ProductHook {
         ProductService.createProduct(formData),
       onSuccess: () => {
         // Invalidate cache của dữ liệu
+        toast.success("Tạo sản phẩm thành công!")
         queryClient.invalidateQueries({
           queryKey: ["products"],
         });
 
-        alert("Đăng sản phẩm thành công!");
         window.location.reload();
       },
+      onError: (error) => {
+        toast.error("Tạo sản phẩm thất bại!")
+        console.log(error);
+      }
     });
   }
 
@@ -235,12 +238,15 @@ class ProductHook {
         ProductService.updateProductDescription(id, description),
       onSuccess: () => {
         // Invalidate cache của dữ liệu
+        toast.success("Cập nhật sản phẩm thành công!")
         queryClient.invalidateQueries({
           queryKey: ["products"],
         });
-
-        alert("Cập nhật sản phẩm thành công!");
       },
+      onError: (error) => {
+        toast.error("Cập nhật sản phẩm thất bại!")
+        console.log(error);
+      }
     });
   }
 
@@ -250,10 +256,15 @@ class ProductHook {
       mutationFn: (id: number) => ProductService.deleteProductById(id),
       onSuccess: () => {
         // Invalidate cache của dữ liệu
+        toast.success("Xóa sản phẩm thành công!")
         queryClient.invalidateQueries({
           queryKey: ["products"],
         });
       },
+      onError: (error) => {
+        toast.error("Xóa sản phẩm thất bại!")
+        console.log(error);
+      }
     });
   }
 
@@ -281,7 +292,7 @@ class ProductHook {
       mutationFn: ({ id, data }: { id: number; data: CreateQuestion }) =>
         ProductService.createProductQuestion(id, data),
       onSuccess: (_data, variables) => {
-        // Invalidate cache của dữ liệu
+        
         queryClient.invalidateQueries({
           queryKey: ["product_question", variables.id],
         });

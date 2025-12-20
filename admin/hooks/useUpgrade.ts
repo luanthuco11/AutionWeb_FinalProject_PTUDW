@@ -2,6 +2,7 @@ import { STALE_10_MIN } from "@/config/query.config";
 import { UpgradeRequestService } from "@/services/upgradeRequestService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Pagination } from "../../shared/src/types/Pagination";
+import toast from "react-hot-toast";
 
 class UpgradeRequestHook {
   static useGetRequestStatus(userId: number) {
@@ -55,10 +56,15 @@ class UpgradeRequestHook {
         UpgradeRequestService.updateApproveRequest(id),
 
       onSuccess: (_, id) => {
+        toast.success("Chấp nhận yêu cầu thành công!")
         queryClient.invalidateQueries({
           queryKey: ["request"],
         });
       },
+      onError: (error) => {
+        toast.error("Chấp nhận yêu cầu thất bại!")
+        console.log(error);
+      }
     });
   }
 
@@ -69,10 +75,15 @@ class UpgradeRequestHook {
       mutationFn: (id: number) => UpgradeRequestService.updateRejectRequest(id),
 
       onSuccess: (_, id) => {
+        toast.success("Từ chối yêu cầu thành công")
         queryClient.invalidateQueries({
           queryKey: ["request"],
         });
       },
+      onError: (error) => {
+        toast.error("Từ chối yêu cầu thất bại!")
+        console.log(error);
+      }
     });
   }
 }

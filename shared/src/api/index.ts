@@ -8,6 +8,7 @@ const CATEGORY_API = `${BASE_API}/category`;
 const BID_API = `${BASE_API}/bid`;
 const FAVORITE_API = `${BASE_API}/favorite`;
 const ORDER_API = `${BASE_API}/order`;
+const SYSTEM_API = `${BASE_API}/system`;
 import { Pagination } from "../types/Pagination";
 
 const API_ROUTES = {
@@ -135,6 +136,10 @@ const API_ROUTES = {
     getOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // GET
     createOrderChat: (productId: number) => `${ORDER_API}/${productId}/chat`, // POST
   },
+  system: {
+    getProductRenewTime: `${SYSTEM_API}/renew-time`,
+    updateProductRenewTime: `${SYSTEM_API}/renew-time`, // GET
+  }
 };
 
 export default API_ROUTES;

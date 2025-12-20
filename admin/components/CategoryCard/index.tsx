@@ -66,11 +66,9 @@ const CategoryCard = ({ category }: { category: CategoryWithProductCount }) => {
                 onSuccess: () => {
                     setEditModalOpen(false);
                     setSelectedCategory(null);
-                    alert("Chinh sua thanh cong")
                 },
                 onError: (error) => {
                     console.log(error);
-                    alert("Chinh sua that bai")
                 }
             }
         );
@@ -81,11 +79,9 @@ const CategoryCard = ({ category }: { category: CategoryWithProductCount }) => {
             onSuccess: () => {
                 setDeleteModalOpen(false);
                 setSelectedCategory(null);
-                alert("Xoa thanh cong")
             },
             onError: (error) => {
                 console.log(error);
-                alert("Xoa that bai")
             }
         });
     };
@@ -96,11 +92,9 @@ const CategoryCard = ({ category }: { category: CategoryWithProductCount }) => {
             onSuccess: () => {
                 setCreateModalOpen(false);
                 setSelectedCategory(null);
-                alert("Them danh muc con thanh cong")
             },
             onError: (error) => {
                 console.log(error);
-                alert("Them that bai")
             }
         }
 

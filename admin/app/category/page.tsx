@@ -44,6 +44,7 @@ const page = () => {
         data: { category_id: number; total: number }[],
         isLoading: boolean
     }
+
     const { mutate: createCategory, isPending: isPendingCreateCategory } = CategoryHook.useCreateCategory();
 
     // Memo data
@@ -53,10 +54,12 @@ const page = () => {
         const countMap = new Map(
             countProductsData.map(item => [item.category_id, item.total])
         );
-
-        return categoriesDataBeforeFilter.map(category =>
+        const mappedData = categoriesDataBeforeFilter.map(category =>
             attachProductCount(category, countMap)
         );
+
+        return mappedData.sort((a, b) => a.name.localeCompare(b.name));
+
     }, [categoriesDataBeforeFilter, countProductsData]);
 
 
@@ -90,29 +93,37 @@ const page = () => {
 
     // Handler
     const handleCreateParentCategory = (category: { name: string }) => {
+        const trimmedName = category.name.trim();
 
         if (categoriesData.some(item =>
-            item.name.toLowerCase() === category.name.toLowerCase()
+            item.name.toLowerCase() === trimmedName.toLowerCase()
         )) {
             alert("Danh mục đã tồn tại");
-            setNewCategoryName("");
             return;
         }
 
-        const newList = [...categoriesData, category];
+        const tempNewItem = {
+            ...category,
+            id: -1, 
+            productNumber: 0,
+            children: []
+        } as any;
+
+        const newList = [...categoriesData, tempNewItem];
 
         newList.sort((a, b) => a.name.localeCompare(b.name));
 
         const index = newList.findIndex(i =>
-            i.name.toLowerCase() === category.name.toLowerCase()
+            i.name.toLowerCase() === trimmedName.toLowerCase()
         );
 
         createCategory(category, {
             onSuccess: () => {
-                alert("Thêm danh mục thành công!");
                 setNewCategoryName("");
-                setSearchQuery("");
                 setShowCreateModal(false);
+                setSearchQuery("");
+
+                // 3. Chuyển trang
                 if (index !== -1) {
                     const newPage = Math.floor(index / limit) + 1;
                     setCurrentPage(newPage);
@@ -120,7 +131,6 @@ const page = () => {
             },
             onError: (error) => {
                 console.error("Lỗi cập nhật:", error);
-                alert("Thêm danh mục thất bại.");
             }
         })
     }
