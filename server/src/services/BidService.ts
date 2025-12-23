@@ -243,6 +243,29 @@ export class BidService extends BaseService {
       }
 
       console.log(5);
+      //Gửi Mail
+      const emailSeller: string = await getEmailSeller();
+      const emailBidder: string = await getEmailBidder(bid.user_id);
+      const emailOldBidder: string = await getEmailBidder(
+        productBidStatus.top_bidder_id
+      );
+
+      sendEmailToUser(
+        emailSeller,
+        "Thông báo về sản phẩm đang bán",
+        "Đã có người đấu giá thành công sản phẩm của bạn"
+      ); //Seller
+
+      sendEmailToUser(
+        emailBidder,
+        "Thông báo về sản phẩm đang đấu giá",
+        "Bạn đã đấu giá thành công"
+      ); //Bidder
+      sendEmailToUser(
+        emailOldBidder,
+        "Thông báo về sản phẩm đang đấu giá",
+        " Đã có người đấu giá thành công sản phẩm bạn đang đấu giá"
+      ); //Old bidder
       // 5. Thực hiện so sánh và lưu kết quả đấu giá
       if (productBidStatus.top_bidder_id == bid.user_id) {
         console.log("Bidder vẫn đang thắng đấu giá");
@@ -286,29 +309,6 @@ export class BidService extends BaseService {
         }
       }
       await poolClient.query("COMMIT");
-      //Gửi Mail
-      const emailSeller: string = await getEmailSeller();
-      const emailBidder: string = await getEmailBidder(bid.user_id);
-      const emailOldBidder: string = await getEmailBidder(
-        productBidStatus.top_bidder_id
-      );
-     
-      sendEmailToUser(
-        emailSeller,
-        "Thông báo về sản phẩm đang bán",
-        "Đã có người đấu giá thành công sản phẩm của bạn"
-      ); //Seller
-
-      sendEmailToUser(
-        emailBidder,
-        "Thông báo về sản phẩm đang đấu giá",
-        "Bạn đã đấu giá thành công"
-      ); //Bidder
-      sendEmailToUser(
-        emailOldBidder,
-        "Thông báo về sản phẩm đang đấu giá",
-        " Đã có người đấu giá thành công sản phẩm bạn đang đấu giá"
-      ); //Old bidder
 
       console.log("Commit thành công 2");
 
