@@ -5,6 +5,7 @@ import {
 } from "../../../shared/src/types/Bid";
 import { BaseService } from "./BaseService";
 import { MutationResult } from "../../../shared/src/types/Mutation";
+import { sendEmailToUser } from "../utils/mailer";
 
 type BidStatusType = {
   top_bidder_id: number;
@@ -106,6 +107,7 @@ export class BidService extends BaseService {
           [bid.price, bid.user_id, bid.product_id]
         );
       }
+
       return saveBidPromise;
     };
 
@@ -174,7 +176,33 @@ export class BidService extends BaseService {
       const upperboundPrice = current + minSignificantGap;
       return upperboundPrice - (upperboundPrice > max ? increment : 0);
     };
-
+    const getEmailSeller = async () => {
+      const sql = `
+      SELECT u.email 
+      FROM admin.users as u 
+      JOIN product.products as p ON u.id = p.seller_id
+      WHERE p.id = $1 `;
+      const params = [bid.product_id];
+      const result: { email: string }[] = await this.safeQueryWithClient(
+        poolClient,
+        sql,
+        params
+      );
+      return result[0]?.email ?? "";
+    };
+    const getEmailBidder = async (id: number) => {
+      const sql = `
+      SELECT u.email 
+      FROM admin.users as u 
+      WHERE u.id = $1 `;
+      const params = [id];
+      const result: { email: string }[] = await this.safeQueryWithClient(
+        poolClient,
+        sql,
+        params
+      );
+      return result[0]?.email ?? "";
+    };
     try {
       await poolClient.query("BEGIN");
 
@@ -229,6 +257,7 @@ export class BidService extends BaseService {
           bid.user_id,
           current_price + price_increment
         );
+
         await Promise.all([updateTopBidderPromise, writeBidLogPromise]);
       } else {
         // TH2: Sản phẩm đã được đấu giá trước đó
@@ -256,9 +285,32 @@ export class BidService extends BaseService {
           await Promise.all([writeBidLogPromise, updateTopBidderPromise]);
         }
       }
-
       await poolClient.query("COMMIT");
-      console.log("Commit thành công");
+      //Gửi Mail
+      const emailSeller: string = await getEmailSeller();
+      const emailBidder: string = await getEmailBidder(bid.user_id);
+      const emailOldBidder: string = await getEmailBidder(
+        productBidStatus.top_bidder_id
+      );
+     
+      sendEmailToUser(
+        emailSeller,
+        "Thông báo về sản phẩm đang bán",
+        "Đã có người đấu giá thành công sản phẩm của bạn"
+      ); //Seller
+
+      sendEmailToUser(
+        emailBidder,
+        "Thông báo về sản phẩm đang đấu giá",
+        "Bạn đã đấu giá thành công"
+      ); //Bidder
+      sendEmailToUser(
+        emailOldBidder,
+        "Thông báo về sản phẩm đang đấu giá",
+        " Đã có người đấu giá thành công sản phẩm bạn đang đấu giá"
+      ); //Old bidder
+
+      console.log("Commit thành công 2");
 
       return { success: true };
     } catch (e) {
