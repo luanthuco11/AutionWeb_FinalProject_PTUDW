@@ -253,7 +253,7 @@ export class BidService extends BaseService {
       sendEmailToUser(
         emailSeller,
         "Thông báo về sản phẩm đang bán",
-        "Đã có người đấu giá thành công sản phẩm của bạn"
+        "Đã có người đấu giá sản phẩm của bạn"
       ); //Seller
 
       sendEmailToUser(
