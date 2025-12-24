@@ -30,7 +30,6 @@ const FinishStep = ({ order }: PageProps) => {
     RatingHook.useUpdateRating();
 
   const handleRatingSeller = (ratingPoint: number, message: string) => {
-    console.log("hàm đây");
     if (!order.buyer.id || !order.seller.id) return;
     const newRating: CreateRating = {
       ratee: order.buyer,
@@ -38,7 +37,6 @@ const FinishStep = ({ order }: PageProps) => {
       comment: message,
     };
 
-    console.log("qua điều kiện", order);
     if (!rating) createRating(newRating);
     else updateRating(newRating);
   };

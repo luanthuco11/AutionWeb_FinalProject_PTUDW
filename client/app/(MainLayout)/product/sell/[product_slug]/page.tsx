@@ -380,7 +380,7 @@ export default function ProductPage() {
                     {order && (
                       <div className="flex flex-row gap-2 justify-between items-center">
                         <p className="text-blue-500 text-2xl font-medium">
-                          {order.buyer.name} đã mua ngay
+                          {order.buyer?.name} đã mua ngay
                         </p>
                         <div className="">
                           <Link
@@ -452,7 +452,7 @@ export default function ProductPage() {
             title="Đi tới đơn hàng"
             isOpen={navToOrderConfirm}
             onClose={() => setNavToOrderConfirm(false)}
-            content={`${order.buyer.name} đã mua ngay. Bạn có muốn đi tới đơn hàng không?`}
+            content={`${order.buyer?.name} đã mua ngay. Bạn có muốn đi tới đơn hàng không?`}
             confirmLabel="Tới đơn hàng"
             cancelLabel="Ở lại"
             onConfirm={() =>

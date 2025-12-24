@@ -88,9 +88,14 @@ class OrderHook {
         OrderService.buyerPayOrder(params.productId, params.payment),
 
       onSuccess: (_, params) => {
+        toast.success("Thanh toán và cập nhật thông tin đơn hàng thành công");
         queryClient.invalidateQueries({
           queryKey: ["order_by_id", params.productId],
         });
+      },
+
+      onError: (error) => {
+        toast.error("Thanh toán và cập nhật thông tin đơn hàng thất bại");
       },
     });
   }
@@ -103,9 +108,14 @@ class OrderHook {
         OrderService.sellerConfirmOrder(params.productId, params.buyerId),
 
       onSuccess: (_, params) => {
+        toast.success("Xác nhận đơn hàng thành công");
         queryClient.invalidateQueries({
           queryKey: ["order_by_id", params.productId],
         });
+      },
+
+      onError: (error) => {
+        toast.error("Xác nhận đơn hàng thất bại");
       },
     });
   }
@@ -118,9 +128,14 @@ class OrderHook {
         OrderService.buyerConfirmShipped(params.productId),
 
       onSuccess: (_, params) => {
+        toast.success("Xác nhận nhận hàng thành công");
         queryClient.invalidateQueries({
           queryKey: ["order_by_id", params.productId],
         });
+      },
+
+      onError: (error) => {
+        toast.error("Xác nhận nhận hàng thất bại");
       },
     });
   }
@@ -133,9 +148,15 @@ class OrderHook {
         OrderService.sellerRejectOrder(params.productId, params.buyerId),
 
       onSuccess: (_, params) => {
+        toast.success("Hùy đơn hàng thành công");
+
         queryClient.invalidateQueries({
           queryKey: ["order_by_id", params.productId],
         });
+      },
+
+      onError: (error) => {
+        toast.error("Hủy đơn hàng thất bại");
       },
     });
   }
