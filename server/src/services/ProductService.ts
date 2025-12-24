@@ -20,6 +20,7 @@ import { R2Service } from "./R2Service";
 import { Pagination } from "../../../shared/src/types/Pagination";
 import { PoolClient } from "pg";
 import { sendEmailToUser } from "../utils/mailer";
+import { MutationResult } from "../../../shared/src/types/Mutation.js";
 
 export class ProductService extends BaseService {
   private static instance: ProductService;

@@ -1,6 +1,6 @@
 import { api, safeRequest } from "../config/axios.config";
 import API_ROUTES from "../../shared/src/api";
-import { BidLog, CreateBidLog } from "../../shared/src/types";
+import { BidLog, BlacklistPayload, CreateBidLog } from "../../shared/src/types";
 
 export class BidService {
   static async getBidlogs(product_id: number): Promise<any> {
@@ -26,6 +26,12 @@ export class BidService {
   static async createReject(payload: BidLog): Promise<any> {
     return safeRequest(async () => {
       const res = await api.post(API_ROUTES.bid.createReject, payload);
+      return res.data;
+    });
+  }
+  static async createBlacklist(payload: BlacklistPayload): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.post(API_ROUTES.bid.createBlacklist, payload);
       return res.data;
     });
   }

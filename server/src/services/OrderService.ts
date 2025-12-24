@@ -11,6 +11,8 @@ import {
 } from "./../../../shared/src/types";
 
 import { MutationResult } from "../../../shared/src/types/Mutation";
+import { ProductService } from "./ProductService";
+import { BidService } from "./BidService";
 
 export class OrderService extends BaseService {
   private static instance: OrderService;
@@ -45,7 +47,7 @@ export class OrderService extends BaseService {
       JOIN PRODUCT.PRODUCTS P ON P.ID = O.PRODUCT_ID
       WHERE
         O.PRODUCT_ID = $1 AND
-        (O.BUYER_ID = $2 OR P.SELLER_ID = $2)
+        (O.BUYER_ID = $2 OR (P.SELLER_ID = $2 AND O.STATUS != 'cancelled'))
     `;
 
     type OrderWithUsers = Order & {
@@ -129,8 +131,14 @@ export class OrderService extends BaseService {
     `;
 
     await this.safeQuery(sql, [status, productId]);
+
+    const productSlug = await this.safeQuery<{ slug: string }>(
+      "SELECT slug FROM PRODUCT.PRODUCTS WHERE id = $1",
+      [productId]
+    );
     return {
       success: true,
+      slug: productSlug[0]?.slug || "",
     };
   }
 
@@ -221,27 +229,20 @@ export class OrderService extends BaseService {
         O.PRODUCT_ID = $1 AND
         O.BUYER_ID = $2 AND
         P.SELLER_ID = $3
-    `;
-
-    const insertToBlacklistSql = `
-      INSERT INTO AUCTION.BLACK_LIST (user_id, product_id, created_at, updated_at)
-      SELECT $1, P.id, NOW(), NOW()
-      FROM PRODUCT.PRODUCTS P
-      WHERE P.id = $2 AND P.seller_id = $3
-      ON CONFLICT (user_id, prodct_id) DO NOTHING;
+      RETURNING O.PRODUCT_ID
     `;
 
     const promises = [
       this.safeQuery(cancelOrderSql, [product_id, buyer_id, seller_id]),
-      this.safeQuery(insertToBlacklistSql, [buyer_id, seller_id]),
+      BidService.getInstance().blacklistABuyer(product_id, seller_id, buyer_id),
     ];
 
     const [cancelOrderResult, insertToBlacklistResult] = await Promise.all(
       promises
     );
+
     return {
-      success:
-        cancelOrderResult?.length != 0 && insertToBlacklistResult?.length != 0,
+      success: true,
     };
   }
 

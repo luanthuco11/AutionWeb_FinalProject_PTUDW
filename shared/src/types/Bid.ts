@@ -39,3 +39,8 @@ export type UserBidInfo = {
   product_id: number;
   max_price: number | undefined;
 };
+
+export type BlacklistPayload = {
+  product_id: number;
+  buyer_id: number;
+};

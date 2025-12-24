@@ -1,4 +1,8 @@
-import { BidLog, CreateBidLog } from "../../../shared/src/types/Bid";
+import {
+  BidLog,
+  BlacklistPayload,
+  CreateBidLog,
+} from "../../../shared/src/types/Bid";
 import { BaseController } from "./BaseController";
 import { Request, Response, NextFunction } from "express";
 
@@ -26,7 +30,7 @@ export class BidController extends BaseController {
       product_id: req.body.product_id,
       price: req.body.price,
     };
-    await this.service.createBid(bid);
+    return await this.service.createBid(bid);
   }
   async createReject(req: Request, res: Response) {
     const bid: BidLog = {
@@ -36,6 +40,12 @@ export class BidController extends BaseController {
       price: req.body.price,
     };
 
-    await this.service.createReject(bid);
+    return await this.service.createReject(bid);
+  }
+  async createBlacklist(req: Request, res: Response) {
+    const seller_id = req.user?.id;
+    const { product_id, buyer_id } = req.body;
+
+    return await this.service.blacklistABuyer(product_id, seller_id, buyer_id);
   }
 }

@@ -88,7 +88,7 @@ const ProductOrderPage = () => {
                     description={`Người mua thanh toán`}
                     className="mb-4"
                   >
-                    <PaymentStep order={order} />
+                    <PaymentStep order={order} product={product}/>
                   </Stepper.Step>
                   <Stepper.Step
                     label="Chuẩn bị hàng"
@@ -106,7 +106,7 @@ const ProductOrderPage = () => {
                   </Stepper.Step>
 
                   <Stepper.Completed>
-                    <FinishStep />
+                    <FinishStep order={order} />
                   </Stepper.Completed>
                 </Stepper>
               )}

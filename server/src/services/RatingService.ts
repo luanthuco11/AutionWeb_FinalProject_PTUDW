@@ -31,6 +31,60 @@ export class RatingService extends BaseService {
     return await this.safeQuery(sql, params);
   }
 
+  async updateRating(raterId: number, payload: CreateRating) {
+    const { ratee, comment, rating } = payload;
+    const sql = `
+                UPDATE feedback.user_ratings
+                SET
+                  rating = $1,
+                  comment = $2,
+                  updated_at = NOW()
+                WHERE rater_id = $3 AND ratee_id = $4
+                `;
+    const params = [rating, comment ? comment : "", raterId, ratee.id];
+    return await this.safeQuery(sql, params);
+  }
+
+  async getOneRating(
+    raterId: number,
+    targetId: number // ratee
+  ): Promise<UserRating | null> {
+    const sql = `
+        SELECT 
+            fur.id as rating_id, fur.rating, fur.comment, fur.created_at, fur.updated_at,
+            aurt.id as rater_id, aurt.name as rater_name, aurt.profile_img as rater_img,
+            aurtt.id as ratee_id, aurtt.name as ratee_name, aurtt.profile_img as ratee_img
+        FROM feedback.user_ratings fur
+        JOIN admin.users aurt ON fur.rater_id = aurt.id
+        JOIN admin.users aurtt ON fur.ratee_id = aurtt.id
+        WHERE fur.rater_id = $1 AND fur.ratee_id = $2
+    `;
+    const params = [raterId, targetId];
+    const result = (await this.safeQuery<any>(sql, params))?.[0];
+
+    if (!result) return null;
+
+    const rating: UserRating = {
+      id: result.rating_id,
+      rater: {
+        id: result.rater_id,
+        name: result.rater_name,
+        profile_img: result.rater_img,
+      },
+      ratee: {
+        id: result.ratee_id,
+        name: result.ratee_name,
+        profile_img: result.ratee_img,
+      },
+      rating: result.rating,
+      comment: result.comment,
+      created_at: result.created_at,
+      updated_at: result.updated_at || null,
+    };
+
+    return rating;
+  }
+
   async getAllRating(userId: number): Promise<UserRatingHistory> {
     const sql = `
         SELECT 

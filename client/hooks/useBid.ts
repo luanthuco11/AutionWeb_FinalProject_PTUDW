@@ -1,7 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { STALE_10_MIN } from "@/config/query.config";
 import { BidService } from "@/services/bidService";
-import { BidLog, CreateBidLog } from "../../shared/src/types";
+import {
+  BidLog,
+  BlacklistPayload,
+  CreateBidLog,
+  MutationResult,
+} from "../../shared/src/types";
 import { toast } from "react-toastify";
 import { success } from "zod";
 class BidHook {
@@ -58,6 +63,29 @@ class BidHook {
         toast.success("Từ chối đấu giá thành công");
         queryClient.invalidateQueries({
           queryKey: ["bid_logs"],
+        });
+      },
+
+      onError: (error) => {
+        toast.error("Từ chối đấu giá thất bại");
+      },
+    });
+  }
+
+  static useCreateBlacklist() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: (payload: BlacklistPayload) =>
+        BidService.createBlacklist(payload),
+      onSuccess: (data, params) => {
+        console.log("data:", data);
+        toast.success("Từ chối đấu giá thành công");
+        queryClient.invalidateQueries({
+          queryKey: ["bid_logs"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["product_by_slug", data.data.slug],
         });
       },
 
