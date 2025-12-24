@@ -16,7 +16,7 @@ const BuyingProductCard = ({
     <>
       <div className="flex items-center justify-between bg-white border border-gray-100 rounded-lg shadow-xs p-4 w-full">
         <Link
-          href={`/product/${product.slug}`}
+          href={`/product/${product.slug}?order_navigate=false`}
           className="flex items-center gap-3"
         >
           <Image

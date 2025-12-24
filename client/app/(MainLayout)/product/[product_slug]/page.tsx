@@ -13,7 +13,7 @@ import SecondaryButton from "@/components/SecondaryButton";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import ProductHook from "@/hooks/useProduct";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Question, formatCurrency, formatDate } from "./components/Question";
 import { BidHistory } from "./components/BidHistory";
 import { RelatedProducts } from "./components/RelatedProducts";
@@ -40,6 +40,7 @@ import { X } from "lucide-react";
 import OrderHook from "@/hooks/useOrder";
 import Link from "next/link";
 import { defaultImage } from "@/app/const";
+import { SimpleConfirmPopup } from "@/components/SimpleConfirmPopup";
 
 function isLessThreeDays(dateA: Date, dateB: Date): boolean {
   const diffMs = Math.abs(dateA.getTime() - dateB.getTime()); // hiệu số milliseconds
@@ -90,6 +91,7 @@ function EndTime({ endTime }: Time) {
 }
 
 export default function ProductPage() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const { product_slug } = useParams();
   const { user } = useAuth();
@@ -97,6 +99,7 @@ export default function ProductPage() {
   const [setFavorites, setSetFavorites] = useState<Set<number>>();
   const [isBid, setIsBid] = useState(false);
   const [openBuyNowModal, setOpenBuyNowModal] = useState<boolean>(false);
+  const [navToOrderConfirm, setNavToOrderConfirm] = useState<boolean>(false);
 
   const schemaBid = z.object({
     price: z
@@ -168,12 +171,17 @@ export default function ProductPage() {
   }, [favorite_products, product]);
 
   useEffect(() => {
-    if (!router || !user || !product) return;
+    if (!router || !user || !product || !order || !searchParams) return;
+    const order_navigate = searchParams.get("order_navigate");
 
     if (user.id == product.seller.id) {
       router.replace(`/product/sell/${product_slug}`);
     }
-  }, [router, user, product]);
+
+    if (order_navigate != "false" && user.id == order.buyer?.id) {
+      setNavToOrderConfirm(true);
+    }
+  }, [router, user, order, product, searchParams]);
 
   useEffect(() => {
     setValue("price", "");
@@ -632,6 +640,18 @@ export default function ProductPage() {
               favorite_products={setFavorites}
             />
           )}
+
+          <SimpleConfirmPopup
+            title="Đi tới đơn hàng"
+            isOpen={navToOrderConfirm}
+            onClose={() => setNavToOrderConfirm(false)}
+            content={`Bạn đã mua sản phẩm này. Bạn có muốn đi tới đơn hàng không?`}
+            confirmLabel="Tới đơn hàng"
+            cancelLabel="Ở lại"
+            onConfirm={() =>
+              router.replace(`/product/order/${order.product_id}`)
+            }
+          />
         </>
       )}
     </div>

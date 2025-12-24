@@ -55,12 +55,16 @@ const API_ROUTES = {
     getUserBid: (productId: number) => `${BID_API}/user-bid/${productId}`, //GET
     createBid: `${BID_API}`, //POST
     createReject: `${BID_API}/reject`, //POST
+    createBlacklist: `${BID_API}/blacklist`, //POST
   },
   rating: {
     getRating: (userId: number, offset: number) =>
       `${RATING_API}/${userId}/${offset}`, //GET
+    getOneRating: (raterId: number, targetId: number) =>
+      `${RATING_API}/rater/${raterId}/target/${targetId}`, // GET
     getTotalRating: (userId: number) => `${RATING_API}/total/${userId}`, //GET
     createRating: `${RATING_API}`, //POST
+    updateRating: `${RATING_API}`, //PATCH
   },
   auth: {
     createAccount: `${AUTH_API}/signUp`,
@@ -139,7 +143,7 @@ const API_ROUTES = {
   system: {
     getProductRenewTime: `${SYSTEM_API}/renew-time`,
     updateProductRenewTime: `${SYSTEM_API}/renew-time`, // GET
-  }
+  },
 };
 
 export default API_ROUTES;

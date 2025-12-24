@@ -11,8 +11,6 @@ interface Button extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: FC<SVGProps<SVGSVGElement>>;
 }
 
-
-
 export default function SecondaryButton({
   text,
   icon: Icon,
@@ -21,7 +19,7 @@ export default function SecondaryButton({
   backgroundColor,
   hoverBackgroundColor,
   ...rest
-} : Button) {
+}: Button) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -30,7 +28,7 @@ export default function SecondaryButton({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        color:  isHovered ? (hoverTextColor || "#000000") : (textColor ||  "#000000"),
+        color: isHovered ? hoverTextColor || "#000000" : textColor || "#000000",
         backgroundColor: isHovered
           ? hoverBackgroundColor || "#9CA3AF"
           : backgroundColor || "#FFFFFF",
@@ -40,5 +38,4 @@ export default function SecondaryButton({
       {Icon && <Icon />} {text}
     </button>
   );
-};
-
+}

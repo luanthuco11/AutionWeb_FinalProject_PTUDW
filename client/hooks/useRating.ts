@@ -27,6 +27,22 @@ export class RatingHook {
     });
   }
 
+  static useGetOneRating(raterId: number, targetId: number) {
+    return useQuery({
+      queryKey: ["user_rating", targetId],
+
+      queryFn: () => RatingService.getOneRating(raterId, targetId),
+
+      staleTime: STALE_10_MIN,
+
+      enabled: !!raterId || !!targetId,
+
+      select: (data) => {
+        return data.data.result;
+      },
+    });
+  }
+
   static useGetTotalRating(userId: number) {
     return useQuery({
       queryKey: ["total_user_rating", userId],
@@ -50,14 +66,33 @@ export class RatingHook {
       mutationFn: (data: CreateRating) => RatingService.createRating(data),
 
       onSuccess: () => {
-        toast.success("Đánh giá thành công");
+        toast.success("Tạo đánh giá thành công");
         queryClient.invalidateQueries({
           queryKey: ["user_rating", "total_user_rating"],
         });
       },
 
       onError: (error) => {
-        toast.error("Đánh giá thất bại");
+        toast.error("Tạo đánh giá thất bại");
+      },
+    });
+  }
+
+  static useUpdateRating() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+      mutationFn: (data: CreateRating) => RatingService.updateRating(data),
+
+      onSuccess: () => {
+        toast.success("Sửa đánh giá thành công");
+        queryClient.invalidateQueries({
+          queryKey: ["user_rating", "total_user_rating"],
+        });
+      },
+
+      onError: (error) => {
+        toast.error("Sửa đánh giá thất bại");
       },
     });
   }

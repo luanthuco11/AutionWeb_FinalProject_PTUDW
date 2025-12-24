@@ -7,6 +7,7 @@ import { BidLog } from "../../../../../../shared/src/types";
 import { formatCurrency, formatDate } from "./Question";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "@/hooks/useAuth";
+import SecondaryButton from "@/components/SecondaryButton/index";
 
 interface ProductId {
   productId: number;
@@ -22,6 +23,7 @@ export const BidHistory = ({ productId }: ProductId) => {
       <h3 className="text-2xl font-bold text-slate-900 mb-4">
         Lịch sử đấu giá
       </h3>
+
       <table className="w-full">
         <thead>
           <tr>
@@ -31,8 +33,8 @@ export const BidHistory = ({ productId }: ProductId) => {
             <th className="text-left py-3 text-sm font-semibold text-gray-600">
               Người đấu giá
             </th>
-            <th className="text-left py-3 pl-5 text-sm font-semibold text-gray-600">
-              Giá
+            <th className="text-right py-3 pl-5 text-sm font-semibold text-gray-600">
+              Giá đấu
             </th>
           </tr>
         </thead>
@@ -44,7 +46,7 @@ export const BidHistory = ({ productId }: ProductId) => {
                 className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition"
               >
                 <td className="py-3 px-1 sm:px-3 truncate text-[12px] sm:text-sm text-gray-700">
-                  {formatDate(his.created_at)}
+                  {new Date(String(his.created_at)).toLocaleString("vi-VN")}
                 </td>
                 <td className="py-3 px-1 sm:px-3 truncate max-w-[90px] text-[12px] sm:text-sm font-medium text-gray-700">
                   {user?.id === his.user.id

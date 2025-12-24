@@ -102,11 +102,11 @@ const ProductOrderPage = () => {
                     description="Vận chuyển đơn hàng"
                     className="mb-4"
                   >
-                    <DeliveringStep order={order} />
+                    <DeliveringStep setActive={setActive} order={order} />
                   </Stepper.Step>
 
                   <Stepper.Completed>
-                    <FinishStep />
+                    <FinishStep order={order} />
                   </Stepper.Completed>
                 </Stepper>
               )}

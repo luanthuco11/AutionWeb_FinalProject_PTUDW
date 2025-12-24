@@ -106,7 +106,7 @@ const ProductOrderPage = () => {
                   </Stepper.Step>
 
                   <Stepper.Completed>
-                    <FinishStep />
+                    <FinishStep order={order} />
                   </Stepper.Completed>
                 </Stepper>
               )}

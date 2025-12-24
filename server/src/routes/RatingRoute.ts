@@ -13,10 +13,19 @@ export class RatingRoute extends BaseRoute {
   }
 
   initRoutes() {
+    this.router.use(protectedRoutes);
+
     this.router.get(
       "/total/:userId",
       BaseController.handleRequest(
         this.controller.getTotalRating.bind(this.controller)
+      )
+    );
+
+    this.router.get(
+      "/rater/:raterId/target/:targetId",
+      BaseController.handleRequest(
+        this.controller.getOneRating.bind(this.controller)
       )
     );
 
@@ -32,6 +41,14 @@ export class RatingRoute extends BaseRoute {
       protectedRoutes,
       BaseController.handleRequest(
         this.controller.createRating.bind(this.controller)
+      )
+    );
+    
+    this.router.patch(
+      "/",
+      protectedRoutes,
+      BaseController.handleRequest(
+        this.controller.updateRating.bind(this.controller)
       )
     );
   }

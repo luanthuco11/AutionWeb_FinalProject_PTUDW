@@ -13,6 +13,14 @@ export class RatingController extends BaseController {
     return { result };
   }
 
+  async getOneRating(req: Request, res: Response) {
+    const userId = req.user?.id;
+    const { raterId, targetId } = req.params;
+    if (userId != raterId && userId != targetId) return { result: null };
+    const result = await this.service.getOneRating(raterId, targetId);
+    return { result };
+  }
+
   async getTotalRating(req: Request, res: Response) {
     const { userId } = req.params;
     const result = await this.service.getAllRating(userId);
@@ -22,6 +30,13 @@ export class RatingController extends BaseController {
   async createRating(req: Request, res: Response) {
     const userId = Number(req.user?.id);
     const result = await this.service.createRating(userId, req.body);
+    console.log(result);
+    return { result };
+  }
+
+  async updateRating(req: Request, res: Response) {
+    const userId = Number(req.user?.id);
+    const result = await this.service.updateRating(userId, req.body);
     return { result };
   }
 }

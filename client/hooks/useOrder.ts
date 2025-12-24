@@ -45,10 +45,13 @@ class OrderHook {
       mutationFn: (params: { payload: NewOrderRequest }) =>
         OrderService.createOrder(params.payload),
 
-      onSuccess: (_, params) => {
+      onSuccess: (data, params) => {
         toast.success("Tạo đơn hàng thành công");
         queryClient.invalidateQueries({
           queryKey: ["order"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["product_by_slug", data.data.slug],
         });
       },
       onError: (error) => {
