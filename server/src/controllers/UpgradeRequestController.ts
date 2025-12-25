@@ -7,9 +7,8 @@ export class UpgradeController extends BaseController {
   }
 
   async createSellerRequest(req: Request, res: Response) {
-    const result = await this.service.createSellerRequest(
-      req.headers["user-id"]
-    );
+    console.log(req);
+    const result = await this.service.createSellerRequest(req.user?.id);
     return { result };
   }
   async getUpgradeRequests(req: Request, res: Response) {

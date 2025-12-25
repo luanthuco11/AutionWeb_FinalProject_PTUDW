@@ -74,6 +74,14 @@ const SellerStatusCard: React.FC<SellerStatusCardProps> = ({
                         <p className="text-gray-600">
                             Yêu cầu của bạn đã bị từ chối bởi quản trị viên.
                         </p>
+                        <button
+                            onClick={onAction}
+                            disabled={isLoading}
+                            className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                            <span>+</span>
+                            {isLoading ? 'Đang gửi yêu cầu...' : 'Đăng ký lại'}
+                        </button>
                     </div>
                 );
 
