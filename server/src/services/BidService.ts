@@ -575,7 +575,7 @@ export class BidService extends BaseService {
         
         </table>
 `
-      ); //Old bidder
+      ); 
     }
 
     if (product?.[0]?.top_bidder_id != buyer_id) return { success: true };
