@@ -339,6 +339,7 @@ export class BidService extends BaseService {
           current_price + price_increment
         );
 
+        
         await Promise.all([updateTopBidderPromise, writeBidLogPromise]);
       } else {
         // TH2: Sản phẩm đã được đấu giá trước đó
@@ -350,7 +351,7 @@ export class BidService extends BaseService {
             productBidStatus.max_price,
             bid.price
           );
-          
+
           createBidLog(productBidStatus.top_bidder_id, opponentBidPrice);
           console.log(5);
         } else {
