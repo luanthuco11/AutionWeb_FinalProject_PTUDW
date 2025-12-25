@@ -858,10 +858,15 @@ WHERE pc.parent_id is not null
       userId,
       createQuestion.comment,
     ]);
-     sendEmailToUser(
-       emailUser,
-       "THÔNG BÁO VỀ SẢN PHẨM ĐANG BÁN",
-       `
+
+    const sellerInfo: User | undefined = await getSellerInfo();
+    const bidderInfo: User | undefined = await getBidderInfo();
+    const productInfo: Product | undefined = await getProductInfo(productId);
+    if (sellerInfo && bidderInfo && productInfo) {
+      sendEmailToUser(
+        sellerInfo.email,
+        "THÔNG BÁO VỀ SẢN PHẨM ĐANG BÁN",
+        `
               <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
           <tr>
             <td style="background-color:#0d6efd; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
@@ -871,18 +876,19 @@ WHERE pc.parent_id is not null
           <tr>
             <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
               <p>
-                Bidder <strong> [Tên bidder]</strong>  đã đặt câu hỏi về sản phẩm
-                <strong>[Tên sản phẩm]</strong> của bạn.
+                Bidder <strong> ${bidderInfo.name}</strong>  đã đặt câu hỏi về sản phẩm
+                <strong>${productInfo.name}</strong> của bạn.
               </p>
               <p style="margin-top:15px;">
-                Hãy trả lời câu hỏi để <strong>[Tên bidder]</strong> biết thêm chi tiết!
+                Hãy trả lời câu hỏi để <strong>${bidderInfo.name}</strong> biết thêm chi tiết!
               </p>
             </td>
           </tr>
-        
         </table>
        `
-     );
+      );
+    }
+
     return question[0];
   }
 
