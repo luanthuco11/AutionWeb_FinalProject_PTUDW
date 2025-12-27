@@ -69,14 +69,14 @@ export const sendRegisterOTPEmail = async (email: string, otp: string) => {
 export const sendEmailToUser = async (
   receiver: string,
   subject: string,
-  text: string
+  html: string
 ) => {
   try {
     const info = await transporter.sendMail({
       from: `"Auction bid" <${process.env.EMAIL_USER}>`,
       to: receiver,
       subject: subject,
-      text: text,
+      html: html,
     });
 
     console.log("Email sent: " + info.response);

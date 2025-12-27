@@ -16,7 +16,10 @@ export type Product = {
   initial_price: number | null;
   buy_now_price: number | null;
   current_price: number | null;
-  top_bidder: Pick<User, "id" | "name" | "profile_img" | "positive_points" | "negative_points"> | null;
+  top_bidder: Pick<
+    User,
+    "id" | "name" | "profile_img" | "positive_points" | "negative_points"
+  > | null;
   bid_count: number;
   end_time: Date;
   description: string | null;
@@ -93,7 +96,7 @@ export type ProductQuestion = {
   product_id: number;
   user: Pick<User, "id" | "name" | "profile_img">;
   comment: string;
-  answer?: ProductAnswer;
+  answer?: ProductAnswer[];
   created_at?: Date;
 };
 
@@ -140,4 +143,6 @@ export type BiddingProduct = WinningProduct & {
   user_price: number;
 };
 export type CreateQuestion = Pick<ProductQuestion, "comment">;
-export type CreateAnswer = Pick<ProductAnswer, "comment">;
+export type CreateAnswer = Pick<ProductAnswer, "comment"> & {
+  productId: number;
+};

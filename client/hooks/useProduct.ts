@@ -338,7 +338,7 @@ class ProductHook {
       onSuccess: (_data, variables) => {
         toast.success("Trả lời câu hỏi thành công");
         queryClient.invalidateQueries({
-          queryKey: ["product_question", variables.idProduct],
+          queryKey: ["product_question"],
         });
       },
 

@@ -6,6 +6,7 @@ import cors from "cors";
 import morgan from "morgan";
 import router from "./routes/index";
 import { deleteExpiredTokensJob } from "./cron/deleteExpiredTokens";
+import { checkEndTimeProduct } from "./cron/checkEndTimeProduct";
 import cookieParser from "cookie-parser";
 
 const app = express();
@@ -30,5 +31,5 @@ app.use((req, res, next) => {
 });
 
 deleteExpiredTokensJob();
-
+checkEndTimeProduct();
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

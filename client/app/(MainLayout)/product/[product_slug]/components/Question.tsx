@@ -50,6 +50,7 @@ function QuestionItem({
   answer,
   created_at,
 }: ProductQuestion) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const date = new Date(created_at ?? "");
   return (
     <>
@@ -60,14 +61,25 @@ function QuestionItem({
         )}
       </div>
       <p className="text-gray-600 mb-3">Câu hỏi: {comment}</p>
-      {answer && (
-        <div className="ml-4 pl-4 border-l-2 border-amber-400">
-          <p className="text-sm font-medium text-amber-600 mb-1">
-            Trả lời từ người bán:
-          </p>
-          <p className="text-sm text-gray-700">{answer.comment}</p>
-        </div>
-      )}
+      {answer &&
+        answer.map((item, index) => (
+          <div
+            key={index}
+            className="ml-4 pl-4 border-l-2 border-amber-400 my-4"
+          >
+            <button
+              onClick={() => setOpenIndex(openIndex === index ? null : index)}
+              className="text-sm font-medium text-amber-600 mb-1 flex items-center gap-2 cursor-pointer"
+            >
+              Trả lời từ người bán
+              <span>{openIndex === index ? "▲" : "▼"}</span>
+            </button>
+
+            {openIndex === index && (
+              <p className="text-sm text-gray-700 mt-1">{item.comment}</p>
+            )}
+          </div>
+        ))}
     </>
   );
 }

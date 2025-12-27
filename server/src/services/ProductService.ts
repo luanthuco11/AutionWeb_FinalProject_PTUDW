@@ -13,7 +13,7 @@ import {
   SoldProduct,
 } from "./../../../shared/src/types/Product";
 import { BaseService } from "./BaseService";
-import { ShortUser } from "../../../shared/src/types";
+import { ShortUser, User } from "../../../shared/src/types";
 
 import { createSlugUnique } from "../utils";
 import { R2Service } from "./R2Service";
@@ -21,6 +21,7 @@ import { Pagination } from "../../../shared/src/types/Pagination";
 import { PoolClient } from "pg";
 import { sendEmailToUser } from "../utils/mailer";
 import { MutationResult } from "../../../shared/src/types/Mutation.js";
+import { Hmac } from "crypto";
 
 export class ProductService extends BaseService {
   private static instance: ProductService;
@@ -771,15 +772,19 @@ WHERE pc.parent_id is not null
           pq.created_at,
           (
             SELECT 
-                json_build_object(
-                    'id', pa.id,
-                    'comment', pa.comment,
-                    'question_id', pa.question_id,
-                    'user', json_build_object(
-                        'id', u2.id,
-                        'name', u2.name,
-                        'profile_img', u2.profile_img
-                    )
+                (
+                  json_agg(
+                  json_build_object(
+                      'id', pa.id,
+                      'comment', pa.comment,
+                      'question_id', pa.question_id,
+                      'user', json_build_object(
+                          'id', u2.id,
+                          'name', u2.name,
+                          'profile_img', u2.profile_img
+                      )
+                  )
+                  )
                 )
             FROM feedback.product_answers pa
             JOIN admin.users u2 ON u2.id = pa.user_id
@@ -811,6 +816,38 @@ WHERE pc.parent_id is not null
     userId: number,
     productId: number
   ) {
+    //Lấy thông tin người bán
+    const getSellerInfo = async () => {
+      const sql = `
+          SELECT u.*
+          FROM admin.users as u 
+          JOIN product.products as p ON u.id = p.seller_id
+          WHERE p.id = $1 `;
+      const params = [productId];
+      const result: User[] = await this.safeQuery(sql, params);
+      return result[0];
+    };
+    //Lấy thông tin sản phẩm
+    const getProductInfo = async (id: number) => {
+      const sql = `
+      SELECT p.*
+      FROM product.products as p 
+      WHERE p.id = $1 `;
+      const params = [id];
+      const result: Product[] = await this.safeQuery(sql, params);
+      return result[0];
+    };
+    //Lấy thông tin người đấu giá
+    const getBidderInfo = async () => {
+      const sql = `
+      SELECT u.*
+      FROM admin.users as u
+      WHERE u.id = $1 `;
+      const params = [userId];
+      const result: User[] = await this.safeQuery(sql, params);
+      return result[0];
+    };
+
     const sql = `
     INSERT INTO feedback.product_questions(
     product_id, 
@@ -826,6 +863,37 @@ WHERE pc.parent_id is not null
       userId,
       createQuestion.comment,
     ]);
+
+    const sellerInfo: User | undefined = await getSellerInfo();
+    const bidderInfo: User | undefined = await getBidderInfo();
+    const productInfo: Product | undefined = await getProductInfo(productId);
+    if (sellerInfo && bidderInfo && productInfo) {
+      sendEmailToUser(
+        sellerInfo.email,
+        "THÔNG BÁO VỀ SẢN PHẨM ĐANG BÁN",
+        `
+              <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
+          <tr>
+            <td style="background-color:#0d6efd; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
+              Câu hỏi mới về sản phẩm
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
+              <p>
+                Người đấu giá <strong> ${bidderInfo.name}</strong>  đã đặt câu hỏi về sản phẩm
+                <strong>${productInfo.name}</strong> của bạn.
+              </p>
+              <p style="margin-top:15px;">
+                Hãy trả lời câu hỏi để <strong>${bidderInfo.name}</strong> biết thêm chi tiết!
+              </p>
+            </td>
+          </tr>
+        </table>
+       `
+      );
+    }
+
     return question[0];
   }
 
@@ -834,17 +902,61 @@ WHERE pc.parent_id is not null
     userId: number,
     questionId: number
   ) {
-    const getEmailUser = async () => {
+    const getRelatedUsersInQuestion = async () => {
       const sql = `
-      SELECT u.email 
-      FROM product.product_questions as q
+      SELECT u.*
+      FROM feedback.product_questions as q
       JOIN admin.users as u ON u.id = q.user_id
-      WHERE q.id = $1 `;
-      const params = [questionId];
-      const result: { email: string }[] = await this.safeQuery(sql, params);
-      return result[0]?.email ?? "";
+      WHERE q.product_id = $1 `;
+      const params = [createAnswer.productId];
+      const result: User[] = await this.safeQuery(sql, params);
+      return result;
     };
+    const getIdOfQuestioner = async () => {
+      const sql = `
+      SELECT u.id
+      FROM feedback.product_questions as q
+      JOIN admin.users as u ON u.id = q.user_id
+      WHERE q.id = $1 
+      `;
+      const params = [questionId];
+      const result: { id: number }[] = await this.safeQuery(sql, params);
+      return result[0]?.id ;
+    };
+    const getRelatedUsersInUserBids = async () => {
+      const sql = `
+      SELECT u.*
+      FROM auction.user_bids as b
+      JOIN admin.users as u ON u.id = b.user_id
+      WHERE b.product_id = $1 AND NOT EXISTS (SELECT l.user_id as id 
+                                              FROM auction.black_list AS l  
+                                              WHERE l.user_id = u.id
+      )`;
+      const params = [createAnswer.productId];
+      const result: User[] = await this.safeQuery(sql, params);
+      return result;
+    };
+    //Lấy thông tin user
+    const getUserInfo = async (id: number) => {
+      const sql = `
+      SELECT u.*
+      FROM admin.users as u 
+      WHERE u.id = $1 `;
+      const params = [id];
+      const result: User[] = await this.safeQuery(sql, params);
 
+      return result[0];
+    };
+    const getProductInfo = async (id: number) => {
+      const sql = `
+      SELECT p.*
+      FROM product.products as p 
+      WHERE p.id = $1 `;
+      const params = [id];
+      const result: Product[] = await this.safeQuery(sql, params);
+
+      return result[0];
+    };
     const sql = `
     INSERT INTO feedback.product_answers(
     question_id,
@@ -860,14 +972,79 @@ WHERE pc.parent_id is not null
       userId,
       createAnswer.comment,
     ]);
+    const [usersFromQuestions, usersFromBids] = await Promise.all([
+      getRelatedUsersInQuestion(),
+      getRelatedUsersInUserBids(),
+    ]);
 
-    const emailUser: string = await getEmailUser();
+    // Gộp & loại trùng theo id
+    const userMap = new Map<number, User>();
 
-    sendEmailToUser(
-      emailUser,
-      "Sản phẩm bạn đang đặt câu hỏi",
-      "Người bán đã trả lời câu hỏi của bạn, hãy vào chi tiết sản phẩm để xem"
-    );
+    [...usersFromQuestions, ...usersFromBids].forEach((user) => {
+      userMap.set(user.id, user);
+    });
+
+    const [questionerId, sellerInfo, productInfo] = await Promise.all([
+      getIdOfQuestioner(),
+      getUserInfo(userId),
+      getProductInfo(createAnswer.productId),
+    ]);
+    const relatedUsers: User[] = Array.from(userMap.values());
+
+    if (sellerInfo && productInfo) {
+      await Promise.all([
+        relatedUsers.forEach((user) => {
+          let html: string = "";
+          console.log(questionerId);
+          console.log(user.id);
+          if (user.id == questionerId) {
+            html = `
+       <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
+          <tr>
+            <td style="background-color:#198754; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
+              Phản hồi từ người bán
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
+              <p>
+                Người bán <strong>${sellerInfo.name}</strong> đã trả lời câu hỏi của bạn
+                tại sản phẩm <strong> ${productInfo.name}</strong>.
+              </p>
+              <p style="margin-top:15px;">
+                Hãy truy cập sản phẩm để xem chi tiết nội dung phản hồi.
+              </p>
+            </td>
+          </tr>
+        </table>
+        `;
+          } else {
+            html = `
+       <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
+          <tr>
+            <td style="background-color:#198754; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
+              Phản hồi từ người bán
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
+              <p>
+                Người bán <strong>${sellerInfo.name}</strong> đã trả lời câu hỏi của người khác
+                tại sản phẩm <strong> ${productInfo.name}</strong>.
+              </p>
+              <p style="margin-top:15px;">
+                Hãy truy cập sản phẩm để xem chi tiết nội dung phản hồi.
+              </p>
+            </td>
+          </tr>
+        </table>
+        `;
+          }
+          sendEmailToUser(user.email, "SẢN PHẨM ĐANG THEO DÕI", html);
+        }),
+      ]);
+    }
+
     return answer[0];
   }
 

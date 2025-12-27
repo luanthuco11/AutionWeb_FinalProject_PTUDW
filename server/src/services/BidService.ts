@@ -6,6 +6,7 @@ import {
 import { BaseService } from "./BaseService";
 import { MutationResult } from "../../../shared/src/types/Mutation";
 import { sendEmailToUser } from "../utils/mailer";
+import { Product, User } from "../../../shared/src/types";
 
 type BidStatusType = {
   top_bidder_id: number;
@@ -180,32 +181,51 @@ export class BidService extends BaseService {
       const upperboundPrice = current + minSignificantGap;
       return upperboundPrice - (upperboundPrice > max ? increment : 0);
     };
-    const getEmailSeller = async () => {
+    //Lấy thông tin người bán
+    const getSellerInfo = async () => {
       const sql = `
-      SELECT u.email 
+      SELECT u.*
       FROM admin.users as u 
       JOIN product.products as p ON u.id = p.seller_id
       WHERE p.id = $1 `;
       const params = [bid.product_id];
-      const result: { email: string }[] = await this.safeQueryWithClient(
+      const result: User[] = await this.safeQueryWithClient(
         poolClient,
         sql,
         params
       );
-      return result[0]?.email ?? "";
+      return result[0];
     };
-    const getEmailBidder = async (id: number) => {
+
+    //Lấy thông tin user
+    const getUserInfo = async (id: number) => {
       const sql = `
-      SELECT u.email 
+      SELECT u.*
       FROM admin.users as u 
       WHERE u.id = $1 `;
       const params = [id];
-      const result: { email: string }[] = await this.safeQueryWithClient(
+      const result: User[] = await this.safeQueryWithClient(
         poolClient,
         sql,
         params
       );
-      return result[0]?.email ?? "";
+
+      return result[0];
+    };
+    //Lấy thông tin sản phẩm
+    const getProductInfo = async (id: number) => {
+      const sql = `
+      SELECT p.*
+      FROM product.products as p 
+      WHERE p.id = $1 `;
+      const params = [id];
+      const result: Product[] = await this.safeQueryWithClient(
+        poolClient,
+        sql,
+        params
+      );
+
+      return result[0];
     };
     try {
       await poolClient.query("BEGIN");
@@ -248,20 +268,61 @@ export class BidService extends BaseService {
 
       console.log(5);
       //Gửi Mail
-      const emailSeller: string = await getEmailSeller();
-      const emailBidder: string = await getEmailBidder(bid.user_id);
+      const sellerInfo: User | undefined = await getSellerInfo();
+      const bidderInfo: User | undefined = await getUserInfo(bid.user_id);
+      const productInfo: Product | undefined = await getProductInfo(
+        bid.product_id
+      );
+      if (sellerInfo && bidderInfo && productInfo) {
+        console.log(bidderInfo);
+        sendEmailToUser(
+          sellerInfo.email,
+          "THÔNG BÁO VỀ SẢN PHẨM ĐANG BÁN",
+          `
+        <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
+          <tr>
+            <td style="background-color:#173E8C; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
+              Thông báo đấu giá
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
+              <p>Người đấu giá <strong> ${bidderInfo.name}</strong> </p>
+              <p>Đã đấu giá sản phẩm <strong>${productInfo.name}</strong> của bạn</p>
+              <p>Với mức giá:<strong> ${bid.price}</strong> </p>
+              <p>Mức giá hiện tại:<strong> ${productBidStatus.current_price}</strong> </p>
+              <p>Giá mua ngay:<strong> ${productInfo.buy_now_price}</strong> </p> 
 
-      sendEmailToUser(
-        emailSeller,
-        "Thông báo về sản phẩm đang bán",
-        "Đã có người đấu giá sản phẩm của bạn"
-      ); //Seller
+            </td>
+          </tr>
+        
+        </table>
+           `
+        ); //Seller
 
-      sendEmailToUser(
-        emailBidder,
-        "Thông báo về sản phẩm đang đấu giá",
-        "Bạn đã đấu giá thành công"
-      ); //Bidder
+        sendEmailToUser(
+          bidderInfo.email,
+          "THÔNG BÁO VỀ SẢN PHẨM ĐÃ ĐẤU GIÁ",
+          `
+          <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
+            <tr>
+              <td style="background-color:#28a745; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
+                Thông báo đấu giá thành công
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
+                <p>Bạn đã đấu giá thành công sản phẩm: <strong>${productInfo.name}</strong></p>
+                <p>Của người bán: <strong>${sellerInfo.name}</strong></p>
+                <p>Với mức giá:<strong> ${bid.price}</strong></p>
+                <p>Giá hiện tại của sản phẩm: <strong>${productBidStatus.current_price}</strong></p>
+              </td>
+            </tr>
+  
+          </table>
+         `
+        ); //Bidder
+      }
 
       // 5. Thực hiện so sánh và lưu kết quả đấu giá
       if (productBidStatus.top_bidder_id == bid.user_id) {
@@ -289,8 +350,11 @@ export class BidService extends BaseService {
             productBidStatus.max_price,
             bid.price
           );
+
           createBidLog(productBidStatus.top_bidder_id, opponentBidPrice);
+          console.log(5);
         } else {
+          console.log(6);
           // Đấu giá thắng
           const myBidPrice = getBidPrice(
             current_price,
@@ -304,14 +368,33 @@ export class BidService extends BaseService {
 
           await Promise.all([writeBidLogPromise, updateTopBidderPromise]);
 
-          const emailOldBidder: string = await getEmailBidder(
+          const oldBidderInfo: User | undefined = await getUserInfo(
             productBidStatus.top_bidder_id
           );
-          sendEmailToUser(
-            emailOldBidder,
-            "Thông báo về sản phẩm đang đấu giá",
-            " Đã có người đấu giá thành công sản phẩm bạn đang đấu giá"
-          ); //Old bidder
+          console.log("old:", oldBidderInfo);
+          if (oldBidderInfo && sellerInfo && bidderInfo && productInfo) {
+            sendEmailToUser(
+              oldBidderInfo.email,
+              "THÔNG BÁO VỀ SẢN PHẨM ĐANG ĐẤU GIÁ",
+              `
+            <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
+              <tr>
+                <td style="background-color:#dc3545; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
+                  Cập nhật đấu giá
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
+                  <p>Đã có người đấu giá thành công sản phẩm <strong>${productInfo.name}</strong> mà bạn đang tham gia</p>
+                  <p>Của người bán:<strong>  ${sellerInfo.name}</strong></p>
+                  <p>Mức giá hiện tại của sản phẩm: <strong>${myBidPrice}</strong></p>
+                </td>
+              </tr>
+             
+            </table>
+              `
+            ); //Old bidder
+          }
         }
       }
       await poolClient.query("COMMIT");
@@ -363,9 +446,25 @@ export class BidService extends BaseService {
 
       sendEmailToUser(
         emailBidder,
-        "Thông báo về sản phẩm đang đấu giá",
-        "Bạn đã bị người bán chặn đấu giá"
-      ); //Old bidder
+        "THÔNG BÁO VỀ SẢN PHẨM ĐANG ĐẤU GIÁ",
+        `
+            <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
+              <tr>
+                <td style="background-color:#6c757d; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
+                  Thông báo đấu giá
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
+                  <p>Người bán: <strong>[Tên seller]</strong></p>
+                  <p>Đã chặn bạn không được phép đấu giá sản phẩm:</p>
+                  <p style="font-weight:bold;">[Tên sản phẩm]</p>
+                </td>
+              </tr>
+  
+            </table>
+        `
+      );
       await poolClient.query("COMMIT");
       return { success: true };
     } catch (error) {
@@ -432,26 +531,53 @@ export class BidService extends BaseService {
       return { success: false };
 
     // Nếu người bị blacklist không phải dẫn đầu -> dừng
+    //Email của người bị chặn
     const getEmailBidder = async (id: number) => {
       const sql = `
       SELECT u.email 
       FROM admin.users as u 
       WHERE u.id = $1 `;
       const params = [id];
-      const result: { email: string }[] = await this.safeQuery(
-        sql,
-        params
-      );
+      const result: { email: string }[] = await this.safeQuery(sql, params);
       return result[0]?.email ?? "";
     };
 
+    //Thông tin người bán
+    const getSellerInfo = async () => {
+      const sql = `
+      SELECT u.*
+      FROM admin.users as u 
+      JOIN product.products as p ON u.id = p.seller_id
+      WHERE p.id = $1 `;
+      const params = [product_id];
+      const result: User[] = await this.safeQuery(sql, params);
+      return result[0];
+    };
+    const sellerInfo: User | undefined = await getSellerInfo();
     const emailBidder: string = await getEmailBidder(buyer_id);
-
+    if (sellerInfo) {
       sendEmailToUser(
         emailBidder,
-        "Thông báo về sản phẩm đang đấu giá",
-        "Bạn đã bị người bán chặn đấu giá"
-      ); //Old bidder
+        "THÔNG BÁO VỀ SẢN PHẨM ĐANG ĐẤU GIÁ",
+        `
+              <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
+          <tr>
+            <td style="background-color:#6c757d; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
+              Thông báo đấu giá
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
+              <p>Người bán <strong>${sellerInfo.name}</strong></p>
+              <p>Đã chặn bạn không được phép đấu giá sản phẩm: <strong>${product[0].name}</strong></p>
+            </td>
+          </tr>
+        
+        </table>
+`
+      );
+    }
+
     if (product?.[0]?.top_bidder_id != buyer_id) return { success: true };
 
     // Người bị blacklist đang dẫn đầu -> phải cập nhật lại top_bidder
