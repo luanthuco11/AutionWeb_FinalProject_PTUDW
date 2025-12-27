@@ -159,27 +159,26 @@ export default function ProductPage() {
     FavoriteHook.useRemoveFavorite();
 
   const sellerRating = useMemo(() => {
-    if (!product?.seller) return 0
+    if (!product?.seller) return 0;
 
-    const { positive_points, negative_points } = product.seller
-    const total = positive_points + negative_points
+    const { positive_points, negative_points } = product.seller;
+    const total = positive_points + negative_points;
 
-    if (total === 0) return 0
+    if (total === 0) return 0;
 
-    return Math.round((positive_points / total) * 100)
-  }, [product?.seller])
+    return Math.round((positive_points / total) * 100);
+  }, [product?.seller]);
 
   const bidderRating = useMemo(() => {
-    if (!product?.top_bidder) return 0
+    if (!product?.top_bidder) return 0;
 
-    const { positive_points, negative_points } = product.top_bidder
-    const total = positive_points + negative_points
+    const { positive_points, negative_points } = product.top_bidder;
+    const total = positive_points + negative_points;
 
-    if (total === 0) return 0
+    if (total === 0) return 0;
 
-    return Math.round((positive_points / total) * 100)
-  }, [product?.top_bidder])
-
+    return Math.round((positive_points / total) * 100);
+  }, [product?.top_bidder]);
 
   useEffect(() => {
     if (favorite_products && product) {
@@ -238,6 +237,11 @@ export default function ProductPage() {
   if (favorite_products) console.log(favorite_products);
 
   const handleBid: SubmitHandler<{ price: number }> = (data) => {
+    if (product.buy_now_price && data.price >= product.buy_now_price) {
+      setOpenBuyNowModal(true);
+      setIsBid(false);
+      return;
+    }
     const bid: CreateBidLog = {
       user_id: user?.id || 0,
       price: data.price,
@@ -356,27 +360,28 @@ export default function ProductPage() {
                       <UserOutlineIcon />
                       Người ra giá cao nhất
                     </p>
-                    {product.top_bidder ? 
-                        <>
-                            <p className="font-semibold text-slate-900 mb-1"> 
-                                {product.top_bidder.id === user?.id ? (
-                                    `${product.top_bidder.name} (Bạn)`
-                                ) : (
-                                    `${product.top_bidder.name[0]}***${product.top_bidder.name[product.top_bidder.name.length - 1]}`
-                                )}
-                            </p>
-                            <p className="text-xs text-slate-600">
-                                {bidderRating !== 0 ? 
-                                    `⭐${" "}${bidderRating}%` : `Chưa có đánh giá`
-                                }
-                            </p>
-                        </> : 
-                        (
-                        <p className=" ml-4 text-[16px] font-semibold text-slate-900">
-                            Chưa có
+                    {product.top_bidder ? (
+                      <>
+                        <p className="font-semibold text-slate-900 mb-1">
+                          {product.top_bidder.id === user?.id
+                            ? `${product.top_bidder.name} (Bạn)`
+                            : `${product.top_bidder.name[0]}***${
+                                product.top_bidder.name[
+                                  product.top_bidder.name.length - 1
+                                ]
+                              }`}
                         </p>
-                        )
-                    }
+                        <p className="text-xs text-slate-600">
+                          {bidderRating !== 0
+                            ? `⭐${" "}${bidderRating}%`
+                            : `Chưa có đánh giá`}
+                        </p>
+                      </>
+                    ) : (
+                      <p className=" ml-4 text-[16px] font-semibold text-slate-900">
+                        Chưa có
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -400,9 +405,9 @@ export default function ProductPage() {
                         {product.seller.name}
                       </p>
                       <p className="text-xs text-slate-600">
-                        {sellerRating !== 0 ? 
-                            `⭐${" "}${sellerRating}%` : `Chưa có đánh giá`
-                        }
+                        {sellerRating !== 0
+                          ? `⭐${" "}${sellerRating}%`
+                          : `Chưa có đánh giá`}
                       </p>
                     </div>
                   </div>
@@ -702,7 +707,6 @@ export default function ProductPage() {
               setIsPopup(false);
             }}
           />
-
           <SimpleConfirmPopup
             title="Đi tới đơn hàng"
             isOpen={navToOrderConfirm}
