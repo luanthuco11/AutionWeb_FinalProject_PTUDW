@@ -45,7 +45,7 @@ const DeliveringStep = ({ setActive, order }: ComponentProps) => {
     if (!order?.product_id) return;
 
     buyerConfirmShipped(
-      { productId: order.product_id },
+      { productId: Number(order.product_id) },
       {
         onSuccess: () => setActive(3),
       }

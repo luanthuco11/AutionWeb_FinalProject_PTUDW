@@ -41,7 +41,7 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
     };
 
     buyerPayOrder(
-      { productId: order.product_id, payment: payment },
+      { productId: Number(order.product_id), payment: payment },
       {
         onSuccess: setActive && (() => setActive(1)),
       }

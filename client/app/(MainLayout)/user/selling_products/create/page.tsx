@@ -13,7 +13,7 @@ import { api } from "@/config/axios.config";
 import {
   CreateProduct,
   ProductCategoryTree,
-} from "../../../../../shared/src/types";
+} from "../../../../../../shared/src/types";
 import ErrorMessage from "./ErrorMessage";
 import CategoryHook from "@/hooks/useCategory";
 import { formatPrice, parseNumber } from "@/utils";
@@ -59,7 +59,7 @@ const CreateProductPage = () => {
       children?.forEach(({ children, name, ...category }) => {
         list.push({
           ...category,
-          name: parentName + " > " + name,
+          name: /*"     " + parentName + " > " +*/ name,
         });
       });
     });
@@ -309,18 +309,24 @@ const CreateProductPage = () => {
               required
               {...register("category_id", { valueAsNumber: true })}
             >
-              <option value="">Chọn danh mục</option>
+              <option value="">--- Chọn danh mục ---</option>
               {categoryList.map((category) => (
                 <option
                   key={category.id}
                   value={category.id}
-                  className={!category.parent_id ? `font-medium` : ""}
+                  style={{
+                    // Thụt lề nếu là con, màu sắc đậm nếu là cha
+                    paddingLeft: category.parent_id ? "20px" : "0px",
+                    color: !category.parent_id ? "black" : "inherit",
+                    fontWeight: !category.parent_id ? 600 : "normal",
+                  }}
+                  disabled={!category.parent_id}
                 >
-                  {category.name}
+                  {category.parent_id
+                    ? `\u00A0\u00A0\u00A0\u00A0\u00A0${category.name}`
+                    : category.name}
                 </option>
               ))}
-
-              <option value="14">Sưu tầm &gt; Nghệ thuật</option>
             </select>
             {errors.category_id && (
               <ErrorMessage message={errors.category_id.message} />
