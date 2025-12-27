@@ -11,7 +11,7 @@ import { ImageCarousel } from "@/components/ImageCarousel";
 import PrimaryButton from "@/components/PrimaryButton";
 import SecondaryButton from "@/components/SecondaryButton";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ProductHook from "@/hooks/useProduct";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Question, formatCurrency, formatDate } from "./components/Question";
@@ -471,14 +471,15 @@ export default function ProductPage() {
 
           <SimpleConfirmPopup
             title="Đi tới đơn hàng"
-            isOpen={navToOrderConfirm}
+            isOpen={!!(navToOrderConfirm && order?.buyer?.id)}
             onClose={() => setNavToOrderConfirm(false)}
             content={`${order.buyer?.name} đã mua ngay. Bạn có muốn đi tới đơn hàng không?`}
             confirmLabel="Tới đơn hàng"
             cancelLabel="Ở lại"
-            onConfirm={() =>
-              router.replace(`/product/sell/order/${order.product_id}`)
-            }
+            onConfirm={() => {
+              setNavToOrderConfirm(false);
+              router.replace(`/product/sell/order/${order.product_id}`);
+            }}
           />
         </>
       )}

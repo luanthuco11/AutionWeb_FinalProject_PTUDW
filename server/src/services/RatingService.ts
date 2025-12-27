@@ -23,17 +23,43 @@ export class RatingService extends BaseService {
 
   async createRating(raterId: number, payload: CreateRating) {
     const { ratee, comment, rating } = payload;
-    const sql = `
+    const insertRatingSql = `
                 INSERT INTO feedback.user_ratings (rater_id, ratee_id, comment, rating, created_at, updated_at)
                 VALUES ( $1, $2, $3, $4, NOW(), NOW() )
                 `;
-    const params = [raterId, ratee.id, comment ? comment : "", rating];
-    return await this.safeQuery(sql, params);
+    const updateUserSql = `
+                UPDATE admin.users u
+                SET 
+                  positive_points = sub.pos,
+                  negative_points = sub.neg,
+                  updated_at = NOW()
+                FROM (
+                  SELECT 
+                    COUNT(*) FILTER (WHERE rating = 1) AS pos,
+                    COUNT(*) FILTER (WHERE rating = -1) AS neg
+                  FROM feedback.user_ratings
+                  WHERE ratee_id = $1
+                ) AS sub
+                WHERE u.id = $1;
+    `;
+    const insertRatingParams = [
+      raterId,
+      ratee.id,
+      comment ? comment : "",
+      rating,
+    ];
+
+    const promises = [
+      this.safeQuery(insertRatingSql, insertRatingParams),
+      this.safeQuery(updateUserSql, [ratee.id]),
+    ];
+
+    await Promise.all(promises);
   }
 
   async updateRating(raterId: number, payload: CreateRating) {
     const { ratee, comment, rating } = payload;
-    const sql = `
+    const updateRatingSql = `
                 UPDATE feedback.user_ratings
                 SET
                   rating = $1,
@@ -41,8 +67,34 @@ export class RatingService extends BaseService {
                   updated_at = NOW()
                 WHERE rater_id = $3 AND ratee_id = $4
                 `;
-    const params = [rating, comment ? comment : "", raterId, ratee.id];
-    return await this.safeQuery(sql, params);
+    const updateUserSql = `
+                UPDATE admin.users u
+                SET 
+                  positive_points = sub.pos,
+                  negative_points = sub.neg,
+                  updated_at = NOW()
+                FROM (
+                  SELECT 
+                    COUNT(*) FILTER (WHERE rating = 1) AS pos,
+                    COUNT(*) FILTER (WHERE rating = -1) AS neg
+                  FROM feedback.user_ratings
+                  WHERE ratee_id = $1
+                ) AS sub
+                WHERE u.id = $1;
+    `;
+    const updateRatingParams = [
+      rating,
+      comment ? comment : "",
+      raterId,
+      ratee.id,
+    ];
+
+    const promises = [
+      this.safeQuery(updateRatingSql, updateRatingParams),
+      this.safeQuery(updateUserSql, [ratee.id]),
+    ];
+
+    await Promise.all(promises);
   }
 
   async getOneRating(
