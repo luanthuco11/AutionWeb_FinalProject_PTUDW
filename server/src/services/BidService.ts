@@ -7,6 +7,7 @@ import { BaseService } from "./BaseService";
 import { MutationResult } from "../../../shared/src/types/Mutation";
 import { sendEmailToUser } from "../utils/mailer";
 import { Product, User } from "../../../shared/src/types";
+import { formatPrice } from "../utils/price";
 
 type BidStatusType = {
   top_bidder_id: number;
@@ -293,11 +294,13 @@ export class BidService extends BaseService {
               }</strong> của bạn</p>
               <p>Với mức giá:<strong> ${bid.price}</strong> </p>
               <p>Mức giá hiện tại:<strong> ${
+                formatPrice(
                 productBidStatus.current_price +
-                productBidStatus.price_increment
+                productBidStatus.price_increment)
               }</strong> </p>
               <p>Giá mua ngay:<strong> ${
-                productInfo.buy_now_price
+                formatPrice(productInfo.buy_now_price ?? undefined)
+                
               }</strong> </p> 
 
             </td>
@@ -325,8 +328,11 @@ export class BidService extends BaseService {
                 <p>Của người bán: <strong>${sellerInfo.name}</strong></p>
                 <p>Với mức giá:<strong> ${bid.price}</strong></p>
                 <p>Giá hiện tại của sản phẩm: <strong>${
-                  productBidStatus.current_price +
-                  productBidStatus.price_increment
+                  formatPrice(
+                    
+                    productBidStatus.current_price +
+                    productBidStatus.price_increment
+                  )
                 }</strong></p>
               </td>
             </tr>
@@ -399,7 +405,7 @@ export class BidService extends BaseService {
                 <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
                   <p>Đã có người đấu giá thành công sản phẩm <strong>${productInfo.name}</strong> mà bạn đang tham gia</p>
                   <p>Của người bán:<strong>  ${sellerInfo.name}</strong></p>
-                  <p>Mức giá hiện tại của sản phẩm: <strong>${myBidPrice}</strong></p>
+                  <p>Mức giá hiện tại của sản phẩm: <strong>${formatPrice(myBidPrice)}</strong></p>
                 </td>
               </tr>
              

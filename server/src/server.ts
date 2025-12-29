@@ -19,7 +19,7 @@ app.use(
     origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
   })
-); // TRINH DUYET CHAN --> WHY ?
+);
 app.use(morgan("dev")); // log the requests
 
 // Dùng Factory tạo route cho resource

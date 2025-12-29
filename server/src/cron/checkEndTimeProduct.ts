@@ -2,7 +2,7 @@ import cron from "node-cron";
 import Database from "../config/db";
 import { Product } from "../../../shared/src/types";
 import { sendEmailToUser } from "../utils/mailer";
-
+import { formatPrice } from "../utils/price";
 const pool = Database.getInstance();
 
 export const checkEndTimeProduct = () => {
@@ -121,7 +121,7 @@ export const checkEndTimeProduct = () => {
                         </p>
                         <p>
                             Người đấu giá <strong>${buyerInfo.name}</strong> đã chiến thắng sản phẩm của bạn
-                            với mức giá <strong>${maxPrice}</strong>.
+                            với mức giá <strong>${formatPrice(maxPrice)}</strong>.
                         </p>
                         <p style="margin-top:15px;">
                             Hãy kiểm tra và hoàn tất thủ tục đấu giá để tiếp tục các bước tiếp theo.
