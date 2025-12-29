@@ -42,6 +42,7 @@ import Link from "next/link";
 import { defaultImage } from "@/app/const";
 import { ConfirmPopup } from "@/app/(MainLayout)/product/[product_slug]/components/ConfirmPopup";
 import { SimpleConfirmPopup } from "@/components/SimpleConfirmPopup";
+import { toast } from "react-toastify";
 
 function isLessThreeDays(dateA: Date, dateB: Date): boolean {
   const diffMs = Math.abs(dateA.getTime() - dateB.getTime()); // hiệu số milliseconds
@@ -246,6 +247,17 @@ export default function ProductPage() {
       setIsBid(false);
       return;
     }
+
+    if (product.current_price && data.price <= product.current_price) {
+      toast.error("Giá đấu phải cao hơn giá sản phẩm hiện tại");
+      return;
+    }
+
+    if (userBid.max_price && data.price <= userBid.max_price) {
+      toast.error("Giá đấu mới phải cao hơn giá đấu cũ");
+      return;
+    }
+
     const bid: CreateBidLog = {
       user_id: user?.id || 0,
       price: data.price,
