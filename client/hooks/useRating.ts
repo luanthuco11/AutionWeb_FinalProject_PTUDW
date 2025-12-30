@@ -71,6 +71,9 @@ export class RatingHook {
         queryClient.invalidateQueries({
           queryKey: ["user_rating", "total_user_rating"],
         });
+        queryClient.invalidateQueries({
+          queryKey: ["user_rating", params.ratee.id],
+        });
       },
 
       onError: (error) => {
@@ -90,6 +93,9 @@ export class RatingHook {
         if (!params.silent) toast.success("Sửa đánh giá thành công");
         queryClient.invalidateQueries({
           queryKey: ["user_rating", "total_user_rating"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["user_rating", params.ratee.id],
         });
       },
 

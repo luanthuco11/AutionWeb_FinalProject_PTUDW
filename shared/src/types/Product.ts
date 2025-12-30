@@ -1,4 +1,4 @@
-import { Order } from "./Order";
+import { Order, OrderStatus } from "./Order";
 import { User } from "./User";
 
 export type Product = {
@@ -140,7 +140,11 @@ export type CreateProduct = Pick<
 export type WinningProduct = Pick<
   Product,
   "id" | "name" | "slug" | "current_price" | "main_image"
->;
+> & {
+  seller: Pick<User, "id" | "name" | "positive_points" | "negative_points">;
+  winning_date: Date;
+  status: OrderStatus;
+};
 export type BiddingProduct = WinningProduct & {
   user_price: number;
 };

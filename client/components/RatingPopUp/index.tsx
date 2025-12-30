@@ -19,9 +19,6 @@ export default function RatingPopup({
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
-  const increaseRating = () => setRating((prev) => Math.min(prev + 1, 5));
-  const decreaseRating = () => setRating((prev) => Math.max(prev - 1, 0));
-
   if (!isOpen) return null;
 
   return (

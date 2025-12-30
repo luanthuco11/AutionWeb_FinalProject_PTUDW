@@ -1,7 +1,7 @@
 import React from "react";
 import Lottie from "lottie-react";
 import checkAnimation from "@/public/Success.json";
-import FeedbackBox from "@/components/Feedback";
+import FeedbackBox from "@/components/FeedbackBox";
 import {
   CreateRating,
   Order,

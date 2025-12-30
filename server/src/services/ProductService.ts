@@ -924,7 +924,7 @@ WHERE pc.parent_id is not null
       `;
       const params = [questionId];
       const result: { id: number }[] = await this.safeQuery(sql, params);
-      return result[0]?.id ;
+      return result[0]?.id;
     };
     const getRelatedUsersInUserBids = async () => {
       const sql = `
@@ -1086,11 +1086,24 @@ WHERE pc.parent_id is not null
   ): Promise<WinningProduct[]> {
     const params: any[] = [userId];
     let sql = `
-    SELECT  p.id, p.name, p.slug, p.main_image, o.price as current_price
-                FROM auction.orders as o
-                JOIN product.products as p ON p.id = o.product_id
-                WHERE o.buyer_id =$1
-                `;
+      SELECT 
+        p.id, 
+        p.name, 
+        p.slug, 
+        p.main_image, 
+        o.price AS current_price, 
+        jsonb_build_object(
+            'id', s.id, 
+            'name', s.name, 
+            'positive_points', s.positive_points, 
+            'negative_points', s.negative_points
+        ) AS seller,
+        o.created_at AS winning_date,
+        o.status
+      FROM auction.orders AS o
+      JOIN product.products AS p ON p.id = o.product_id
+      JOIN admin.users s ON s.id = p.seller_id
+      WHERE o.buyer_id = $1 `;
 
     if (limit) {
       sql += `LIMIT $2 \n`;
