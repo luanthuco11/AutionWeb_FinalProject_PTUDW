@@ -885,7 +885,16 @@ WHERE pc.parent_id is not null
             <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
               <p>
                 Người đấu giá <strong> ${bidderInfo.name}</strong>  đã đặt câu hỏi về sản phẩm
-                <strong>${productInfo.name}</strong> của bạn.
+                <strong>
+                 <a 
+                    href="http://localhost:3000/product/${productInfo.slug}" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style="color: inherit; text-decoration: underline;"
+                    >
+                    ${productInfo.name}
+                  </a>
+                </strong> của bạn.
               </p>
               <p style="margin-top:15px;">
                 Hãy trả lời câu hỏi để <strong>${bidderInfo.name}</strong> biết thêm chi tiết!
