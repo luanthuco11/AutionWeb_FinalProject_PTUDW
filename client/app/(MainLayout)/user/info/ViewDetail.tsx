@@ -13,8 +13,8 @@ export default function ViewDetail({ user }: { user: User }) {
     const positiveRatingPercent = useMemo(() => (
         sumRating === 0
             ? 0
-            : (user.positive_points / (user.negative_points + user.positive_points) * 100)
-    ), [user]
+            : Math.round(user.positive_points / (user.negative_points + user.positive_points) * 100)
+    ), [user, sumRating]
     )
 
     return <div>

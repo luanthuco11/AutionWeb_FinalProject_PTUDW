@@ -6,26 +6,46 @@ import OrderHook from "@/hooks/useOrder";
 import clsx from "clsx";
 import { OrderMessage } from "../../../../../../../../shared/src/types";
 import { Send, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 
 type Props = {
   productId: number;
+};
+
+const Avatar = ({ name, img }: { name: string; img?: string | null }) => {
+  if (img) {
+    return (
+      <Image
+        src={img}
+        alt={name}
+        width={32}
+        height={32}
+        className="w-8 h-8 rounded-full object-cover shadow-md"
+      />
+    );
+  }
+
+  return (
+    <div
+      className={clsx(
+        "w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold shadow-md bg-blue-600"
+      )}
+    >
+      {name?.charAt(0).toUpperCase()}
+    </div>
+  );
 };
 
 const OrderChat = ({ productId }: Props) => {
   const user = useAuthStore((s) => s.user);
   const [message, setMessage] = useState("");
 
-  const { data: conversation, isLoading } =
-    OrderHook.useOrderChat(productId);
+  const { data: conversation, isLoading } = OrderHook.useOrderChat(productId);
 
-  const { mutate: sendMessage, isPending } =
-    OrderHook.useCreateOrderChat();
+  const { mutate: sendMessage, isPending } = OrderHook.useCreateOrderChat();
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation?.messages.length]);
 
   if (isLoading) {
     return (
@@ -34,7 +54,9 @@ const OrderChat = ({ productId }: Props) => {
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 animate-pulse">
             <ShoppingBag className="w-6 h-6 text-blue-600" />
           </div>
-          <p className="text-sm text-slate-600 font-medium">Đang tải hội thoại...</p>
+          <p className="text-sm text-slate-600 font-medium">
+            Đang tải hội thoại...
+          </p>
         </div>
       </div>
     );
@@ -56,14 +78,15 @@ const OrderChat = ({ productId }: Props) => {
   return (
     <div className="flex flex-col h-[600px] bg-white rounded-2xl shadow-xl overflow-hidden">
       {/* Header - Modern gradient with glass effect */}
-      <div className="relative px-6 py-4 bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 overflow-hidden">
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+      <div className="relative px-6 py-4 bg-gradient-to-r from-blue-800 via-cyan-500 to-indigo-300 overflow-hidden">
         <div className="relative flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
             <ShoppingBag className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-white text-base">Trao đổi đơn hàng</h3>
+            <h3 className="font-semibold text-white text-base">
+              Trao đổi đơn hàng
+            </h3>
             <p className="text-xs text-white/80">Luôn sẵn sàng hỗ trợ bạn</p>
           </div>
         </div>
@@ -73,7 +96,8 @@ const OrderChat = ({ productId }: Props) => {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-slate-50/50 to-white">
         {conversation.messages.map((msg: OrderMessage, idx: number) => {
           const isMe = msg.user.id === user?.id;
-          const showAvatar = idx === 0 || conversation.messages[idx - 1].user.id !== msg.user.id;
+          const showAvatar =
+            idx === 0 || conversation.messages[idx - 1].user.id !== msg.user.id;
 
           return (
             <div
@@ -86,34 +110,39 @@ const OrderChat = ({ productId }: Props) => {
               {!isMe && (
                 <div className="flex flex-col items-center">
                   {showAvatar ? (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-xs font-semibold shadow-md">
-                      {msg.user.name?.charAt(0).toUpperCase()}
-                    </div>
+                    <Avatar name={msg.user.name} img={msg.user.profile_img} />
                   ) : (
                     <div className="w-8 h-8"></div>
                   )}
                 </div>
               )}
 
-              <div className={clsx("flex flex-col max-w-[85%]", isMe ? "items-end" : "items-start")}>
+              <div
+                className={clsx(
+                  "flex flex-col max-w-[85%]",
+                  isMe ? "items-end" : "items-start"
+                )}
+              >
                 {!isMe && showAvatar && (
                   <p className="text-xs font-medium text-slate-600 mb-1 px-1">
                     {msg.user.name}
                   </p>
                 )}
-                
+
                 <div className="relative group">
                   <div
                     className={clsx(
                       "inline-block px-4 py-2.5 rounded-[20px] text-[15px] shadow-sm transition-all hover:shadow-md",
                       isMe
-                        ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white rounded-tr-md"
+                        ? "bg-sky-500 text-white rounded-tr-md"
                         : "bg-slate-100 text-slate-900 rounded-tl-md"
                     )}
                   >
-                    <p className="leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                    <p className="leading-relaxed whitespace-pre-wrap">
+                      {msg.message}
+                    </p>
                   </div>
-                  
+
                   {/* Tooltip thời gian khi hover */}
                   <div
                     className={clsx(
@@ -134,9 +163,7 @@ const OrderChat = ({ productId }: Props) => {
               {isMe && (
                 <div className="flex flex-col items-center">
                   {showAvatar ? (
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center text-white text-xs font-semibold shadow-md">
-                      {msg.user.name?.charAt(0).toUpperCase()}
-                    </div>
+                    <Avatar name={msg.user.name} img={msg.user.profile_img} />
                   ) : (
                     <div className="w-8 h-8"></div>
                   )}
@@ -156,7 +183,7 @@ const OrderChat = ({ productId }: Props) => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Nhập tin nhắn..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all placeholder:text-slate-400"
+              className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all placeholder:text-slate-400"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && message.trim() && !isPending) {
                   sendMessage({
@@ -168,7 +195,7 @@ const OrderChat = ({ productId }: Props) => {
               }}
             />
           </div>
-          
+
           <button
             disabled={!message.trim() || isPending}
             onClick={() => {
@@ -181,15 +208,17 @@ const OrderChat = ({ productId }: Props) => {
             className={clsx(
               "w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed",
               message.trim() && !isPending
-                ? "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:from-purple-600 hover:via-pink-600 hover:to-red-600 transform hover:scale-105"
+                ? "bg-gradient-to-r from-blue-500 to-cyan-400 transform hover:scale-105"
                 : "bg-slate-300"
             )}
           >
-            <Send className={clsx(
-              "w-5 h-5 transition-transform",
-              isPending && "animate-pulse",
-              message.trim() ? "text-white" : "text-slate-500"
-            )} />
+            <Send
+              className={clsx(
+                "w-5 h-5 transition-transform",
+                isPending && "animate-pulse",
+                message.trim() ? "text-white" : "text-slate-500"
+              )}
+            />
           </button>
         </div>
       </div>

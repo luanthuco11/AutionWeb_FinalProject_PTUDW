@@ -32,12 +32,6 @@ const RatingPage = () => {
     setOffset((page - 1) * limit);
   }, []);
 
-  // --- Exception ---
-  if (isLoading || isTotalRatingLoading) return <LoadingSpinner />;
-  if (error || errorTotalRating) return <p>Lỗi tải dữ liệu</p>;
-  if (!userRating || !ratingByPage)
-    return <p>Không tìm thấy thông tin người dùng</p>;
-
   // --- Memo ---
   const positiveRatingPercent = useMemo(() => {
     if (!userRating || !userRating.logs) return 0;
@@ -59,6 +53,12 @@ const RatingPage = () => {
   const sumRating = useMemo(() => {
     return userRating?.logs.length || 0;
   }, [userRating]);
+
+  // --- Exception ---
+  if (isLoading || isTotalRatingLoading) return <LoadingSpinner />;
+  if (error || errorTotalRating) return <p>Lỗi tải dữ liệu</p>;
+  if (!userRating || !ratingByPage)
+    return <p>Không tìm thấy thông tin người dùng</p>;
 
   return (
     <div className="background-user flex flex-col gap-2">
