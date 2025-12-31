@@ -209,7 +209,7 @@ export default function ProductPage() {
   useEffect(() => {
     if (!router || !user || !product || !order || !searchParams || canBid)
       return;
-
+    console.log(order);
     //Check can bid
     if (user) {
       if (!isCanBid) {
@@ -236,8 +236,6 @@ export default function ProductPage() {
     }
     const nowTime: Date = new Date();
     const endTime = new Date(product.end_time);
-    console.log(nowTime);
-    console.log(endTime);
     if (nowTime.getTime() >= endTime.getTime()) {
       setIsEnd(true);
     } else {
@@ -393,8 +391,12 @@ export default function ProductPage() {
                         Giá mua ngay
                       </p>{" "}
                       <p className="text-4xl font-bold text-red-500 mb-2">
-                        {product.current_price &&
-                          formatCurrency(product.buy_now_price)}
+                        {product.buy_now_price != null ? (
+                          product.current_price &&
+                          formatCurrency(product.buy_now_price)
+                        ) : (
+                          <>Chưa có</>
+                        )}
                       </p>
                     </div>
                   </div>
@@ -660,15 +662,16 @@ export default function ProductPage() {
                           )}
                         </div>
 
-                        <div className="relative group w-full">
-                          {/* Button */}
-                          <button
-                            disabled={!isCanBid}
-                            onClick={handleBuyNow}
-                            style={{
-                              cursor: !isCanBid ? "not-allowed" : "pointer",
-                            }}
-                            className="
+                        {product.buy_now_price != null ? (
+                          <div className="relative group w-full">
+                            {/* Button */}
+                            <button
+                              disabled={!isCanBid}
+                              onClick={handleBuyNow}
+                              style={{
+                                cursor: !isCanBid ? "not-allowed" : "pointer",
+                              }}
+                              className="
                                     w-full flex items-center gap-2 justify-center
                                     border border-red-600 text-red-600
                                     py-2 font-medium rounded-lg
@@ -677,15 +680,14 @@ export default function ProductPage() {
                                     disabled:hover:bg-transparent
                                     disabled:hover:text-red-600
                                   "
-                          >
-                            {"Mua ngay " +
-                              formatCurrency(product.buy_now_price || 0)}
-                          </button>
-
-                          {/* Tooltip */}
-                          {!isCanBid && (
-                            <div
-                              className=" absolute bottom-full left-1/2
+                            >
+                              {"Mua ngay " +
+                                formatCurrency(product.buy_now_price || 0)}
+                            </button>
+                            {/* Tooltip */}
+                            {!isCanBid && (
+                              <div
+                                className=" absolute bottom-full left-1/2
                                       -translate-x-1/2
                                       mb-2
                                       hidden
@@ -700,11 +702,14 @@ export default function ProductPage() {
                                       shadow-lg
                                       z-50
                                     "
-                            >
-                              Bạn không đủ điều kiện để mua sản phẩm này
-                            </div>
-                          )}
-                        </div>
+                              >
+                                Bạn không đủ điều kiện để mua sản phẩm này
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <></>
+                        )}
                       </>
                     ) : (
                       <div>

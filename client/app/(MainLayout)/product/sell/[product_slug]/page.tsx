@@ -322,8 +322,12 @@ export default function ProductPage() {
                         Giá mua ngay
                       </p>{" "}
                       <p className="text-4xl font-bold text-red-500 mb-2">
-                        {product.current_price &&
-                          formatCurrency(product.buy_now_price)}
+                        {product.buy_now_price != null ? (
+                          product.current_price &&
+                          formatCurrency(product.buy_now_price)
+                        ) : (
+                          <>Chưa có</>
+                        )}
                       </p>
                     </div>
                   </div>
