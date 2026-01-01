@@ -123,8 +123,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   signOut: async () => {
     try {
-      get().clearState();
       const { message } = await authService.signOut();
+      get().clearState();
       toast.success(message);
     } catch (error: any) {
       console.log(error);
