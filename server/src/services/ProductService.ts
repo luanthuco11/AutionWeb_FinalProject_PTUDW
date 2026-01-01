@@ -265,7 +265,7 @@ export class ProductService extends BaseService {
         return productType;
       })
     );
-
+    
     return newProducts;
   }
 

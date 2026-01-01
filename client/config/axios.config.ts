@@ -95,6 +95,6 @@ export async function safeRequest<T>(fn: () => Promise<T>) {
   } catch (error: any) {
     console.log(error);
 
-    throw error?.response?.data ?? error;
+    throw new Error(error?.response?.data ?? error);
   }
 }
