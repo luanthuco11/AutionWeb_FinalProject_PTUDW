@@ -52,8 +52,10 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
 
   if (isPayingOrder) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <LoadingSpinner />
+      <div className="relative flex flex-col items-center justify-center h-120 gap-4">
+        <div className="w-full h-50">
+          <LoadingSpinner />
+        </div>
         <p className="text-slate-500 animate-pulse">Đang xử lý thanh toán...</p>
       </div>
     );
