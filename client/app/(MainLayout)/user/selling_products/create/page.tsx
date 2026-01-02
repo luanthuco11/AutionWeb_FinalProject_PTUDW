@@ -486,7 +486,7 @@ const CreateProductPage = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
-                className="w-4 h-4"
+                className="w-4 h-4 bg-white"
                 type="checkbox"
                 {...register("is_all_can_bid")}
               />
@@ -504,7 +504,7 @@ const CreateProductPage = () => {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
-                className="w-4 h-4"
+                className="w-4 h-4 bg-white"
                 type="checkbox"
                 {...register("auto_extend")}
               />

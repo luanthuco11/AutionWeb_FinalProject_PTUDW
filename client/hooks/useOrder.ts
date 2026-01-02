@@ -46,7 +46,7 @@ class OrderHook {
         OrderService.createOrder(params.payload),
 
       onSuccess: (data, params) => {
-        toast.success("Tạo đơn hàng thành công 123");
+        toast.success("Tạo đơn hàng thành công");
         console.log("data hook: ", data);
         queryClient.invalidateQueries({
           queryKey: ["order"],

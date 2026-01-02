@@ -277,6 +277,7 @@ export default function ProductPage() {
     }
   };
 
+  console.log("gia tri user: ", user);
   const handleBid: SubmitHandler<{ price: number }> = async (data) => {
     if (product.buy_now_price && data.price >= product.buy_now_price) {
       setWarningAutoBuyNowModal(true);
@@ -358,7 +359,9 @@ export default function ProductPage() {
       isLoadingOrder ||
       isLoadingUserBid ||
       isCreatingOrder ? (
-        <LoadingSpinner />
+        <div className="fixed inset-0 z-100">
+          <LoadingSpinner />
+        </div>
       ) : (
         <>
           <div className="mb-4">
