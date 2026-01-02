@@ -1,57 +1,80 @@
+"use client";
+
 import React from "react";
 import { Order } from "../../../../../../shared/src/types";
+import {
+  XCircle,
+  Calendar,
+  AlertCircle,
+  ArrowLeft,
+  ShoppingBag,
+  History,
+} from "lucide-react";
+import Link from "next/link";
 
 const CancelledCard = ({ order }: { order: Order }) => {
   return (
-    <div className="w-full py-12 flex justify-center items-center">
-      <div className="max-w-sm w-full bg-white border border-red-200 rounded-3xl p-8 shadow-xl shadow-red-50/50 relative overflow-hidden">
-        {/* Decor trang trí phía sau */}
-        <div className="absolute -top-10 -right-10 w-32 h-32 bg-red-50 rounded-full blur-3xl opacity-60"></div>
+    <div className="w-full py-16 px-4 flex flex-col items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="max-w-md w-full bg-white border border-red-100 rounded-[2.5rem] p-10 shadow-2xl shadow-red-100/40 relative overflow-hidden">
+        {/* Decor Layer */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-red-50/50 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-slate-50 rounded-full -ml-12 -mb-12 blur-2xl"></div>
 
         <div className="relative flex flex-col items-center text-center">
-          {/* Icon Hủy đơn với hiệu ứng nền */}
-          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6 ring-8 ring-red-50/30">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 text-red-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+          {/* Main Icon */}
+          <div className="relative mb-8">
+            <div className="w-24 h-24 bg-red-500 rounded-4xl flex items-center justify-center shadow-lg shadow-red-200 rotate-3 transition-transform hover:rotate-0 duration-500">
+              <XCircle className="h-12 w-12 text-white" strokeWidth={1.5} />
+            </div>
           </div>
 
-          {/* Title */}
-          <h2 className="text-2xl font-bold text-red-600 mb-2">
-            Đơn hàng đã bị hủy
+          {/* Content */}
+          <h2 className="text-3xl font-bold text-slate-800 mb-3 tracking-tight">
+            Đơn hàng đã hủy
           </h2>
 
-          {/* Thời gian */}
-          <p className="text-slate-500 text-sm mb-6 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 bg-red-400 rounded-full animate-pulse"></span>
-            Hủy lúc:{" "}
-            <span className="font-medium text-slate-700">
-              {new Date(order.updated_at!).toLocaleString("vi-VN")}
+          <div className="flex items-center gap-2 text-slate-400 text-sm mb-8 font-medium">
+            <Calendar size={14} />
+            <span>
+              {new Date(order.updated_at!).toLocaleString("vi-VN", {
+                hour: "2-digit",
+                minute: "2-digit",
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}
             </span>
-          </p>
+          </div>
 
-          {/* Box Lý do */}
-          <div className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 text-left">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-              Lý do hủy đơn
+          {/* Reason Box - Cải tiến layout */}
+          <div className="w-full bg-slate-50/80 backdrop-blur-sm border border-slate-100 rounded-[1.5rem] p-5 mb-8 text-left transition-colors hover:bg-slate-50">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-1.5 h-4 bg-red-400 rounded-full"></div>
+              <p className="text-[11px] font-bold text-slate-400 uppercase">
+                Lý do từ hệ thống
+              </p>
+            </div>
+            <p className="text-slate-700 font-semibold leading-relaxed">
+              {"Người mua không thanh toán"}
             </p>
-            <p className="text-slate-700 font-medium">
-              Người mua không thanh toán
-            </p>
+          </div>
+
+          {/* Action Buttons - Giúp Buyer thoát khỏi trang lỗi */}
+          <div className="w-full grid grid-cols-1 gap-3">
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-2 w-full bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition-all active:scale-95 shadow-lg shadow-slate-200"
+            >
+              <ShoppingBag size={18} />
+              Tiếp tục mua sắm
+            </Link>
           </div>
         </div>
       </div>
+
+      <p className="mt-8 text-slate-400 text-xs font-medium italic">
+        Mọi thắc mắc liên hệ về email của người bán: <b>{order.seller.email}</b>
+      </p>
     </div>
   );
 };
