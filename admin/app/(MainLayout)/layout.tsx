@@ -12,7 +12,7 @@ export default function RootLayout({
         <Header />
       </header>
 
-      <div className="flex pl-60">
+      <div className="flex pl-72">
         <div className="fixed top-[70px] left-0 w-60 h-screen bg-white shadow z-40">
           <NavigationBar />
         </div>
