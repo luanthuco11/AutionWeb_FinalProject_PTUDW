@@ -1,5 +1,4 @@
 // app/layout.tsx
-"use client";
 import { Footer } from "@/components/Footer/Footer";
 import "../globals.css";
 import Header from "@/components/Header";
@@ -14,7 +13,7 @@ export default function RootLayout({
     <>
       <AuthRoute>
         <Header />
-        <div className="mt-[100px] flex container-layout gap-8 mb-[50px]">
+        <div className="mt-[100px] flex flex-col lg:flex-row container-layout gap-8 mb-[50px] w-full">
           {children}
         </div>
         <Footer />

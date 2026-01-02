@@ -1,10 +1,31 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "flowbite";
 
 @plugin "tailwind-scrollbar";
 
 @custom-variant dark (&:is(.dark *));
+
+@layer base {
+  @import "flowbite";
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    background-color: #f9fafb81;
+    color: #1f2937;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+  }
+}
 
 :root {
   --card: oklch(1 0 0);
@@ -141,88 +162,66 @@
   --color-warning: #f59e0b;
   --color-surface: #e5e7eb;
 }
-/* Added missing closing brace for @theme inline block */
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
+@layer components {
+  .badge-new {
+    @apply inline-block px-2 py-1 text-xs font-semibold bg-green-50 text-green-700 rounded border border-green-200;
   }
-  body {
-    @apply bg-background text-foreground;
+
+  .card-shadow {
+    @apply shadow-sm hover:shadow-md transition-shadow;
   }
-}
 
-body {
-  background-color: #f9fafb81;
-  color: #1f2937;
-}
+  /* Auction countdown timer */
+  .countdown-timer {
+    @apply font-mono text-sm font-semibold;
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 600;
-}
+  .countdown-critical {
+    @apply text-red-600;
+  }
 
-.badge-new {
-  @apply inline-block px-2 py-1 text-xs font-semibold bg-green-50 text-green-700 rounded border border-green-200;
-}
+  /* Added hover/focus state utilities for modern interactions */
+  .btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all;
+  }
 
-.card-shadow {
-  @apply shadow-sm hover:shadow-md transition-shadow;
-}
+  .btn-accent {
+    @apply bg-amber-400 text-slate-900 hover:bg-amber-500 focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 transition-all font-semibold;
+  }
 
-/* Auction countdown timer */
-.countdown-timer {
-  @apply font-mono text-sm font-semibold;
-}
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all;
+  }
 
-.countdown-critical {
-  @apply text-red-600;
-}
+  .input-focus {
+    @apply border-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all;
+  }
 
-/* Added hover/focus state utilities for modern interactions */
-.btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all;
-}
+  .minimal-scrollbar {
+    /* Sử dụng scrollbar-thin để thanh cuộn mỏng */
+    @apply scrollbar-thin;
 
-.btn-accent {
-  @apply bg-amber-400 text-slate-900 hover:bg-amber-500 focus:ring-2 focus:ring-amber-300 focus:ring-offset-2 transition-all font-semibold;
-}
+    /* Đặt màu nút cuộn (thumb) là màu xám đậm (ví dụ: gray-700) và track trong suốt */
+    @apply scrollbar-thumb-gray-700 scrollbar-track-transparent;
+  }
 
-.btn-secondary {
-  @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition-all;
-}
+  /* Ẩn các nút mũi tên (arrows) cho WebKit browsers (Chrome, Edge, Safari) */
+  .minimal-scrollbar::-webkit-scrollbar-button {
+    display: none;
+    height: 0;
+    width: 0;
+  }
 
-.input-focus {
-  @apply border-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all;
-}
+  .container-layout {
+    @apply px-2 sm:px-6 md:px-10 lg:px-14;
+  }
 
-.minimal-scrollbar {
-  /* Sử dụng scrollbar-thin để thanh cuộn mỏng */
-  @apply scrollbar-thin;
+  .background-user {
+    @apply bg-white shadow-sm px-6 rounded-lg pt-8 pb-4 border border-gray-200;
+  }
 
-  /* Đặt màu nút cuộn (thumb) là màu xám đậm (ví dụ: gray-700) và track trong suốt */
-  @apply scrollbar-thumb-gray-700 scrollbar-track-transparent;
-}
-
-/* Ẩn các nút mũi tên (arrows) cho WebKit browsers (Chrome, Edge, Safari) */
-.minimal-scrollbar::-webkit-scrollbar-button {
-  display: none;
-  height: 0;
-  width: 0;
-}
-
-.container-layout {
-  @apply px-2 sm:px-6 md:px-10 lg:px-14;
-}
-
-.background-user {
-  @apply bg-white shadow-sm px-6 rounded-lg pt-8 pb-4 border border-gray-200;
-}
-
-.checkbox-primary {
-  @apply rounded-xs border border-black cursor-pointer focus:ring-0 focus:ring-offset-0;
+  .checkbox-primary {
+    @apply rounded-xs border border-black cursor-pointer focus:ring-0 focus:ring-offset-0;
+  }
 }
