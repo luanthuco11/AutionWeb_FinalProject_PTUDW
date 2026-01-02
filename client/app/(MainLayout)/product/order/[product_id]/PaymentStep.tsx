@@ -3,11 +3,19 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import PrimaryButton from "@/components/PrimaryButton";
-import { CircleCheckBig, NotebookPen } from "lucide-react";
+import {
+  CircleCheckBig,
+  NotebookPen,
+  CreditCard,
+  MapPin,
+  AlertCircle,
+  Phone,
+} from "lucide-react";
 import OrderHook from "@/hooks/useOrder";
 import { Order, OrderPayment } from "../../../../../../shared/src/types";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { formatCurrency } from "../../[product_slug]/components/Question";
+import clsx from "clsx";
 
 type ComponentProps = {
   setActive?: React.Dispatch<React.SetStateAction<number>>;
@@ -24,13 +32,9 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
 
   useEffect(() => {
     setAddress(order?.buyer.address || "");
-
-    return () => {};
   }, [order]);
 
-  const handlePayment = () => {
-    setIsPaid(true);
-  };
+  const handlePayment = () => setIsPaid(true);
 
   const handleConfirmation = () => {
     const payment: OrderPayment = {
@@ -42,162 +46,198 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
 
     buyerPayOrder(
       { productId: Number(order.product_id), payment: payment },
-      {
-        onSuccess: setActive && (() => setActive(1)),
-      }
+      { onSuccess: setActive && (() => setActive(1)) }
     );
   };
 
+  if (isPayingOrder) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64 gap-4">
+        <LoadingSpinner />
+        <p className="text-slate-500 animate-pulse">Đang xử lý thanh toán...</p>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {isPayingOrder ? (
-        <div className="relative h-50">
-          <LoadingSpinner />
+    <div className="max-w-4xl mx-auto flex flex-col gap-8 py-4">
+      {/* Bước 1: Thanh toán chuyển khoản */}
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+            1
+          </div>
+          <h3 className="font-bold text-slate-800 text-lg">
+            Thanh toán chuyển khoản
+          </h3>
         </div>
-      ) : (
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-col gap-2">
-            <p className="text-xl font-bold ">
-              <span className="text-blue-600">Bước 1. </span> Quét mã QR hoặc
-              chuyển khoản vào thông tin bên dưới
-            </p>
-            <div className="flex flex-row gap-3">
+
+        <div className="p-6 flex flex-col md:flex-row gap-8 items-center md:items-start">
+          <div className="shrink-0 group">
+            <div className="relative p-2 bg-white border-2 border-dashed border-slate-200 rounded-2xl group-hover:border-blue-400 transition-colors">
               <Image
                 src="/seller-QR.jpg"
                 alt="QR thanh toán"
-                width={200}
-                height={200}
+                width={180}
+                height={180}
+                className="rounded-xl"
               />
-              <div className="my-2 flex flex-col text-lg font-medium">
-                <div>
-                  <div className="grid grid-cols-11 gap-2">
-                    <p className="col-span-4">Số tài khoản:</p>
-                    <p className="col-span-7 font-mono text-lg text-gray-800">
-                      1027329108
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-11 gap-2">
-                    <p className="col-span-4">Tên tài khoản:</p>
-                    <p className="col-span-7 font-mono text-lg text-gray-800">
-                      {order.seller.name}
-                    </p>
-                  </div>
-                  <div className="grid grid-cols-11 gap-2 mt-5">
-                    <p className="col-span-4">Giả sản phẩm:</p>
-                    <p className="col-span-7 text-xl text-red-500">
-                      {formatCurrency(order.price)}
-                    </p>
-                  </div>
-                </div>
-                <div className="h-full w-60 flex justify-center items-center">
-                  {isPaid ? (
-                    <div className="flex flex-row gap-2 text-green-600">
-                      <CircleCheckBig />{" "}
-                      <span className="ml-2">Đã thanh toán</span>
-                    </div>
-                  ) : (
-                    <div className="w-2/3 justify-start">
-                      <PrimaryButton
-                        backgroundColor={"#3B82F6"}
-                        hoverBackgroundColor={"#4B92F6"}
-                        onClick={handlePayment}
-                        text={"Thanh toán"}
-                      />
-                    </div>
-                  )}
-                </div>
+              <div className="absolute inset-0 flex items-center justify-center bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+                <span className="text-xs font-bold text-blue-600">
+                  Quét mã để trả tiền
+                </span>
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <p className="text-xl font-bold ">
-              <span className="text-blue-600">Bước 2. </span> Nhập thông tin
-              nhận hàng
-            </p>
-            <form className="w-3/5 flex flex-col gap-3 mt-2">
-              <div className="grid grid-cols-12 gap-2">
-                <label htmlFor="name" className="col-span-2 font-medium">
-                  Họ và tên
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  value={order.buyer.name}
-                  className="col-span-10 text-black h-7.5 rounded-lg mr-10 bg-slate-200"
-                  disabled={true}
-                ></input>
-              </div>
-              <div className="grid grid-cols-12 gap-2">
-                <label htmlFor="email" className="col-span-2 font-medium">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={order.buyer.email}
-                  className="col-span-10 text-black h-7.5 rounded-lg mr-10 bg-slate-200"
-                  disabled={true}
-                ></input>
-              </div>
-              <div className="grid grid-cols-12 gap-2">
-                <label htmlFor="address" className="col-span-2 font-medium">
-                  Địa chỉ
-                </label>
-                <input
-                  type="text"
-                  id="address"
-                  placeholder="123 Tôn Đức Thắng, Quận 1, TP. Hồ Chí Minh"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="col-span-10 text-black h-7.5 rounded-lg mr-10"
-                ></input>
-              </div>
-              <div className="grid grid-cols-12 gap-2">
-                <label
-                  htmlFor="phone_number"
-                  className="col-span-2 font-medium"
-                >
-                  Liên lạc
-                </label>
-                <input
-                  type="text"
-                  id="phone_number"
-                  value={phoneNumber}
-                  placeholder="0123456798"
-                  onChange={(e) =>
-                    setPhoneNumber(e.target.value.replace(/[^0-9]/g, ""))
-                  }
-                  className="col-span-10 text-black h-7.5 rounded-lg mr-10"
-                ></input>
-              </div>
-            </form>
-            <ul className="text-red-600 mt-2">
-              <li>
-                Vui lòng kiểm tra kĩ thông tin, vì bạn không thể quay lại chỉnh
-                sửa sau khi xác nhận.
-              </li>
-              <li>
-                Khi cần thiết, bạn có thể giao tiếp với người bán ở phần "Trò
-                chuyện với người bán".
-              </li>
-            </ul>
-          </div>
 
-          <div className="flex flex-row gap-2 justify-center">
-            <div className="relative w-50">
-              <button
-                onClick={handleConfirmation}
-                disabled={!isPaid || !address || !phoneNumber}
-                className="flex flex-rows gap-2 items-center border border-blue-500 py-2 px-7 rounded-lg bg-blue-500 text-white hover:bg-blue-400 hover:border-blue-400 cursor-pointer disabled:bg-gray-400 disabled:border-gray-400"
-              >
-                <NotebookPen height={20} width={20} />
-                <span className="text-md font-medium">Xác nhận</span>
-              </button>
+          <div className="flex-1 w-full space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <p className="text-[11px] text-slate-500 uppercase font-bold tracking-wider mb-1">
+                  Số tài khoản
+                </p>
+                <p className="font-mono text-lg text-slate-800 select-all font-bold">
+                  1027329108
+                </p>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <p className="text-[11px] text-slate-500 uppercase font-bold tracking-wider mb-1">
+                  Chủ tài khoản
+                </p>
+                <p className="text-slate-800 font-bold">{order.seller.name}</p>
+              </div>
+            </div>
+
+            <div className="p-4 bg-red-50 rounded-xl border border-red-100 flex justify-between items-center">
+              <span className="text-red-700 font-medium">
+                Số tiền cần thanh toán:
+              </span>
+              <span className="text-2xl font-black text-red-600">
+                {formatCurrency(order.price)}
+              </span>
+            </div>
+
+            <div className="flex justify-center">
+              {isPaid ? (
+                <div className="flex items-center justify-center gap-2 px-6 py-2.5 bg-green-50 text-green-600 rounded-full border border-green-200 font-bold animate-in fade-in zoom-in duration-300">
+                  <CircleCheckBig className="w-5 h-5" />
+                  <span>Đã thực hiện thanh toán</span>
+                </div>
+              ) : (
+                <div className="w-full sm:w-48">
+                  <PrimaryButton
+                    backgroundColor={"#2563eb"}
+                    hoverBackgroundColor={"#1d4ed8"}
+                    onClick={handlePayment}
+                    text={"Tôi đã chuyển khoản"}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
-      )}
-    </>
+      </div>
+
+      {/* Bước 2: Thông tin nhận hàng */}
+      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+            2
+          </div>
+          <h3 className="font-bold text-slate-800 text-lg">
+            Thông tin nhận hàng
+          </h3>
+        </div>
+
+        <div className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold text-slate-700 ml-1">
+                Người nhận
+              </label>
+              <div className="px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-600 flex items-center gap-2">
+                <span className="font-medium">{order.buyer.name}</span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-bold text-slate-700 ml-1">
+                Email liên hệ
+              </label>
+              <div className="px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-slate-600">
+                <span className="font-medium">{order.buyer.email}</span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="text-sm font-bold text-slate-700 ml-1">
+                Địa chỉ giao hàng
+              </label>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Số nhà, tên đường, phường/xã..."
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400"
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 md:col-span-2">
+              <label className="text-sm font-bold text-slate-700 ml-1">
+                Số điện thoại liên lạc
+              </label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Ví dụ: 0912345678"
+                  value={phoneNumber}
+                  onChange={(e) =>
+                    setPhoneNumber(e.target.value.replace(/[^0-9]/g, ""))
+                  }
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder:text-slate-400"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-amber-50 rounded-xl border border-amber-100 flex gap-3">
+            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+            <div className="text-sm text-amber-800 space-y-1">
+              <p className="font-bold">Lưu ý quan trọng:</p>
+              <p>
+                • Kiểm tra kỹ thông tin địa chỉ. Sau khi xác nhận bạn sẽ không
+                thể tự chỉnh sửa.
+              </p>
+              <p>
+                • Sử dụng phần <b>"Trao đổi đơn hàng"</b> để chat trực tiếp với
+                người bán khi cần.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Nút xác nhận cuối cùng */}
+      <div className="flex flex-col items-center py-4">
+        <button
+          onClick={handleConfirmation}
+          disabled={!isPaid || !address || !phoneNumber}
+          className={clsx(
+            "flex gap-3 items-center px-10 py-4 rounded-2xl font-bold text-lg transition-all shadow-lg active:scale-95",
+            !isPaid || !address || !phoneNumber
+              ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
+              : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-200"
+          )}
+        >
+          <NotebookPen className="w-6 h-6" />
+          Xác nhận hoàn tất
+        </button>
+        <p className="mt-3 text-sm text-slate-400">
+          Vui lòng hoàn thành 2 bước trên để nút xác nhận khả dụng
+        </p>
+      </div>
+    </div>
   );
 };
 
