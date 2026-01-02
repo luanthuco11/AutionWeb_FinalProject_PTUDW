@@ -68,7 +68,7 @@ const OrderInfoCard = ({ product, order }: ComponentProps) => {
               Đơn hoàn thành lúc
             </p>
             <p className="text-sm text-slate-700 font-medium">
-              {order.status === "completed"
+              {order.status === "shipped"
                 ? new Date(order.updated_at || "").toLocaleString("vi-VN")
                 : "Chưa kết thúc"}
             </p>

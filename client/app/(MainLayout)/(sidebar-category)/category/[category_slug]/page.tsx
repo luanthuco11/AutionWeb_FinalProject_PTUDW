@@ -19,7 +19,7 @@ function CategorySlugPage({
   const searchParams = useSearchParams();
   const router = useRouter();
   const page = searchParams.get("page") || "1";
-  const sort = searchParams.get("sort") || "";
+  const sort = searchParams.get("sort") || "ascending-price";
   let totalPages = 1;
   let dataResult = null;
   const {
