@@ -55,8 +55,10 @@ const DeliveringStep = ({ setActive, order }: ComponentProps) => {
 
   if (isConfirmingShipped) {
     return (
-      <div className="w-full h-[500px] flex flex-col items-center justify-center gap-4">
-        <LoadingSpinner />
+      <div className="relative w-full h-[500px] flex flex-col items-center justify-center gap-4">
+        <div className="w-full h-50">
+          <LoadingSpinner />
+        </div>
         <p className="text-slate-500 animate-pulse font-medium">
           Đang xác nhận...
         </p>
@@ -166,8 +168,8 @@ const DeliveringStep = ({ setActive, order }: ComponentProps) => {
             </div>
             <div className="bg-amber-50 p-3 rounded-xl border border-amber-100">
               <p className="text-xs text-amber-700 font-medium leading-relaxed italic">
-                Vui lòng chỉ xác nhận "Đã nhận hàng" khi bạn đã cầm sản phẩm
-                trên tay và kiểm tra kỹ lưỡng.
+                Vui lòng chỉ xác nhận <b>Đã nhận hàng</b> khi bạn đã cầm sản
+                phẩm trên tay và kiểm tra kỹ lưỡng.
               </p>
             </div>
           </div>
