@@ -152,8 +152,8 @@ export type WinningProduct = Pick<
   winning_date: Date;
   status: OrderStatus;
 };
-export type BiddingProduct = WinningProduct & {
-  user_price: number;
+export type BiddingProduct = Product & {
+  user_price: number; 
 };
 export type CreateQuestion = Pick<ProductQuestion, "comment">;
 export type CreateAnswer = Pick<ProductAnswer, "comment"> & {

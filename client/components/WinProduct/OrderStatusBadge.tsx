@@ -75,8 +75,8 @@ const OrderStatusBadge = ({ status }: { status: OrderStatus }) => {
       {/* <span
         className={clsx("h-1.5 w-1.5 rounded-full animate-pulse", config.dot)}
       /> */}
-      <Icon className="w-3.5 h-3.5" />
-      <span className="text-[12px] font-bold uppercase tracking-tight">
+      <Icon className="w-3 h-3 md:w-3.5 md:h-3.5" />
+      <span className="text-[10px] md:text-[12px] font-bold uppercase tracking-tight">
         {config.label}
       </span>
     </div>

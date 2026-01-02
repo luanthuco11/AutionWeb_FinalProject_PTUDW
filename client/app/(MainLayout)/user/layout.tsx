@@ -34,7 +34,7 @@ export default function SidebarLayout({
                   <UserCategoryTable userCategories={visibleCategories} />
                 </div>
               </aside>
-              <main className=" w-full">{children}</main>
+              <main className="w-full lg:pl-8">{children}</main>
             </div>
           </ProtectedRoute>
         </>

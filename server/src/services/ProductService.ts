@@ -274,7 +274,7 @@ export class ProductService extends BaseService {
         return productType;
       })
     );
-    
+
     return newProducts;
   }
 
@@ -1223,15 +1223,16 @@ RETURNING *;
   ): Promise<BiddingProduct[]> {
     const params: any[] = [userId];
     let sql = `
-    SELECT DISTINCT p.id, p.name, p.slug, p.main_image, b.price as user_price
-                FROM auction.bid_logs as b
-                JOIN product.products as p ON p.id = b.product_id
-                WHERE b.user_id =$1 AND b.price = (
-                    SELECT MAX(price)
-                    FROM auction.bid_logs as c
-                    WHERE c.user_id = $1 AND c.product_id = b.product_id
-                  )
-                   `;
+      SELECT product_id::INT, b.max_price::INT
+      FROM auction.user_bids b
+      JOIN product.products p ON p.id = b.product_id
+      WHERE user_id = $1 AND (p.end_time > NOW() AND NOT EXISTS (
+        SELECT 1
+        FROM auction.orders o
+        WHERE o.product_id = b.product_id AND o.status != 'cancelled'
+      ))
+      ORDER BY p.end_time DESC
+    `;
     if (limit) {
       sql += `LIMIT $2 \n`;
       params.push(limit);
@@ -1241,24 +1242,24 @@ RETURNING *;
       sql += "OFFSET $3 \n";
       params.push(offset);
     }
-    const productsNotPrice: BiddingProduct[] = await this.safeQuery(
-      sql,
-      params
-    );
+    const productIds = await this.safeQuery<{
+      product_id: number;
+      max_price: number;
+    }>(sql, params);
 
-    const productHavePrice = await Promise.all(
-      productsNotPrice.map(async (p) => {
-        const current_price = await this.getCurrentPrice(p.id);
-        if (current_price === undefined) {
-          return { ...p, current_price: null };
-        }
-        return { ...p, current_price };
+    const productPreview = await Promise.all(
+      productIds.map(async (item: any) => {
+        const productType = await this.getProductType(item.product_id);
+        return {
+          ...productType,
+          user_price: item.max_price,
+        };
       })
     );
-    return productHavePrice;
+    return productPreview;
   }
 
-  async getProducts(pagination: Pagination): Promise<ProductPreview[]> {
+  async getProducts(pagination: Pagination): Promise<Product[]> {
     const sql = `
                 SELECT p.id 
                 FROM product.products p
@@ -1272,7 +1273,7 @@ RETURNING *;
 
     const productPreview = await Promise.all(
       product.map(async (item: any) => {
-        const productType = this.getProductPreviewType(item.id);
+        const productType = this.getProductType(item.id);
         return productType;
       })
     );
