@@ -19,8 +19,10 @@ export interface UserCategory {
 
 export default function UserCategoryTable({
   userCategories,
+   isMobile = false,
 }: {
   userCategories: UserCategory[];
+   isMobile?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();

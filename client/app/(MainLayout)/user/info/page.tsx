@@ -12,6 +12,7 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
 import { useQueryClient } from "@tanstack/react-query";
+import ShortUserSidebar from "@/components/ShortUserSidebar";
 
 const InfoPage = () => {
   const { signOut } = useAuthStore();
@@ -55,62 +56,65 @@ const InfoPage = () => {
   if (!userProfile) return <p>Không tìm thấy thông tin người dùng</p>;
 
   return (
-    <div className="bg-white w-full h-full border-2 border-gray-200 shadow-md rounded-lg p-7">
-      <p className="text-2xl font-medium">Thông tin tài khoản</p>
-      <div>
-        {inEditMode ? (
-          <div>
-            <EditDetail
-              user={userProfile}
-              onProfileSubmit={setSubmitProfileForm}
-              setIsSaving={setIsSaving}
-              onSaveSuccess={() => setInEditMode(false)}
-              setIsDirty={setIsFormDirty}
-            />
-          </div>
-        ) : (
-          <div>
-            <ViewDetail user={userProfile} />
-          </div>
-        )}
+    <>
+      <ShortUserSidebar />
+      <div className="bg-white w-full h-full border-2 border-gray-200 shadow-md rounded-lg p-7">
+        <p className="text-2xl font-medium">Thông tin tài khoản</p>
+        <div>
+          {inEditMode ? (
+            <div>
+              <EditDetail
+                user={userProfile}
+                onProfileSubmit={setSubmitProfileForm}
+                setIsSaving={setIsSaving}
+                onSaveSuccess={() => setInEditMode(false)}
+                setIsDirty={setIsFormDirty}
+              />
+            </div>
+          ) : (
+            <div>
+              <ViewDetail user={userProfile} />
+            </div>
+          )}
 
-        {inEditMode ? (
-          <div>
-            <section className="flex flex-row gap-5 mt-10 max-w-80">
-              <PrimaryButton
-                text={isSaving ? "Đang lưu..." : "Lưu thay đổi"}
-                onClick={handleSaveButton}
-              />
-              <SecondaryButton
-                text="Hủy"
-                textColor="#FF0505"
-                hoverTextColor="#FFFFFF"
-                hoverBackgroundColor="#FF5555"
-                onClick={handleCancelEditButton}
-              />
-            </section>
-          </div>
-        ) : (
-          <div>
-            <section className="flex flex-row gap-5 mt-10 max-w-80">
-              <PrimaryButton
-                text="Chỉnh sửa"
-                icon={() => <EditIcon className="text-white" />}
-                onClick={handleEditButton}
-              />
-              <SecondaryButton
-                text="Đăng xuất"
-                icon={() => <LogoutIcon className="text-red-[#FF0505]" />}
-                textColor="#FF0505"
-                hoverTextColor="#FFFFFF"
-                hoverBackgroundColor="#FF5555"
-                onClick={handleLogout}
-              />
-            </section>
-          </div>
-        )}
+          {inEditMode ? (
+            <div>
+              <section className="flex flex-row gap-5 mt-10 max-w-80">
+                <PrimaryButton
+                  text={isSaving ? "Đang lưu..." : "Lưu thay đổi"}
+                  onClick={handleSaveButton}
+                />
+                <SecondaryButton
+                  text="Hủy"
+                  textColor="#FF0505"
+                  hoverTextColor="#FFFFFF"
+                  hoverBackgroundColor="#FF5555"
+                  onClick={handleCancelEditButton}
+                />
+              </section>
+            </div>
+          ) : (
+            <div>
+              <section className="flex flex-row gap-5 mt-10 max-w-80">
+                <PrimaryButton
+                  text="Chỉnh sửa"
+                  icon={() => <EditIcon className="text-white" />}
+                  onClick={handleEditButton}
+                />
+                <SecondaryButton
+                  text="Đăng xuất"
+                  icon={() => <LogoutIcon className="text-red-[#FF0505]" />}
+                  textColor="#FF0505"
+                  hoverTextColor="#FFFFFF"
+                  hoverBackgroundColor="#FF5555"
+                  onClick={handleLogout}
+                />
+              </section>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

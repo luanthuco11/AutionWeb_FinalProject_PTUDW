@@ -24,8 +24,11 @@ export default function SidebarLayout({
       {data && (
         <>
           <ProtectedRoute>
-            <aside>
-              <UserCategoryTable userCategories={visibleCategories} />
+            <aside></aside>
+            <aside className="hidden lg:block w-64 shrink-0">
+              <div className="sticky top-24">
+                <UserCategoryTable userCategories={visibleCategories} />
+              </div>
             </aside>
             <main className="w-full">{children}</main>
           </ProtectedRoute>
