@@ -6,9 +6,9 @@ import { SearchBar } from "@/components/SearchBar";
 import CategoryHook from "@/hooks/useCategory";
 import ProductHook from "@/hooks/useProduct";
 import React from "react";
-import { CategoryProduct, ProductPreview } from "../../../shared/src/types";
+import { CategoryProduct, ProductPreview } from "../../../../shared/src/types";
 import { useSearchParams } from "next/navigation";
-import { Pagination as PaginationType } from "../../../shared/src/types/Pagination";
+import { Pagination as PaginationType } from "../../../../shared/src/types/Pagination";
 import Pagination from "@/components/Pagination";
 import { useRouter } from "next/navigation";
 export default function ManageProductPage() {
