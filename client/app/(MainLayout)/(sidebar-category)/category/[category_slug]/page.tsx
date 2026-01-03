@@ -23,7 +23,7 @@ function CategorySlugPage({
   const page = searchParams.get("page") || "1";
   const sort = searchParams.get("sort") || "ascending-price";
   let totalPages  = 1;
-  let dataResult = null;
+  
   const {
     data,
     isLoading: isLoadingProducts,
@@ -52,7 +52,7 @@ function CategorySlugPage({
   const totalPriceProducts = data?.totalProducts ?? 0;
   const categoryName = data?.categoryName ?? "";
   const products = data?.products ?? [];
-  const totalPages = Math.ceil(Number(totalPriceProducts) / per_page);
+  totalPages = Math.ceil(Number(totalPriceProducts) / per_page);
 
   const handlePageChange = (value: number) => {
     const next = new URLSearchParams(searchParams);
