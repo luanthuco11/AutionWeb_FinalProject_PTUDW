@@ -1254,9 +1254,14 @@ RETURNING *;
     userId: number
   ): Promise<number | undefined> {
     const sql = `
-    SELECT COUNT (DISTINCT bl.product_id) as total
-     FROM auction.bid_logs bl 
-     WHERE bl.user_id = $1
+    SELECT COUNT (DISTINCT b.product_id) as total
+     FROM auction.bid_logs b
+     JOIN product.products p ON p.id = b.product_id
+     WHERE b.user_id = $1 AND (p.end_time >= NOW() AND NOT EXISTS (
+        SELECT 1
+        FROM auction.orders o
+        WHERE o.product_id = b.product_id AND o.status <> 'cancelled'
+      ))
           `;
     const totalProducts: { total: number }[] = await this.safeQuery(sql, [
       userId,
@@ -1275,10 +1280,10 @@ RETURNING *;
       SELECT product_id::INT, b.max_price::INT
       FROM auction.user_bids b
       JOIN product.products p ON p.id = b.product_id
-      WHERE user_id = $1 AND (p.end_time > NOW() AND NOT EXISTS (
+      WHERE user_id = $1 AND (p.end_time >= NOW() AND NOT EXISTS (
         SELECT 1
         FROM auction.orders o
-        WHERE o.product_id = b.product_id AND o.status != 'cancelled'
+        WHERE o.product_id = b.product_id AND o.status <> 'cancelled'
       ))
       ORDER BY p.end_time DESC
     `;

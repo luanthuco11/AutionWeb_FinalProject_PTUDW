@@ -11,6 +11,7 @@ import FavoriteHook from "@/hooks/useFavorite";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import EmptyList from "@/components/EmptyList";
 
 const FavoriteProductPage = () => {
   const searchParams = useSearchParams();
@@ -50,7 +51,7 @@ const FavoriteProductPage = () => {
         </div>
       )}
       {error && <div>{error.message}</div>}
-      {!isLoading && !error && (
+      {favoriteProducts && favoriteProducts.length > 0 ? (
         <div className="flex flex-col gap-10">
           <div
             className="
@@ -80,6 +81,11 @@ const FavoriteProductPage = () => {
             />
           </div>
         </div>
+      ) : (
+        <EmptyList
+          content=" Bạn hiện không có sản phẩm yêu thích nào. Hãy tìm kiếm những
+                món đồ ưng ý và bắt đầu ra giá nhé!"
+        />
       )}
     </div>
   );

@@ -7,6 +7,7 @@ import WinProduct from "@/components/WinProduct";
 import { WinningProduct } from "../../../../../shared/src/types";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
+import EmptyList from "@/components/EmptyList";
 
 const WinningProductPage = () => {
   const per_page = 5;
@@ -66,37 +67,10 @@ const WinningProductPage = () => {
           </>
         ) : (
           !isLoadingWinningProduct && (
-            <div className="flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px] text-center">
-              <div className="bg-slate-100 p-4 md:p-6 rounded-full mb-4 md:mb-6">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-12 h-12 md:w-16 md:h-16 text-slate-400"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m6 4.125l2.25 2.25m0 0l2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25-2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-lg md:text-xl font-medium text-slate-900 mb-2">
-                Chưa có sản phẩm nào
-              </h3>
-              <p className="text-sm md:text-base text-slate-500 mb-6 md:mb-8 max-w-xs md:max-w-sm">
-                Có vẻ như bạn chưa thắng được có sản phẩm nào. Hãy tham gia đấu
-                giá ngay để có chiến tích đầu nhé!
-              </p>
-              <Link
-                href="/"
-                className="px-5 py-2 md:px-6 md:py-2.5 bg-primary text-white text-sm md:text-base font-medium rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Khám phá sản phẩm
-              </Link>
-            </div>
+            <EmptyList
+              content="Có vẻ như bạn chưa thắng được có sản phẩm nào. Hãy tham gia đấu
+                giá ngay để có chiến tích đầu nhé!"
+            />
           )
         )}
       </div>

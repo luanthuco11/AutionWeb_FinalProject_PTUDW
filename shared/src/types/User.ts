@@ -31,7 +31,6 @@ export type ForgetPasswordRequest = {
   email: string;
 };
 
-
 export type ResetPasswordRequest = {
   newPassword: string;
   confirmPassword: string;
