@@ -1,6 +1,7 @@
 import { api, safeRequest } from "@/config/axios.config";
 import API_ROUTES from "../../shared/src/api";
 import { Pagination } from "../../shared/src/types/Pagination";
+import { ChangePasswordRequest } from "../../shared/src/types";
 
 interface UpdateUserPayload {
   name: string | "";
@@ -32,6 +33,12 @@ export class UserService {
   static async deleteUser(id: number): Promise<any> {
     return safeRequest(async () => {
       const res = await api.delete(API_ROUTES.user.deleteUser(id));
+      return res.data;
+    });
+  }
+  static async changePassword(user: ChangePasswordRequest): Promise<any> {
+    return safeRequest(async () => {
+      const res = await api.post(API_ROUTES.auth.changePassword, user);
       return res.data;
     });
   }

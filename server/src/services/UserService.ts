@@ -1,3 +1,4 @@
+import { profile } from "console";
 import { User } from "../../../shared/src/types";
 import { MutationResult } from "../../../shared/src/types/Mutation";
 import { createSlugUnique } from "../utils";
@@ -10,7 +11,7 @@ interface UpdateUserPayload {
   email: string | "";
   address: string | "";
   profile_image: Express.Multer.File;
-  day_of_birth: Date
+  day_of_birth: Date;
 }
 
 export class UserService extends BaseService {
@@ -42,7 +43,7 @@ export class UserService extends BaseService {
     const rawUsers: User[] = await this.safeQuery(sql, params);
     const users = rawUsers.map((u) => {
       const { negative_points, positive_points, ...rest } = u;
-      console.log( negative_points === null);
+      console.log(negative_points === null);
       return {
         ...rest,
         negative_points: negative_points === null ? 0 : negative_points,
@@ -77,7 +78,22 @@ export class UserService extends BaseService {
     const r2 = R2Service.getInstance();
     const filesArray = payload.profile_image ? [payload.profile_image] : [];
     const [avatarUrl] = await r2.uploadFilesToR2(filesArray, "user");
-    const sql = `
+    if (payload.profile_image === undefined) {
+      const sql = `
+            UPDATE admin.users
+            SET name = $1,
+                email = $2,
+                address = $3,
+                day_of_birth = $4
+            WHERE id = $5
+            `;
+      const { name, email, address, day_of_birth, id } = payload;
+      const params = [name, email, address, day_of_birth, id];
+      const result = await this.safeQuery(sql, params);
+
+      return result;
+    } else {
+      const sql = `
             UPDATE admin.users
             SET name = $1,
                 email = $2,
@@ -86,11 +102,11 @@ export class UserService extends BaseService {
                 day_of_birth = $6
             WHERE id = $5
             `;
-    const { name, email, address, id, day_of_birth } = payload;
-    const params = [name, email, address, avatarUrl, id, day_of_birth];
-    const result = await this.safeQuery(sql, params);
-
-    return result;
+      const { name, email, address, id, day_of_birth } = payload;
+      const params = [name, email, address, avatarUrl, id, day_of_birth];
+      const result = await this.safeQuery(sql, params);
+      return result;
+    }
   }
   async deleteUser(id: number): Promise<MutationResult> {
     const params = [id];
