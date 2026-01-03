@@ -1233,7 +1233,8 @@ RETURNING *;
       FROM auction.orders AS o
       JOIN product.products AS p ON p.id = o.product_id
       JOIN admin.users s ON s.id = p.seller_id
-      WHERE o.buyer_id = $1 AND o.status != 'cancelled'`;
+      WHERE o.buyer_id = $1 AND o.status != 'cancelled'
+      ORDER BY winning_date DESC `;
 
     if (limit) {
       sql += `LIMIT $2 \n`;
