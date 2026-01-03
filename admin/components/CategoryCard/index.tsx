@@ -30,13 +30,14 @@ const CategoryCard = ({ category }: { category: CategoryWithProductCount }) => {
   const deleteCategoryMutation = CategoryHook.useDeleteCategory();
   const createCategoryMutation = CategoryHook.useCreateCategory();
 
-  const handleView = (categoryId: number) => {
-    router.push(`/product/${categoryId}`);
+  const handleView = (categorySlug: string) => {
+    router.push(`/product/category/${categorySlug}`);
   };
 
   const handleEdit = (categoryId: number, categoryName: string) => {
     setSelectedCategory({ id: categoryId, name: categoryName });
     setEditModalOpen(true);
+    console.log(selectedCategory)
   };
 
   const handleDelete = (
@@ -101,10 +102,10 @@ const CategoryCard = ({ category }: { category: CategoryWithProductCount }) => {
 
   // --- Styled Components / Classes để tái sử dụng ---
   // Responsive icon size: nhỏ hơn trên mobile (h-5, h-6) và to hơn trên desktop (h-7, h-8)
-  const actionIconClass = (colorClass: string) => 
+  const actionIconClass = (colorClass: string) =>
     `h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 p-1 rounded-md transition-colors duration-200 cursor-pointer ${colorClass}`;
 
-  const rowBaseClass = 
+  const rowBaseClass =
     "min-h-[3.5rem] h-auto bg-blue-100/40 border border-gray-300 rounded-md shadow-md flex flex-row gap-1 px-2 sm:px-3 py-2 justify-between items-center select-none hover:border-blue-500 transition-colors duration-200";
 
   return (
@@ -121,7 +122,7 @@ const CategoryCard = ({ category }: { category: CategoryWithProductCount }) => {
         >
           <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 hover:text-blue-500 transition-colors duration-200" />
         </div>
-        
+
         {/* Tên danh mục: Cho phép wrap text trên mobile */}
         <p className="flex grow pt-0.5 font-bold text-sm sm:text-base break-words mr-2">
           {category.name}
@@ -132,16 +133,27 @@ const CategoryCard = ({ category }: { category: CategoryWithProductCount }) => {
 
         {/* Action Buttons Group */}
         <div className="flex flex-row gap-1 sm:gap-2 justify-center items-center shrink-0">
-          <Eye
-            onClick={() => handleView(category.id)}
+          {/* <Eye
+            onClick={(e) => {
+              e.stopPropagation();
+              handleView(category.slug);
+            }}
             className={actionIconClass("text-blue-600 hover:bg-blue-600/20")}
-          />
+          /> */}
           <Pencil
-            onClick={() => handleEdit(category.id, category.name)}
-            className={actionIconClass("text-orange-500 hover:bg-orange-500/20")}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEdit(category.id, category.name);
+            }}
+            className={actionIconClass(
+              "text-orange-500 hover:bg-orange-500/20"
+            )}
           />
           <Trash2
-            onClick={() => handleDelete(category.id, category.name, category.productNumber)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(category.id, category.name, category.productNumber);
+            }}
             className={actionIconClass("text-red-500 hover:bg-red-500/20")}
           />
         </div>
@@ -162,19 +174,27 @@ const CategoryCard = ({ category }: { category: CategoryWithProductCount }) => {
                   {child.productNumber}
                 </span>
               </p>
-              
+
               <div className="flex flex-row gap-1 sm:gap-2 justify-center items-center shrink-0">
                 <Eye
-                  onClick={() => handleView(child.id)}
-                  className={actionIconClass("text-blue-600 hover:bg-blue-600/20")}
+                  onClick={() => handleView(child.slug)}
+                  className={actionIconClass(
+                    "text-blue-600 hover:bg-blue-600/20"
+                  )}
                 />
                 <Pencil
                   onClick={() => handleEdit(child.id, child.name)}
-                  className={actionIconClass("text-orange-500 hover:bg-orange-500/20")}
+                  className={actionIconClass(
+                    "text-orange-500 hover:bg-orange-500/20"
+                  )}
                 />
                 <Trash2
-                  onClick={() => handleDelete(child.id, child.name, child.productNumber)}
-                  className={actionIconClass("text-red-500 hover:bg-red-500/20")}
+                  onClick={() =>
+                    handleDelete(child.id, child.name, child.productNumber)
+                  }
+                  className={actionIconClass(
+                    "text-red-500 hover:bg-red-500/20"
+                  )}
                 />
               </div>
             </div>

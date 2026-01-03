@@ -157,8 +157,8 @@ const page = () => {
       {/* RESPONSIVE PADDING: p-3 cho mobile, sm:p-4, md:p-6 cho tablet/desktop */}
       <div className="py-3 sm:py-4 md:py-6">
         <div className="flex flex-col gap-3 sm:gap-4">
-          {pageData.map((item, index) => (
-            <CategoryCard category={item} key={index} />
+          {pageData.map((item) => (
+            <CategoryCard category={item} key={item.id} />
           ))}
         </div>
 
