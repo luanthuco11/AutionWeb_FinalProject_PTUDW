@@ -139,11 +139,11 @@ export default function EditDetail({
         user.day_of_birth ? formatDateISO(user.day_of_birth) : ""
       );
     }
-  }, [user, setValue]);
+  }, [user]);
 
   useEffect(() => {
     onProfileSubmit(() => handleSubmit(onSubmit));
-  }, [handleSubmit, onSubmit, onProfileSubmit]);
+  }, []);
 
   // --- Styles ---
   const inputClass =
@@ -318,7 +318,9 @@ export default function EditDetail({
               <div className="flex justify-end mt-1">
                 <button
                   type="button"
-                  onClick={() => router.replace("/forget-password")}
+                  onClick={() => {
+                    router.replace("/forget-password");
+                  }}
                   disabled={!isEditingPassword}
                   className="text-xs text-blue-500 hover:text-blue-700 hover:underline disabled:text-gray-400"
                 >

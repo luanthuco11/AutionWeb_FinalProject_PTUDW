@@ -19,7 +19,7 @@ function SearchPage() {
   const query = searchParams.get("query") || "";
   const sort = searchParams.get("sort") || "ascending-price";
   let totalPages = 1;
-  let dataResult = null;
+  
   const {
     data,
     isLoading: isLoadingProducts,
