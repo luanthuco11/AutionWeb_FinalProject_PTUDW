@@ -256,6 +256,7 @@ export default function ProductCard({
   product,
   isFavorite = false,
 }: ProductCardProps) {
+  console.log(product.id, isFavorite);
   // --- Hooks ---
   const { mutate: addFavorite, isPending: isAdding } =
     FavoriteHook.useAddFavorite();

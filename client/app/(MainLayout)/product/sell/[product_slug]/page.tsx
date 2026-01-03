@@ -150,7 +150,7 @@ export default function ProductPage() {
       );
 
       setSetFavorites(newSetFavorites);
-      if (newSetFavorites.has(product.id)) {
+      if (newSetFavorites.has(Number(product.id))) {
         setIsFavorite(true);
       } else {
         setIsFavorite(false);

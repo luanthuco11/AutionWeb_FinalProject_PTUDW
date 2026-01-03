@@ -40,7 +40,7 @@ export const RelatedProducts = ({
               >
                 <ProductCard
                   product={product as ProductPreview}
-                  isFavorite={favorite_products.has(product.id)}
+                  isFavorite={favorite_products.has(Number(product.id))}
                 />
               </div>
             ))}
@@ -53,7 +53,7 @@ export const RelatedProducts = ({
             <div key={`desktop-${index}`} className="w-full">
               <ProductCard
                 product={product as ProductPreview}
-                isFavorite={favorite_products.has(product.id)}
+                isFavorite={favorite_products.has(Number(product.id))}
               />
             </div>
           ))}
