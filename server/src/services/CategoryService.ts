@@ -139,6 +139,11 @@ export class CategoryService extends BaseService {
     FROM category_tree ct
     LEFT JOIN product.products p
       ON p.category_id = ct.category_id
+    WHERE p.end_time > NOW() AND NOT EXISTS (
+      SELECT 1
+      FROM auction.orders o
+      WHERE o.product_id = p.id AND o.status != 'cancelled'
+    )
     GROUP BY ct.root_id
     ORDER BY ct.root_id;
   `;
