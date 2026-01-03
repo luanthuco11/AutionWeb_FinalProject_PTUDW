@@ -11,6 +11,7 @@ import { CategoryWithProductCount } from "@/components/CategoryCard";
 import { toast } from "react-toastify";
 import { useAuthStore } from "@/store/auth.store";
 import { BookCopy } from "lucide-react";
+import LoadingSpinner from "@/components/LoadingSpinner";
 const attachProductCount = (
   category: ProductCategoryTree,
   countMap: Map<number, number>
@@ -141,7 +142,12 @@ const page = () => {
 
   // Handling loading
   if (isCategoriesLoading || isCountProductsLoading)
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen">
+        <LoadingSpinner />
+      </div>
+    );
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center gap-3 mb-8">

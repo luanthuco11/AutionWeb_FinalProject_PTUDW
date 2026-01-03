@@ -51,7 +51,7 @@ export function SigninForm({
 
       // Kiểm tra lại state an toàn hơn
       if (useAuthStore.getState().user) {
-        router.replace("/");
+        router.replace("/category");
       }
     } catch (error) {
       console.error("Login failed", error);
