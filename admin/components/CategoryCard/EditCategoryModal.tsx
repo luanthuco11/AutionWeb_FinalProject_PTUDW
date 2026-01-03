@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 export const EditCategoryModal = ({
@@ -14,6 +14,10 @@ export const EditCategoryModal = ({
 }) => {
     const [name, setName] = useState(category.name);
 
+    useEffect(() => {
+        setName(category.name)
+    }, [category])
+    
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit(category.id, name);

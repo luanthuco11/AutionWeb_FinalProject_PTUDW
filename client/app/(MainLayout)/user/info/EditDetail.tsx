@@ -213,8 +213,7 @@ export default function EditDetail({
                 {...register("email")}
                 id="email"
                 type="email"
-                disabled // Thường email không cho sửa lung tung
-                className={`${inputClass} bg-gray-50 text-gray-500 cursor-not-allowed`}
+                className={inputClass}
               />
               {errors.email && (
                 <p className={errorClass}>{errors.email.message}</p>

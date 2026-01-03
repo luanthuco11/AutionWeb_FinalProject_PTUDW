@@ -45,6 +45,11 @@ function SearchPage() {
     next.set("page", String(value));
     router.replace(`?${next.toString()}`);
   };
+
+  const handleClearSearch = () => {
+    router.replace("/");
+  };
+
   console.log("data: ", data);
   if (data) {
     totalPages = Math.ceil(Number(totalProducts) / per_page);
@@ -85,6 +90,28 @@ function SearchPage() {
               <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md font-semibold">
                 {query}
               </span>
+              {query && (
+                <button
+                  onClick={handleClearSearch}
+                  className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-500 transition-colors border px-3 py-1 rounded-lg hover:border-red-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  Xóa tìm kiếm
+                </button>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4 lg:gap-5">
