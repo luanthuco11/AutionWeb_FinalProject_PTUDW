@@ -196,7 +196,7 @@ export default function ProductPage() {
       const newSetFavorites: Set<number> = new Set(
         favorite_products.map((p: Product) => Number(p.id))
       );
-
+      setSetFavorites(newSetFavorites);
       if (newSetFavorites.has(product.id)) {
         setIsFavorite(true);
       } else {

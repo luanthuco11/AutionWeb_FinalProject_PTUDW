@@ -169,14 +169,8 @@ function QuestionItem({
                   active:scale-95
                   disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                {isCreateAnswer ? (
-                  <LoadingSpinner />
-                ) : (
-                  <>
-                    <FlightOutlineIcon className="w-4 h-4" />
-                    <span>Gửi</span>
-                  </>
-                )}
+                <FlightOutlineIcon className="w-4 h-4" />
+                <span>Gửi</span>
               </button>
             </div>
           </div>
