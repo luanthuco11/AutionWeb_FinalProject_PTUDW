@@ -147,7 +147,15 @@ export function SigninForm({
         </CardContent>
 
         {/* Footer / Sign Up Link */}
-        <CardFooter className="flex flex-col gap-2 border-t pt-6 bg-muted/20">
+        <CardFooter className="flex flex-col gap-1 border-t pt-6 bg-muted/20">
+          <div className=" flex items-center justify-center">
+            <button
+              onClick={() => router.replace("/")}
+              className="px-6 py-2  text-black/50  hover:text-blue-700 cursor-pointer active:scale-95"
+            >
+              Tiếp tục với tư cách là khách
+            </button>
+          </div>
           <div className="text-center text-sm text-muted-foreground">
             Bạn chưa có tài khoản?{" "}
             <Link
