@@ -9,6 +9,7 @@ import ProductHook from "@/hooks/useProduct";
 import { useMemo } from "react";
 import { usePerPage } from "@/utils/getPerPage";
 import ShortCategorySideBar from "@/components/ShortCategorySidebar";
+import EmptyList from "@/components/EmptyList";
 function SearchPage() {
   const per_page = usePerPage();
   const searchParams = useSearchParams();
@@ -110,7 +111,10 @@ function SearchPage() {
           </div>
         </div>
       ) : (
-        <div>Không có sản phẩm thuộc loại này...</div>
+        <EmptyList
+          content="Bạn hiện không bán sản phẩm nào. Hãy tìm kiếm những
+                món đồ ưng ý và từ đó đưa ra lựa chọn để tạo sản phẩm nhé"
+        />
       )}
     </>
   );

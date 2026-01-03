@@ -3,143 +3,115 @@
 import { useState } from "react";
 import Image from "next/image";
 import { defaultImage } from "@/app/const";
+import { ChevronLeft, ChevronRight, X } from "lucide-react"; // Sử dụng Lucide cho icon đẹp hơn
 
 interface ImageProps {
   images: string[];
 }
+
 export const ImageCarousel = ({ images }: ImageProps) => {
   const [currentImage, setCurrentImage] = useState(0);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState("");
 
-  const openModal = (imageUrl: string) => {
-    setSelectedImage(imageUrl);
-    setIsModalOpen(true);
-  };
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedImage("");
+  const handleMoveLeft = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImage((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
-  const handleMoveLeft = () => {
-    if (currentImage === 0) setCurrentImage(images.length - 1);
-    else setCurrentImage((pre) => pre - 1);
+  const handleMoveRight = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentImage((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  const handleMoveRight = () => {
-    if (currentImage === images.length - 1) setCurrentImage(0);
-    else setCurrentImage((pre) => pre + 1);
-  };
-  const hanldeSwitchImage = (imageSlected: number) => {
-    setCurrentImage(imageSlected);
-  };
   return (
-    <div className="flex flex-col gap-2 w-full h-full ">
-      {/* Main*/}
-      <div className="relative ">
+    <div className="flex flex-col gap-3 w-full animate-in fade-in duration-500">
+      {/* Main Image Container */}
+      <div className="relative group overflow-hidden rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
         <div
-          className="flex rounded-lg bg-gray-200 justify-center overflow-hidden aspect-square hover:cursor-pointer "
-          onClick={() => openModal(images[currentImage])}
+          className="relative aspect-square cursor-zoom-in flex items-center justify-center overflow-hidden"
+          onClick={openModal}
         >
+          {/* Ảnh chính với hiệu ứng transition mượt */}
           <Image
+            key={currentImage} // Key giúp trigger animation khi đổi ảnh
             src={images[currentImage] || defaultImage}
-            width={800}
-            height={800}
-            alt="..."
+            fill
+            alt="Product view"
+            className="object-contain p-2 transition-all duration-500 ease-out animate-in zoom-in-95"
+            priority
           />
         </div>
 
-        <div className="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 ">
-          <div className="bg-gray-700 text-white text-[14px] md:text-[8px] lg:text-[16px] px-4 py-1 rounded-[30px]">
+        {/* Chỉ số ảnh (Badge) */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10">
+          <div className="bg-black/60 backdrop-blur-md text-white text-xs font-medium px-3 py-1.5 rounded-full border border-white/20">
             {currentImage + 1} / {images.length}
           </div>
         </div>
 
+        {/* Nút điều hướng - Chỉ hiện rõ khi hover */}
         <button
-          type="button"
-          className="absolute top-1/2 start-0 z-30 flex items-center justify-center  px-4 cursor-pointer group focus:outline-none"
           onClick={handleMoveLeft}
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/80 shadow-md text-slate-800 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white active:scale-90"
         >
-          <span className="inline-flex items-center justify-center w-7 h-7 md:w-10 md:h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg
-              className="w-3 h-3 md:w-4 md:h-4 text-white rtl:rotate-180"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 6 10"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 1 1 5l4 4"
-              />
-            </svg>
-            <span className="sr-only">Previous</span>
-          </span>
+          <ChevronLeft className="w-5 h-5" />
         </button>
         <button
-          type="button"
-          className="absolute top-1/2 end-0 z-30 flex items-center justify-center  px-4 cursor-pointer group focus:outline-none"
           onClick={handleMoveRight}
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-white/80 shadow-md text-slate-800 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white active:scale-90"
         >
-          <span className="inline-flex items-center justify-center w-7 h-7 md:w-10 md:h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
-            <svg
-              className="w-3 h-3 md:w-4 md:h-4  text-white  rtl:rotate-180"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 6 10"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="m1 9 4-4-4-4"
-              />
-            </svg>
-            <span className="sr-only">Next</span>
-          </span>
+          <ChevronRight className="w-5 h-5" />
         </button>
       </div>
-      {/*Extra */}
-      <div className="grid grid-cols-4 gap-2  ">
-        {images.map((link, index) => {
-          return (
-            <div
-              key={index}
-              className={`  rounded-[6px] bg-gray-200   aspect-square overflow-hidden flex justify-center hover:cursor-pointer ${
-                currentImage == index ? "border-accent-dark border-2" : ""
-              }`}
-              onClick={() => hanldeSwitchImage(index)}
-            >
-              <Image src={link || defaultImage} width={200} height={200} alt="..." />
-            </div>
-          );
-        })}
+
+      {/* Thumbnails List */}
+      <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
+        {images.map((link, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentImage(index)}
+            className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 bg-white ${
+              currentImage === index
+                ? "border-blue-500 ring-2 ring-blue-500/20 scale-95"
+                : "border-transparent hover:border-slate-300 opacity-70 hover:opacity-100"
+            }`}
+          >
+            <Image
+              src={link || defaultImage}
+              fill
+              alt={`Thumbnail ${index}`}
+              className="object-contain p-1"
+            />
+          </button>
+        ))}
       </div>
+
+      {/* Fullscreen Modal */}
       {isModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 transition-opacity duration-300"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in duration-300"
           onClick={closeModal}
         >
-          <div>
-            <div
-              className="max-w-4xl max-h-4/5 p-4 rounded-lg bg-white relative "
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={selectedImage || defaultImage}
-                alt="Selected View"
-                className="max-w-full max-h-[80vh]  "
-                width={1200}
-                height={1200}
-              />
-            </div>
+          <button
+            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors"
+            onClick={closeModal}
+          >
+            <X className="w-8 h-8" />
+          </button>
+
+          <div
+            className="relative w-[90vw] h-[80vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={images[currentImage] || defaultImage}
+              alt="Fullscreen view"
+              fill
+              className="object-contain animate-in zoom-in-90 duration-300"
+            />
           </div>
         </div>
       )}
