@@ -475,7 +475,7 @@ WHERE pp.end_time >= NOW() and not exists (
    where o.product_id = pp.id and o.status <> 'cancelled' 
    )
   GROUP BY pp.id 
-  ORDER BY COUNT(DISTINCT bid_logs.user_id) DESC
+  ORDER BY COUNT (*) DESC
   `;
     const params: any[] = [];
     if (limit) {
