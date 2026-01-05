@@ -12,6 +12,7 @@ import {
 } from "./../../../shared/src/types";
 
 import { MutationResult } from "../../../shared/src/types/Mutation";
+import { R2Service } from "./R2Service";
 
 export class OrderService extends BaseService {
   private static instance: OrderService;
@@ -151,8 +152,12 @@ export class OrderService extends BaseService {
 
   async buyerPayOrder(
     product_id: number,
-    payment: OrderPayment
+    payment: OrderPayment,
+    invoiceImage: Express.Multer.File
   ): Promise<MutationResult> {
+    const r2 = R2Service.getInstance();
+    const invoiceImageUrl = await r2.uploadToR2(invoiceImage, "order");
+
     const { is_paid, address, phone_number } = payment;
 
     if (!is_paid) return { success: false };
@@ -163,13 +168,15 @@ export class OrderService extends BaseService {
         SHIPPING_ADDRESS = $1,
         PHONE_NUMBER = $2,
         STATUS = 'paid',
+        PAYMENT_INVOICE = $3,
         UPDATED_AT = NOW()
-      WHERE PRODUCT_ID = $3 AND STATUS = 'pending'
+      WHERE PRODUCT_ID = $4 AND STATUS = 'pending'
     `;
 
     const result = await this.safeQuery(sql, [
       address,
       phone_number,
+      invoiceImageUrl,
       product_id,
     ]);
 

@@ -41,11 +41,16 @@ export class OrderService {
     });
   }
 
-  static async buyerPayOrder(productId: number, payment: OrderPayment) {
+  static async buyerPayOrder(productId: number, formData: FormData) {
     return safeRequest(async () => {
       const res = await api.patch(
         API_ROUTES.order.buyerPayOrder(productId),
-        payment
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       return res.data;
     });

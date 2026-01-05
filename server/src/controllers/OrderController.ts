@@ -1,3 +1,4 @@
+import { OrderPayment } from "../../../shared/src/types";
 import { BaseController } from "./BaseController";
 import { Request, Response, NextFunction } from "express";
 
@@ -35,8 +36,20 @@ export class OrderController extends BaseController {
 
   async buyerPayOrder(req: Request, res: Response) {
     const productId = Number(req.params.productId);
-    const payment = req.body;
-    const result = await this.service.buyerPayOrder(productId, payment);
+
+    const files = req.files as Express.Multer.File[];
+    if (!files) {
+      throw new Error("No files were delivered");
+    }
+    const invoiceImage = files.find((f) => f.fieldname === "payment_invoice");
+    const payloadStr = req.body.payload;
+    if (!payloadStr) {
+      throw new Error("No payload were delivered");
+    }
+
+    const payload: OrderPayment = JSON.parse(payloadStr);
+
+    const result = await this.service.buyerPayOrder(productId, payload, invoiceImage);
     return result;
   }
 
@@ -74,7 +87,7 @@ export class OrderController extends BaseController {
   async getOrderChat(req: Request, res: Response) {
     const productId = Number(req.params.productId);
     const userId = req.user?.id;
-    console.log('kk', req.user, userId);
+    console.log("kk", req.user, userId);
     const chat = await this.service.getOrderChat(productId, userId);
     return { order_chat: chat };
   }
@@ -82,7 +95,11 @@ export class OrderController extends BaseController {
   async createOrderChat(req: Request, res: Response) {
     const productId = Number(req.params.productId);
     const userId = req.user?.id;
-    const result = await this.service.createOrderChat(productId, userId, req.body);
+    const result = await this.service.createOrderChat(
+      productId,
+      userId,
+      req.body
+    );
     return result;
   }
 }

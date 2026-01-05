@@ -1,7 +1,7 @@
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import CloudflareR2 from "../config/cloudflare";
 
-export type R2DirectoryType = "product" | "user";
+export type R2DirectoryType = "product" | "user" | "order";
 
 export class R2Service {
   private readonly r2Client = CloudflareR2.getInstance();

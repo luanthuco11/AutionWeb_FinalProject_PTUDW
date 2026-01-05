@@ -4,6 +4,10 @@ import { BaseRoute } from "./BaseRoute";
 import { BaseController } from "../controllers/BaseController";
 import { protectedRoutes } from "../middlewares/authMiddleware";
 import { BidService } from "../services/BidService";
+import multer from "multer";
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 export class OrderRoute extends BaseRoute {
   private controller: OrderController;
@@ -26,6 +30,7 @@ export class OrderRoute extends BaseRoute {
     );
     this.router.patch(
       "/:productId/buyer/pay-order",
+      upload.any(),
       BaseController.handleRequest(
         this.controller.buyerPayOrder.bind(this.controller)
       )

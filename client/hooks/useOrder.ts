@@ -88,8 +88,8 @@ class OrderHook {
     const queryClient = useQueryClient();
 
     return useMutation({
-      mutationFn: (params: { productId: number; payment: OrderPayment }) =>
-        OrderService.buyerPayOrder(params.productId, params.payment),
+      mutationFn: (params: { productId: number; formData: FormData }) =>
+        OrderService.buyerPayOrder(params.productId, params.formData),
 
       onSuccess: (_, params) => {
         toast.success("Thanh toán và cập nhật thông tin đơn hàng thành công");

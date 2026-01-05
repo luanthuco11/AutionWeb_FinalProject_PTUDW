@@ -28,10 +28,7 @@ const FavoriteProductPage = () => {
   const page = Number(searchParams.get("page")) || 1;
   const limit = 10;
 
-  const { 
-    data: sellingProducts, 
-    isLoading: isLoadingSellingProducts 
-  } =
+  const { data: sellingProducts, isLoading: isLoadingSellingProducts } =
     ProductHook.useGetSellingProduct() as {
       data: ProductPreview[];
       isLoading: boolean;

@@ -1,9 +1,10 @@
 "use client";
 
 import LoadingSpinner from "@/components/LoadingSpinner";
-import React from "react";
+import React, { useState } from "react";
 import { Order } from "../../../../../../shared/src/types";
 import { formatCurrency } from "../../[product_slug]/components/Question";
+import Image from "next/image";
 import {
   User,
   Mail,
@@ -12,6 +13,8 @@ import {
   Clock,
   Phone,
   ShieldCheck,
+  Eye,
+  X,
 } from "lucide-react";
 
 type ComponentProps = {
@@ -19,6 +22,8 @@ type ComponentProps = {
 };
 
 const WaitingConfirmStep = ({ order }: ComponentProps) => {
+  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
+
   return (
     <div className="max-w-[500px] mx-auto py-4 md:py-8 space-y-6 md:space-y-8 md:px-1">
       {/* Header trạng thái */}
@@ -100,19 +105,45 @@ const WaitingConfirmStep = ({ order }: ComponentProps) => {
               </p>
             </div>
           </div>
-        </div>
 
-        {/* Banner tổng tiền cuối Card */}
-        <div className="px-4 md:px-5 py-3 md:py-5 bg-blue-600 flex items-center justify-between text-white">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 md:w-5 md:h-5 text-white/90" />
-            <span className="text-[10px] md:text-xs font-medium uppercase tracking-wider">
-              Tổng cộng
-            </span>
+          {/* Banner thanh toán & Xem biên lai (Cập nhật mới) */}
+          <div className="px-4 md:px-6 py-4 md:py-5 bg-blue-600 flex items-center justify-between text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 pointer-events-none" />
+
+            <div className="flex flex-col gap-2 md:gap-1.5 z-10">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 md:w-5 md:h-5 text-blue-100 opacity-90" />
+                <span className="text-[10px] md:text-xs font-medium uppercase tracking-widest text-blue-50">
+                  Đã thanh toán
+                </span>
+              </div>
+
+              <div className="text-right z-10 pl-2 shrink-0">
+                <span className="text-xl text-center md:text-2xl font-black tracking-tight leading-none">
+                  {formatCurrency(order.price)}
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsPreviewOpen(true)}
+              className="group w-fit relative flex items-center gap-1.5 px-2 py-1 bg-white/20 hover:bg-white/30 rounded-lg transition-all border border-white/10"
+            >
+              <div className="w-6 h-6 md:w-8 md:h-8 relative rounded overflow-hidden border border-white/20">
+                <Image
+                  src={order.payment_invoice || ""}
+                  alt="Receipt"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              <span className="text-[9px] md:text-[11px] font-bold uppercase tracking-tight">
+                Biên lai
+              </span>
+
+              <Eye className="w-3 h-3 md:w-4 md:h-4 opacity-70 group-hover:opacity-100" />
+            </button>
           </div>
-          <span className="text-lg md:text-xl font-black text-white">
-            {formatCurrency(order.price)}
-          </span>
         </div>
       </div>
 
@@ -127,6 +158,26 @@ const WaitingConfirmStep = ({ order }: ComponentProps) => {
           Hệ thống sẽ cập nhật ngay khi người bán xác nhận...
         </p>
       </div>
+
+      {/* Modal View Ảnh Biên Lai */}
+      {isPreviewOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200"
+          onClick={() => setIsPreviewOpen(false)}
+        >
+          <button className="absolute top-6 right-6 text-white p-2 hover:bg-white/10 rounded-full">
+            <X className="w-8 h-8" />
+          </button>
+          <div className="relative w-full max-w-2xl h-[80vh]">
+            <Image
+              src={order.payment_invoice || ""}
+              alt="Biên lai phóng to"
+              fill
+              className="object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

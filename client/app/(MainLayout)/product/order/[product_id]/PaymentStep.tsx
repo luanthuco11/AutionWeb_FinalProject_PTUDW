@@ -1,14 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import PrimaryButton from "@/components/PrimaryButton";
+import React, { useEffect, useState, useRef } from "react";
 import {
   CircleCheckBig,
   NotebookPen,
   MapPin,
   AlertCircle,
   Phone,
+  Upload,
+  Eye,
+  X,
 } from "lucide-react";
 import OrderHook from "@/hooks/useOrder";
 import { Order, OrderPayment } from "../../../../../../shared/src/types";
@@ -24,7 +26,10 @@ type ComponentProps = {
 const PaymentStep = ({ setActive, order }: ComponentProps) => {
   const [address, setAddress] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
-  const [isPaid, setIsPaid] = useState<boolean>(false);
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [rawFile, setRawFile] = useState<File | null>(null);
 
   const { mutate: buyerPayOrder, isPending: isPayingOrder } =
     OrderHook.useBuyerPayOrder();
@@ -33,9 +38,22 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
     setAddress(order?.buyer.address || "");
   }, [order]);
 
-  const handlePayment = () => setIsPaid(true);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setRawFile(file);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setReceiptImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleConfirmation = () => {
+    if (!rawFile || !address || !phoneNumber) return;
+
     const payment: OrderPayment = {
       product_id: order.product_id,
       is_paid: true,
@@ -43,8 +61,12 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
       phone_number: phoneNumber,
     };
 
+    const formData = new FormData();
+    formData.append("payment_invoice", rawFile);
+    formData.append("payload", JSON.stringify(payment));
+
     buyerPayOrder(
-      { productId: Number(order.product_id), payment: payment },
+      { productId: Number(order.product_id), formData: formData },
       { onSuccess: setActive && (() => setActive(1)) }
     );
   };
@@ -85,11 +107,6 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
                 height={160}
                 className="rounded-lg w-[140px] h-[140px] md:w-[180px] md:h-[180px]"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-white/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-                <span className="text-[10px] font-bold text-blue-600 uppercase">
-                  Quét mã
-                </span>
-              </div>
             </div>
           </div>
 
@@ -122,21 +139,50 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
               </span>
             </div>
 
-            <div className="flex justify-center md:justify-start pt-1">
-              {isPaid ? (
-                <div className="flex items-center justify-center gap-2 px-5 py-2 md:py-2.5 bg-green-50 text-green-600 rounded-full border border-green-200 text-xs md:text-sm font-bold animate-in fade-in zoom-in duration-300">
-                  <CircleCheckBig className="w-4 h-4 md:w-5 md:h-5" />
-                  <span>Đã thực hiện thanh toán</span>
+            <div className="flex flex-col items-center gap-3 pt-1">
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+
+              {receiptImage ? (
+                <div className="flex items-center gap-3 p-2 bg-green-50 rounded-xl border border-green-200 w-fit animate-in fade-in zoom-in">
+                  <div className="flex items-center gap-2 px-3 text-green-600 text-xs md:text-sm font-bold">
+                    <CircleCheckBig className="w-4 h-4" />
+                    <span>Đã gửi biên lai</span>
+                  </div>
+                  <div
+                    onClick={() => setIsPreviewOpen(true)}
+                    className="relative w-10 h-10 md:w-12 md:h-12 border border-green-200 rounded-lg overflow-hidden cursor-pointer group"
+                  >
+                    <Image
+                      src={receiptImage}
+                      alt="Biên lai"
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                      <Eye className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setReceiptImage(null)}
+                    className="p-1 hover:bg-green-100 rounded-full text-green-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
               ) : (
-                <div className="w-full sm:w-auto sm:min-w-[200px]">
-                  <PrimaryButton
-                    backgroundColor={"#2563eb"}
-                    hoverBackgroundColor={"#1d4ed8"}
-                    onClick={handlePayment}
-                    text={"Tôi đã chuyển khoản"}
-                  />
-                </div>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-md active:scale-95 w-full sm:w-fit"
+                >
+                  <Upload className="w-4 h-4" />
+                  Tải lên biên lai giao dịch
+                </button>
               )}
             </div>
           </div>
@@ -210,25 +256,6 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
               </div>
             </div>
           </div>
-
-          <div className="p-3 md:p-4 bg-amber-50 rounded-xl border border-amber-100 flex gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-            <div className="text-[11px] md:text-sm text-amber-800 leading-relaxed">
-              <p className="font-bold mb-1 uppercase tracking-wide text-[10px] md:text-xs">
-                Lưu ý quan trọng:
-              </p>
-              <ul className="space-y-1 list-disc ml-3">
-                <li>
-                  Kiểm tra kỹ thông tin địa chỉ. Không thể tự chỉnh sửa sau khi
-                  xác nhận.
-                </li>
-                <li>
-                  Sử dụng <b>"Trao đổi đơn hàng"</b> để chat trực tiếp với người
-                  bán.
-                </li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -236,10 +263,10 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
       <div className="flex flex-col items-center py-6">
         <button
           onClick={handleConfirmation}
-          disabled={!isPaid || !address || !phoneNumber}
+          disabled={!receiptImage || !address || !phoneNumber}
           className={clsx(
             "w-full sm:w-auto flex gap-3 items-center justify-center px-8 md:px-12 py-3.5 md:py-4 rounded-xl md:rounded-2xl font-bold text-base md:text-lg transition-all shadow-md active:scale-95",
-            !isPaid || !address || !phoneNumber
+            !receiptImage || !address || !phoneNumber
               ? "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none"
               : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-200"
           )}
@@ -251,6 +278,26 @@ const PaymentStep = ({ setActive, order }: ComponentProps) => {
           Vui lòng hoàn thành đầy đủ 2 bước trên để nút xác nhận khả dụng
         </p>
       </div>
+
+      {/* Modal View Ảnh To */}
+      {isPreviewOpen && receiptImage && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200"
+          onClick={() => setIsPreviewOpen(false)}
+        >
+          <button className="absolute top-6 right-6 text-white p-2 hover:bg-white/10 rounded-full">
+            <X className="w-8 h-8" />
+          </button>
+          <div className="relative w-full max-w-2xl h-[80vh]">
+            <Image
+              src={receiptImage}
+              alt="Biên lai phóng to"
+              fill
+              className="object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
