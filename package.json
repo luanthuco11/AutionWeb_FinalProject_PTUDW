@@ -23,6 +23,7 @@
     "tailwindcss": "^4.1.17"
   },
   "dependencies": {
+    "dotenv": "^17.2.3",
     "feather-icons": "^4.29.2",
     "lucide-react": "^0.553.0",
     "tinymce": "^8.2.1"
