@@ -33,7 +33,7 @@ project-root/
 │   ├── postcss.config.mjs
 │   ├── tsconfig.json
 │   ├── .gitignore
-│   ├── .env.local       # ENV frontend
+│   ├── .env.local       # ENV client
 │   └── package.json
 │
 ├── admin/               
@@ -51,6 +51,7 @@ project-root/
 │   ├── postcss.config.mjs
 │   ├── tsconfig.json
 │   ├── .gitignore
+│   ├── .env.local # ENV admin
 │   └── package.json
 │   
 |  # Express backend 
@@ -149,7 +150,7 @@ DATABASE_URL="postgresqlpostgresql://postgres:your_password@localhost:5432/aucti
 ---
 
 ## ⚙️ Environment Variables Setup
-### 1️⃣: server/.env
+### 1: server/.env
 ```bash
 PORT=8080
 
@@ -170,11 +171,18 @@ SMTP_PASS=eyfw qwju lswj qlfs
 RECAPTCHA_SECRET_KEY=6LcZkjcsAAAAAMcv-XwCkN-EvZtnbcdBHrexrLcC
 ```
 
-### 2️⃣: client/.env.local
+### 2: client/.env.local
 ```bash
 NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LcZkjcsAAAAAN7qnLO1BzlPcN2KdP2smMAemRPP
 ```
 
+### 3: admin/.env.local
+```bash
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LcZkjcsAAAAAN7qnLO1BzlPcN2KdP2smMAemRPP
+NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_CLIENT_URL=http://localhost:3000
+NEXT_PUBLIC_ADMIN_URL=http://localhost:3001
+```
 ---
 
 ## 🚀 Development
