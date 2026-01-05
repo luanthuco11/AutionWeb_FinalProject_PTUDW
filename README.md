@@ -3,7 +3,7 @@
 A modern **fullstack monorepo** boilerplate built with:
 - **TypeScript** as the language
 - **Next.js** for the frontend
-- **Node.js + Express + Prisma** for the backend
+- **Node.js + Express** for the backend
 - **PostgreSQL** as the database
 ---
 

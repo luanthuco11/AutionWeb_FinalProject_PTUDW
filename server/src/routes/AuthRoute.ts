@@ -23,9 +23,11 @@ export class AuthRoute extends BaseRoute {
       BaseController.handleRequest(this.controller.signIn.bind(this.controller))
     );
 
-     this.router.post(
+    this.router.post(
       "/signInAdmin",
-      BaseController.handleRequest(this.controller.signInAdmin.bind(this.controller))
+      BaseController.handleRequest(
+        this.controller.signInAdmin.bind(this.controller)
+      )
     );
 
     this.router.post(
@@ -49,7 +51,7 @@ export class AuthRoute extends BaseRoute {
       )
     );
 
-     this.router.post(
+    this.router.post(
       "/refreshAdmin",
       BaseController.handleRequest(
         this.controller.refreshTokenAdmin.bind(this.controller)
@@ -71,26 +73,25 @@ export class AuthRoute extends BaseRoute {
     );
 
     this.router.post(
-       "/verify-register-otp",
+      "/verify-register-otp",
       BaseController.handleRequest(
         this.controller.verifyRegisterOTP.bind(this.controller)
       )
-    )
+    );
 
-      this.router.post(
-       "/reSend-register-otp",
+    this.router.post(
+      "/reSend-register-otp",
       BaseController.handleRequest(
         this.controller.reSendPendingUserOTP.bind(this.controller)
       )
-    )
+    );
 
-    
-      this.router.post(
-       "/reSend-resetPassword-otp",
+    this.router.post(
+      "/reSend-resetPassword-otp",
       BaseController.handleRequest(
         this.controller.reSendResetPasswordOTP.bind(this.controller)
       )
-    )
+    );
 
     this.router.post(
       "/reset-password",
@@ -100,7 +101,7 @@ export class AuthRoute extends BaseRoute {
       )
     );
 
-      this.router.post(
+    this.router.post(
       "/change-password",
       protectedRoutes,
       BaseController.handleRequest(
@@ -108,6 +109,11 @@ export class AuthRoute extends BaseRoute {
       )
     );
 
-    
+    this.router.patch(
+      "/reset-user-password",
+      BaseController.handleRequest(
+        this.controller.resetUserPassword.bind(this.controller)
+      )
+    );
   }
 }

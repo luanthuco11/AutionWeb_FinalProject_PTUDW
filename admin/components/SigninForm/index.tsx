@@ -13,6 +13,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label"; // Sử dụng Label chuẩn của Shadcn hoặc FieldLabel của bạn
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -35,6 +37,7 @@ export function SigninForm({
 }: React.ComponentProps<"div">) {
   const router = useRouter();
   const signIn = useAuthStore((s) => s.signIn);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -102,16 +105,30 @@ export function SigninForm({
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mật khẩu</Label>
               </div>
-              <Input
-                id="password"
-                type="password"
-                disabled={isSubmitting}
-                {...register("password")}
-                className={cn(
-                  errors.password &&
-                    "border-destructive focus-visible:ring-destructive"
-                )}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  disabled={isSubmitting}
+                  {...register("password")}
+                  className={cn(
+                    errors.password &&
+                      "border-destructive focus-visible:ring-destructive"
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
               <div className="flex justify-end">
                 <Link
                   href="/forget-password"

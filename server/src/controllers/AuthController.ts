@@ -14,6 +14,7 @@ import {
   CreateUser,
   RegisterRequest,
   ResetPasswordRequest,
+  ResetUserPasswordRequest,
   SignRequest,
   UserEntity,
 } from "../../../shared/src/types";
@@ -23,11 +24,13 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import {
+  sendEmailToUser,
   sendForgetPasswordOTPEmail,
   sendRegisterOTPEmail,
 } from "../utils/mailer";
 import { UserOTP } from "./../../../shared/src/types/ResetPasswordOTP";
 import axios from "axios";
+import { generatePassword } from "../utils/password";
 const ACCESS_TOKEN_TTL = "15m";
 const RESET_TOKEN_TTL = "15m";
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days (ms)
@@ -512,7 +515,7 @@ export class AuthController extends BaseController {
     console.log("Thong tin user trong db: ", userInfo);
     const oldHashPassword = userInfo.password_hash;
     console.log("compare: ", oldHashPassword, userConfirm.oldPassword);
-    const isCorrectPassword = await  bcrypt.compare(
+    const isCorrectPassword = await bcrypt.compare(
       userConfirm.oldPassword,
       oldHashPassword
     );
@@ -602,6 +605,102 @@ export class AuthController extends BaseController {
     await sendForgetPasswordOTPEmail(user.email, otp);
     return {
       message: "Gửi lại OTP thành công",
+    };
+  }
+
+  async resetUserPassword(req: Request, res: Response) {
+    const body: ResetUserPasswordRequest = req.body;
+
+    const newPassword: string = generatePassword(12);
+    const passwordHash: string = await bcrypt.hash(newPassword, 10);
+    await this.service.updateHashPassword(body?.userId, passwordHash);
+
+    if (body.mail) {
+      sendEmailToUser(
+        body.mail,
+        "THÔNG BÁO THAY ĐỔI MẬT KHẨU",
+        `
+    <table style="width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse; border:1px solid #ddd;">
+      <tr>
+        <td style="background-color:#dc3545; color:white; padding:20px; text-align:center; font-size:20px; font-weight:bold;">
+          Thông báo thay đổi mật khẩu
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding:20px; font-size:15px; line-height:1.6; color:#333;">
+          <p>Xin chào,</p>
+
+          <p>
+            Mật khẩu tài khoản của bạn đã được <strong>Admin</strong> thay đổi nhằm
+            <strong>đảm bảo an toàn cho hệ thống</strong>.
+          </p>
+
+          <p>
+            <strong>Mật khẩu tạm thời của bạn:</strong>
+          </p>
+
+          <div style="
+            background-color:#f8f9fa;
+            border:1px dashed #dc3545;
+            padding:12px;
+            font-size:18px;
+            font-weight:bold;
+            text-align:center;
+            letter-spacing:1px;
+            margin:15px 0;
+          ">
+            ${newPassword}
+          </div>
+
+          <p>
+            Vui lòng sử dụng mật khẩu trên để
+            <strong>đăng nhập tạm thời</strong> vào hệ thống tại đường link bên dưới:
+          </p>
+
+          <p style="text-align:center; margin:25px 0;">
+            <a
+              href="http://localhost:3000/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="
+                background-color:#0d6efd;
+                color:white;
+                padding:12px 20px;
+                text-decoration:none;
+                border-radius:5px;
+                font-weight:bold;
+                display:inline-block;
+              "
+            >
+              Đăng nhập hệ thống
+            </a>
+          </p>
+
+          <p>
+            Sau khi đăng nhập, vui lòng vào
+            <strong>Hồ sơ cá nhân → Chỉnh sửa thông tin</strong>
+            để <strong>cập nhật mật khẩu mới</strong>.
+          </p>
+
+          <p style="font-size:14px; color:#666; margin-top:15px;">
+            ⚠️ Vì lý do bảo mật, vui lòng không chia sẻ mật khẩu tạm thời này cho bất kỳ ai
+            và hãy đổi mật khẩu ngay sau khi đăng nhập.
+          </p>
+
+          <p style="margin-top:20px;">
+            Trân trọng,<br/>
+            <strong>Đội ngũ quản trị hệ thống</strong>
+          </p>
+        </td>
+      </tr>
+    </table>
+    `
+      );
+    }
+
+    return {
+      message: "Thay đổi mật khẩu người dùng thành công.",
     };
   }
 }

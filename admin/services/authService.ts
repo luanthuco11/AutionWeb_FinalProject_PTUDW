@@ -6,6 +6,7 @@ import {
   ForgetPasswordRequest,
   RegisterRequest,
   ResetPasswordRequest,
+  ResetUserPasswordRequest,
   SignRequest,
 } from "../../shared/src/types";
 import { api } from "@/config/axios.config";
@@ -110,6 +111,20 @@ export const authService = {
           Authorization: `Bearer ${resetToken}`,
         },
       });
+
+      return res.data;
+    } catch (error: any) {
+      throw new Error(
+        error?.response?.data?.message ?? "Lỗi khi đặt lại mật khẩu"
+      );
+    }
+  },
+
+  resetUserPassword: async (
+    user: ResetUserPasswordRequest,
+  ) => {
+    try {
+      const res = await api.patch(API_ROUTES.auth.resetUserPassword, user);
 
       return res.data;
     } catch (error: any) {

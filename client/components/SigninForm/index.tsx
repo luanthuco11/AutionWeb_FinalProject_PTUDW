@@ -20,7 +20,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SignRequest } from "../../../shared/src/types";
 import { useAuthStore } from "@/store/auth.store";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react"; // Cần cài lucide-react nếu chưa có
+import { Eye, EyeOff, Loader2 } from "lucide-react"; // Cần cài lucide-react nếu chưa có
+import { useState } from "react";
 
 const signInSchema = z.object({
   username: z.string().min(1, "Tên đăng nhập không được để trống"),
@@ -35,6 +36,7 @@ export function SigninForm({
 }: React.ComponentProps<"div">) {
   const router = useRouter();
   const signIn = useAuthStore((s) => s.signIn);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -102,16 +104,30 @@ export function SigninForm({
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Mật khẩu</Label>
               </div>
-              <Input
-                id="password"
-                type="password"
-                disabled={isSubmitting}
-                {...register("password")}
-                className={cn(
-                  errors.password &&
-                    "border-destructive focus-visible:ring-destructive"
-                )}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  disabled={isSubmitting}
+                  {...register("password")}
+                  className={cn(
+                    errors.password &&
+                      "border-destructive focus-visible:ring-destructive"
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
               <div className="flex justify-end">
                 <Link
                   href="/forget-password"

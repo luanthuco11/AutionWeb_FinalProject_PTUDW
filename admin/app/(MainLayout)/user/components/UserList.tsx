@@ -7,10 +7,13 @@ import { useRouter } from "next/navigation";
 import React, { use, useEffect, useState } from "react";
 import { Pagination as PaginationType } from "../../../../shared/src/types/Pagination";
 import Pagination from "@/components/Pagination";
-import { User } from "../../../../shared/src/types";
+import { User } from "../../../../../shared/src/types";
 import { formatDate } from "@/app/utils";
 import { DeleteCategoryModal } from "@/components/CategoryCard/DeleteCategoryModal";
 import { ConfirmPopup } from "@/components/ConfirmPopup";
+import AuthHook from "@/hooks/userAuth";
+import { KeyRound } from "lucide-react";
+import { ConfirmResetPasswordPopup } from "@/components/ConfirmResetPasswordPopup";
 
 export const UserList = () => {
   const searchParams = useSearchParams();
@@ -20,10 +23,15 @@ export const UserList = () => {
   const limit = searchParams.get("limit") || 10;
   const router = useRouter();
   const [isPopup, setIsPopup] = useState(false);
+  const [isResetPopup, setIsResetPopup] = useState(false);
   const [selectedUser, setSelectedUser] = useState<{
     id: number;
     content: string;
   }>({ id: 0, content: "Chưa có" });
+  const [selectedResetUser, setSelectedResetUser] = useState<{
+    userId: string;
+    mail: string;
+  }>({ userId: "0", mail: "Chưa có" });
   const pagination: PaginationType = {
     page: Number(page),
     limit: Number(limit),
@@ -31,6 +39,9 @@ export const UserList = () => {
   const { data, isLoading } = UserHook.useGetUsers(pagination);
   const { mutate: deleteUser, isPending: isDeletingUser } =
     UserHook.useDeleteUser();
+  const { mutate: resetUserPassword, isPending: isResetUserPassword } =
+    AuthHook.useResetUserPassword();
+
   const handlePageChange = (page: number) => {
     const next = new URLSearchParams(searchParams);
     next.set("page", String(page));
@@ -57,10 +68,20 @@ export const UserList = () => {
     }
     setIsPopup(false);
   };
+  const handleOnResetUserPassword = (user: User) => {
+    setSelectedResetUser({userId: String(user.id), mail: user.email});
+    setIsResetPopup(true);
+  };
+  const handleResetUserPassword = () => {
+    if (selectedResetUser) {
+        resetUserPassword(selectedResetUser)
+    }
+    setIsResetPopup(false);
+  };
   console.log(users);
   return (
     <>
-      {isLoading || isDeletingUser ? (
+      {isLoading || isDeletingUser || isResetUserPassword ? (
         <LoadingSpinner />
       ) : (
         users && (
@@ -128,31 +149,40 @@ export const UserList = () => {
                             {formatDate(item.created_at)}
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <button
-                              onClick={() =>
-                                handleOnDelete(item.id, "xóa" + item.name)
-                              }
-                              className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={24}
-                                height={24}
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-trash2 w-4 h-4"
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                onClick={() => handleOnResetUserPassword(item)}
+                                title="Reset mật khẩu"
+                                className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors cursor-pointer"
                               >
-                                <path d="M3 6h18" />
-                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                <line x1={10} x2={10} y1={11} y2={17} />
-                                <line x1={14} x2={14} y1={11} y2={17} />
-                              </svg>
-                            </button>
+                                <KeyRound className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleOnDelete(item.id, "xóa" + item.name)
+                                }
+                                className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors cursor-pointer"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width={24}
+                                  height={24}
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth={2}
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="lucide lucide-trash2 w-4 h-4"
+                                >
+                                  <path d="M3 6h18" />
+                                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                  <line x1={10} x2={10} y1={11} y2={17} />
+                                  <line x1={14} x2={14} y1={11} y2={17} />
+                                </svg>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -177,6 +207,12 @@ export const UserList = () => {
         onClose={() => setIsPopup(false)}
         selected={selectedUser}
         onConfirm={handleDeleteUser}
+      />
+      <ConfirmResetPasswordPopup
+        isOpen={isResetPopup}
+        onClose={() => setIsResetPopup(false)}
+        selected={selectedResetUser}
+        onConfirm={handleResetUserPassword}
       />
     </>
   );

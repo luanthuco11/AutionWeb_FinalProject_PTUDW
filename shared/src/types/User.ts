@@ -42,6 +42,11 @@ export type ChangePasswordRequest = {
   confirmPassword: string;
 };
 
+export type ResetUserPasswordRequest = {
+  userId: string;
+  mail: string;
+}
+
 export type SignRequest = {
   username: string;
   password: string;

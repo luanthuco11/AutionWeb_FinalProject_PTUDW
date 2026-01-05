@@ -81,6 +81,7 @@ const API_ROUTES = {
     verifyOTP: `${AUTH_API}/verify-otp`,
     verifyRegisterOTP: `${AUTH_API}/verify-register-otp`,
     resetPassword: `${AUTH_API}/reset-password`,
+    resetUserPassword: `${AUTH_API}/reset-user-password`, //PATCH
     reSendRegisterOTP: `${AUTH_API}/reSend-register-otp`,
     reSendResetPasswordOTP: `${AUTH_API}/reSend-resetPassword-otp`,
   },
