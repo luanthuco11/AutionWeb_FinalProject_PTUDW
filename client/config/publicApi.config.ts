@@ -9,7 +9,8 @@ export const publicApi: AxiosInstance = axios.create({
 publicApi.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
-    console.error("[PUBLIC API ERROR]", {
+    console.log("[PUBLIC API ERROR]", {
+      message: error.message,
       url: error.config?.url,
       status: error.response?.status,
       data: error.response?.data,
