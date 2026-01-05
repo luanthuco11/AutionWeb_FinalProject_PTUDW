@@ -108,7 +108,7 @@ git clone https://github.com/Donavfulish/AutionWeb_FinalProject_PTUDW.git
 cd project-name
 ```
 
-### 2️⃣ Cài đặt phụ thuộc
+### 2️⃣ Install dependencies
 At the root folder, run command:
 ```bash
 npm install
@@ -119,13 +119,13 @@ Npm workspaces will install dependencies automatically for: `client`, `admin`, `
 ---
 
 ## 🧱 Database Setup (PostgreSQL)
-### Cách 1: Use Neon Database (có sẵn)
+### 1️⃣: Use Neon Database (có sẵn)
 Backend is already setup for Neon PostgreSQL.
 ```bash
 DATABASE_URL="postgresql://neondb_owner:npg_im2UE6JSAIKP@ep-green-shape-a1pc3qjd-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 ```
 
-### Cách 2: Create database from db.zip 
+### 2️⃣: Create database from db.zip 
 Bước 1: Unzip script in file db.zip
 
 Bước 2: Create new database using pgAdmin
