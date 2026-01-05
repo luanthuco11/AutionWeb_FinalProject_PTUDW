@@ -152,12 +152,11 @@ DATABASE_URL="postgresqlpostgresql://postgres:your_password@localhost:5432/aucti
 ## ⚙️ Environment Variables Setup
 ### 1: server/.env
 ```bash
-PORT=8080
-
 # Using neon database or pgadmin follow the above instruction
-DATABASE_URL=postgresql://neondb_owner:npg_im2UE6JSAIKP@ep-green-shape-a1pc3qjd-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-
-ACCESS_TOKEN_SECRET=f02ef7ad90ba19273faa0385663268c100c3af2f4b8c8796f062e536db41048172e7e6ed3e700393378a68d54db98ad53badf6646859024d7d304681c25e7b5c
+# DATABASE_URL=postgresql://postgres:nhomnayco5nguoi@db.tprxqutjlspnuxavnrhf.supabase.co:5432/postgres
+DATABASE_URL='postgresql://neondb_owner:npg_im2UE6JSAIKP@ep-green-shape-a1pc3qjd-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require'
+PORT = 8080
+ACCESS_TOKEN_SECRET = 'f02ef7ad90ba19273faa0385663268c100c3af2f4b8c8796f062e536db41048172e7e6ed3e700393378a68d54db98ad53badf6646859024d7d304681c25e7b5c'
 
 R2_ACCOUNT_ID=cb5953b1e7c78dc509ddcff170b55b6e
 R2_ACCESS_KEY_ID=afd28e938270629af69629789400de73
@@ -165,15 +164,18 @@ R2_SECRET_ACCESS_KEY=fd662d22b2c77522479df5c7cc24bc8880e04ebcc4a620786027a4401ec
 R2_BUCKET_NAME=ptudw-auction-images
 
 SMTP_USER=flazerfa123@gmail.com
-
-SMTP_PASS=eyfw qwju lswj qlfs
+SMTP_PASS=eyfw qwju lswj qlfs # App pass cua taooo
 
 RECAPTCHA_SECRET_KEY=6LcZkjcsAAAAAMcv-XwCkN-EvZtnbcdBHrexrLcC
+NEXT_PUBLIC_CLIENT_URL=http://localhost:3000
 ```
 
 ### 2: client/.env.local
 ```bash
 NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LcZkjcsAAAAAN7qnLO1BzlPcN2KdP2smMAemRPP
+NEXT_PUBLIC_API_URL=http://localhost:8080
+NEXT_PUBLIC_CLIENT_URL=http://localhost:3000
+NEXT_PUBLIC_ADMIN_URL=http://localhost:3001
 ```
 
 ### 3: admin/.env.local
