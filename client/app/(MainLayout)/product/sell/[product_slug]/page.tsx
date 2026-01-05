@@ -424,7 +424,7 @@ export default function ProductPage() {
               </h3>
             </div>
 
-            <div className="py-4 px-6">
+            <div className="py-4 px-6 max-h-[500px] overflow-y-scroll">
               {product && (
                 <p
                   dangerouslySetInnerHTML={{

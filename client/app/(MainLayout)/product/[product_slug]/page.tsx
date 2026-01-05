@@ -909,7 +909,7 @@ export default function ProductPage() {
               </div>
             </div>
           )}
-          <div className="bg-white rounded-xl shadow-sm   mb-4 sm:mb-8 border border-slate-200">
+          <div className="bg-white rounded-xl shadow-sm   mb-4 sm:mb-8 border border-slate-200 ">
             <div className="border-b border-slate-100 bg-slate-50/50 p-4">
               {" "}
               <h3 className="text-2xl font-bold text-slate-900 mb-1 sm:mb-4">
@@ -917,7 +917,7 @@ export default function ProductPage() {
               </h3>
             </div>
 
-            <div className="p-4">
+            <div className="p-4 max-h-[500px] overflow-y-scroll">
               {product && (
                 <p
                   dangerouslySetInnerHTML={{
