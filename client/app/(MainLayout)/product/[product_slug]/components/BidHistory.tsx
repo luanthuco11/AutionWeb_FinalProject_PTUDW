@@ -20,10 +20,13 @@ export const BidHistory = ({ productId }: ProductId) => {
   return (
     <div className="relative bg-white rounded-xl shadow-sm overflow-hidden  mb-8 border border-slate-200">
       {isLoadingBigLogs && <LoadingSpinner />}
-      <div className="p-4 md:p-6 lg:p-4 border-b border-slate-100 bg-slate-50/50">
-        <h3 className="text-2xl font-bold text-slate-900 mb-2 sm:mb-4">
+       <div className="p-4 md:p-6 border-b border-slate-100 bg-slate-50/50">
+        <h3 className="text-xl md:text-2xl font-bold text-slate-800">
           Lịch sử đấu giá
         </h3>
+        <p className="text-slate-500 text-sm mt-1">
+          Thông tin 10 đấu giá gần nhất
+        </p>
       </div>
 
       <div className="px-4 md:p-6 lg:p-4">
