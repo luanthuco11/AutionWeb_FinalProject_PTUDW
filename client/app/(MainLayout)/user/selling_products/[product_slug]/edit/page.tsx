@@ -166,7 +166,7 @@ const EditProductPage = () => {
               </div>
 
               <div
-                className="p-4"
+                className="p-4 max-h-[500px] overflow-y-scroll"
                 dangerouslySetInnerHTML={{ __html: product.description || "" }}
               />
             </div>
