@@ -415,6 +415,7 @@ export default function ProductPage() {
                             shadow-lg shadow-green-600/30
                             whitespace-nowrap
                             border-2 border-white
+                            
                           "
                     >
                       🏆 Bạn đang dẫn đầu
