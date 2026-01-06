@@ -19,11 +19,8 @@ import { ShortUser, User } from "../../../shared/src/types";
 import { createSlugUnique } from "../utils";
 import { R2Service } from "./R2Service";
 import { Pagination } from "../../../shared/src/types/Pagination";
-import { PoolClient } from "pg";
 import { sendEmailToUser } from "../utils/mailer";
-import { MutationResult } from "../../../shared/src/types/Mutation.js";
-import { Hmac } from "crypto";
-import { ListTodo } from "lucide-react";
+
 
 export class ProductService extends BaseService {
   private static instance: ProductService;
