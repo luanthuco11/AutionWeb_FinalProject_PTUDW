@@ -46,7 +46,7 @@ const FavoriteProductPage = () => {
     <div className="background-user">
       <div className="text-xl md:text-2xl font-medium">Sản phẩm yêu thích</div>
       {isLoading && (
-        <div className="relative w-full h-50">
+        <div className="inset-0 h-[80vh]">
           <LoadingSpinner />
         </div>
       )}

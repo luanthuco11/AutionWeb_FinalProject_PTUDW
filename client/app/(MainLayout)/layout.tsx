@@ -12,8 +12,10 @@ export default function RootLayout({
   return (
     <>
       <AuthRoute>
-        <Header />
-        <div className="mt-[100px] flex flex-col lg:flex-row container-layout gap-8 mb-[50px] w-full">
+        <div className="sticky top-0 w-full z-50">
+          <Header />
+        </div>
+        <div className="mt-7.5 flex flex-col lg:flex-row container-layout gap-8 mb-[50px] w-full min-h-screen">
           {children}
         </div>
         <Footer />

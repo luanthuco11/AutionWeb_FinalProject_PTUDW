@@ -1,123 +1,200 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import ProductCategoryTable from "../ProductCategoryTable";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import CategoryHook from "@/hooks/useCategory";
 import LoadingSpinner from "../LoadingSpinner";
-// --- Icons cho Mobile ---
-const MenuIcon = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className={className}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-    />
-  </svg>
-);
+import { ChevronDown, ChevronRight, Menu, X } from "lucide-react";
 
-const XIcon = ({ className }: { className?: string }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth={1.5}
-    stroke="currentColor"
-    className={className}
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M6 18 18 6M6 6l12 12"
-    />
-  </svg>
-);
+// --- Sub-component: SortDropdown ---
+function SortDropdown() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const currentSort = searchParams.get("sort");
+
+  const handleSort = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("sort", value);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  return (
+    <div className="relative w-full">
+      <select
+        className="appearance-none w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-3 pr-10 cursor-pointer transition-colors"
+        defaultValue={currentSort || "ascending-price"}
+        onChange={(e) => handleSort(e.target.value)}
+      >
+        <option value="ascending-price">Giá tăng dần</option>
+        <option value="descending-price">Giá giảm dần</option>
+        <option value="expiring-soon">Sắp kết thúc</option>
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+        <ChevronDown className="h-4 w-4" />
+      </div>
+    </div>
+  );
+}
 
 const ShortCategorySideBar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
+    new Set()
+  );
+
   const pathname = usePathname();
+  const router = useRouter();
   const { data, isLoading, error } = CategoryHook.useCategories();
 
-  // Tự động đóng khi chuyển trang
+  // Logic hiển thị Sort
+  const shouldShowSort =
+    (pathname.startsWith("/category") && pathname !== "/category") ||
+    pathname.startsWith("/search");
+
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    setIsOpen(false);
   }, [pathname]);
 
-  // Khóa cuộn trang khi mở menu
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-  }, [isMobileMenuOpen]);
+    document.body.style.overflow = isOpen ? "hidden" : "unset";
+  }, [isOpen]);
+
+  const toggleCategory = (id: number) => {
+    setExpandedCategories((prev) => {
+      const newSet = new Set(prev);
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+      return newSet;
+    });
+  };
 
   return (
     <>
-      {isLoading && (
-        <div className="flex justify-center items-center py-4">
-          <LoadingSpinner />
-        </div>
-      )}
-
-      {error && (
-        <div className="text-center text-red-500 py-2">
-          Error loading categories...
-        </div>
-      )}
-
-      {/* --- TOGGLE BUTTON --- */}
-      {/* Sửa: Thêm md:hidden hoặc lg:hidden nếu bạn chỉ muốn hiện nút này trên mobile */}
-      {/* Nếu bạn muốn hiện nút này trên cả Desktop thì giữ nguyên class, nhưng logic Drawer bên dưới phải bỏ lg:hidden */}
+      {/* --- NÚT TRIGGER MOBILE --- */}
       <div className="lg:hidden mb-4">
         <button
-          onClick={() => setIsMobileMenuOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm text-gray-700 hover:bg-gray-50 transition-colors"
+          onClick={() => setIsOpen(true)}
+          className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl shadow-sm text-slate-700 active:bg-slate-50 transition-all"
         >
-          <MenuIcon className="w-5 h-5" />
-          <span className="font-medium">Danh mục & Bộ lọc</span>
+          <Menu className="w-5 h-5 text-indigo-600" />
+          <span className="font-semibold text-[15px]">Danh mục & Bộ lọc</span>
         </button>
       </div>
 
-      {/* --- DRAWER / OVERLAY --- */}
-      {isMobileMenuOpen && (
-        // SỬA QUAN TRỌNG: Đã xóa class "lg:hidden" ở dòng dưới đây
-        <div className="fixed inset-0 z-50">
-          {/* Backdrop tối màu */}
+      {/* --- SIDEBAR DRAWER --- */}
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex">
+          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/50 transition-opacity"
-            onClick={() => setIsMobileMenuOpen(false)}
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={() => setIsOpen(false)}
           />
 
-          {/* Nội dung Menu trượt */}
-          {/* Thêm max-w-xs hoặc w-80 để menu không quá to trên desktop nếu lỡ mở */}
-          <div className="absolute left-0 top-0 bottom-0 w-[85%] max-w-xs bg-white shadow-xl flex flex-col animate-slide-in">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="inline-block font-bold text-md text-indigo-700 bg-indigo-50 px-3 py-1 rounded-md">
-                Chọn danh mục bạn quan tâm
-              </h2>
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-              >
-                <XIcon className="w-6 h-6 text-gray-500" />
-              </button>
+          {/* Sidebar Panel */}
+          <div className="relative w-[300px] max-w-[85vw] bg-white h-full flex flex-col shadow-2xl animate-in slide-in-from-left duration-300">
+            {/* 1. STICKY HEADER AREA (Header + Sort) */}
+            <div className="sticky top-0 z-20 bg-white border-b">
+              <div className="flex items-center justify-between p-4">
+                <h2
+                  className="text-lg font-bold text-slate-900 cursor-pointer"
+                  onClick={() => router.push("/category")}
+                >
+                  Danh mục
+                </h2>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+                >
+                  <X className="w-6 h-6 text-slate-400" />
+                </button>
+              </div>
+
+              {/* Phần Sort nằm trong vùng Sticky nếu có */}
+              {shouldShowSort && (
+                <div className="px-4 pb-4">
+                  <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2 px-1">
+                    Sắp xếp theo
+                  </p>
+                  <SortDropdown />
+                </div>
+              )}
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-              {/* Chỉ render Table khi có data để tránh lỗi undefined */}
-              {data && (
-                <ProductCategoryTable
-                  productCategories={data}
-                  isMobile={true}
-                />
+            {/* 2. SCROLLABLE CONTENT (Danh sách danh mục) */}
+            <div className="flex-1 overflow-y-auto overscroll-contain px-2 py-4">
+              {isLoading && (
+                <div className="flex justify-center py-10">
+                  <LoadingSpinner />
+                </div>
               )}
+
+              {error && (
+                <div className="text-center text-red-500 text-sm py-4">
+                  Không thể tải danh mục
+                </div>
+              )}
+
+              <div className="space-y-1">
+                {data?.map((item: any) => {
+                  const hasChildren = item.children && item.children.length > 0;
+                  const isExpanded =
+                    expandedCategories.has(item.id) && hasChildren;
+
+                  return (
+                    <div key={item.id} className="select-none">
+                      {/* Parent Item */}
+                      <div
+                        className={`flex items-center justify-between px-3 py-3 rounded-xl cursor-pointer transition-all ${
+                          isExpanded
+                            ? "bg-slate-50 text-indigo-600"
+                            : "text-slate-700 active:bg-slate-50"
+                        }`}
+                        onClick={() => hasChildren && toggleCategory(item.id)}
+                      >
+                        <span
+                          className={`text-[15px] ${
+                            isExpanded ? "font-bold" : "font-medium"
+                          }`}
+                        >
+                          {item.name}
+                        </span>
+                        {hasChildren && (
+                          <ChevronRight
+                            className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                              isExpanded ? "rotate-90 text-indigo-500" : ""
+                            }`}
+                          />
+                        )}
+                      </div>
+
+                      {/* Children Sub-menu */}
+                      {isExpanded && (
+                        <div className="ml-4 mt-1 border-l-2 border-slate-100 space-y-1 animate-in fade-in slide-in-from-top-1">
+                          {item.children?.map((child: any) => {
+                            const isChildActive =
+                              pathname === `/category/${child.slug}`;
+                            return (
+                              <Link
+                                key={child.id}
+                                href={`/category/${child.slug}?sort=ascending-price`}
+                                className={`block ml-4 px-3 py-2.5 text-[14px] rounded-lg transition-colors ${
+                                  isChildActive
+                                    ? "text-indigo-600 bg-indigo-50/50 font-bold"
+                                    : "text-slate-500 active:text-slate-900"
+                                }`}
+                              >
+                                {child.name}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Khoảng trống cuối để tránh bị che */}
+              <div className="h-20" />
             </div>
           </div>
         </div>

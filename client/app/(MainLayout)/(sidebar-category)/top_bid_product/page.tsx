@@ -55,7 +55,9 @@ export default function Page() {
   return (
     <>
       {(isLoadingTopBiddingProduct || isLoadingFavoriteProduct) && (
-        <LoadingSpinner />
+        <div className="inset-0 h-[80vh]">
+          <LoadingSpinner />
+        </div>
       )}
       {errorTopBiddingProduct && <> Error.... </>}
       {errorFavoriteProduct && <> Error.... </>}

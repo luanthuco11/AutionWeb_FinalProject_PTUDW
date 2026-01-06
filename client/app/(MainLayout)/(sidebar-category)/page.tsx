@@ -95,17 +95,19 @@ function Page() {
           return (
             <div key={index}>
               {/* Section Title */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+              <div className="flex flex-row flex-wrap sm:flex-row justify-between items-baseline sm:items-end mb-4 gap-2">
+                <h2 className="text-xl md:text-2xl font-bold w-fit text-gray-800">
                   {item.title}
                 </h2>
 
                 <Link
                   href={item.href || "/"}
-                  className="text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group"
+                  className="shrink flex justify-end"
                 >
-                  <span className="text-sm font-medium">Xem tất cả</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  <p className="text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1 group">
+                    <span className="text-sm font-medium">Xem tất cả</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </p>
                 </Link>
               </div>
 

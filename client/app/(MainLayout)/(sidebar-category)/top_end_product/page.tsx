@@ -54,7 +54,9 @@ export default function Page() {
   return (
     <>
       {(isLoadingTopEndingSoonProduct || isLoadingFavoriteProduct) && (
-        <LoadingSpinner />
+        <div className="inset-0 h-[80vh]">
+          <LoadingSpinner />
+        </div>
       )}
       {errorTopEndingSoonProduct && <> Error.... </>}
       {errorFavoriteProduct && <> Error.... </>}

@@ -16,7 +16,7 @@ export const usePerPage = () => {
       } else if (window.innerWidth >= 640) {
         setPerPage(6);
       } else {
-        setPerPage(3);
+        setPerPage(5);
       }
     };
 

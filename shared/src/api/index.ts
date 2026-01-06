@@ -47,7 +47,7 @@ const API_ROUTES = {
     }, //GET
     createCategory: `${CATEGORY_API}`, //POST
     updateCategory: (id: number) => `${CATEGORY_API}/${id}`, //PATCH
-    deleteCategory: (id: number) => ` ${CATEGORY_API}/${id}`, //DELETE
+    deleteCategory: (id: number) => `${CATEGORY_API}/${id}`, //DELETE
   },
   bid: {
     getBidLogs: (id: number) => `${BID_API}/${id}`, //GET

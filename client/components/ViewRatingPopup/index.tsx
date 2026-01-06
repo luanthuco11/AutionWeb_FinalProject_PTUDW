@@ -44,7 +44,7 @@ const ViewRatingPopup = ({
   onClose,
 }: ViewRatingPopupProps) => {
   const limit = 5;
-  const {user} = useAuth();
+  const { user } = useAuth();
   const [logs, setLogs] = useState<any[]>([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);

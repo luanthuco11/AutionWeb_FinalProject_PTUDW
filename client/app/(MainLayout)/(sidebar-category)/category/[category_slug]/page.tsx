@@ -66,7 +66,7 @@ function CategorySlugPage({
       <div className="inset-0 h-[80vh]">
         <LoadingSpinner />
       </div>
-    )
+    );
   }
 
   // 2. Logic Error: Hiển thị lỗi nếu có
