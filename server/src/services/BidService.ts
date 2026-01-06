@@ -493,9 +493,18 @@ export class BidService extends BaseService {
               </tr>
               <tr>
                 <td style="padding:20px; font-size:16px; line-height:1.5; color:#333;">
-                  <p>Đã có người đấu giá thành công sản phẩm <strong>${
-                    productInfo.name
-                  }</strong> mà bạn đang tham gia</p>
+                  <p>Đã có người đấu giá thành công sản phẩm <strong>
+                          <a 
+                            href="${
+                              process.env.NEXT_PUBLIC_CLIENT_URL
+                            }/product/${productInfo.slug}" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style="color: #0d6efd; text-decoration: underline;"
+                          >
+                            ${productInfo.name}
+                          </a>
+                        </strong> mà bạn đang tham gia</p>
                   <p>Của người bán:<strong>  ${sellerInfo.name}</strong></p>
                   <p>Mức giá hiện tại của sản phẩm: <strong>${formatPrice(
                     myBidPrice
