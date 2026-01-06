@@ -15,7 +15,7 @@ class BidHook {
       queryKey: ["bid_logs", product_id],
       queryFn: () => BidService.getBidlogs(product_id, isPrivate),
       staleTime: STALE_10_MIN,
-      enabled: !!product_id && !!isPrivate,
+      enabled: !!product_id,
       select: (data) => {
         return data.data.bid_logs;
       },
