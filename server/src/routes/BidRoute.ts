@@ -18,9 +18,9 @@ export class BidRoute extends BaseRoute {
   }
 
   initRoutes() {
-    this.router.use(protectedRoutes);
     this.router.get(
       "/user-bid/:productId",
+      protectedRoutes,
       BaseController.handleRequest(
         this.controller.getUserBid.bind(this.controller)
       )
@@ -33,12 +33,14 @@ export class BidRoute extends BaseRoute {
     );
     this.router.post(
       "/",
+      protectedRoutes,
       BaseController.handleRequest(
         this.controller.createBid.bind(this.controller)
       )
     );
     this.router.post(
       "/reject",
+      protectedRoutes,
       BaseController.handleRequest(
         this.controller.createReject.bind(this.controller)
       )
@@ -46,12 +48,14 @@ export class BidRoute extends BaseRoute {
 
     this.router.post(
       "/blacklist",
+      protectedRoutes,
       BaseController.handleRequest(
         this.controller.createBlacklist.bind(this.controller)
       )
     );
     this.router.get(
       "/:product_slug/can-bid",
+      protectedRoutes,
       BaseController.handleRequest(
         this.controller.getCanBid.bind(this.controller)
       )
