@@ -270,15 +270,12 @@ export class BidService extends BaseService {
     try {
       await poolClient.query("BEGIN");
 
-      console.log(1);
       // 1. Kiểm tra user có bị đánh blacklist không
       if (await isUserInBlackList()) {
         await poolClient.query("ROLLBACK");
-        console.log("Người dùng có trong blacklist");
         return { success: false };
       }
 
-      console.log(2);
       // 2. Lưu thông tin đấu giá mới của người dùng
       const user_max_price = await getUserMaxPrice();
       const saveBidPromise = getSaveUserBid(user_max_price);
@@ -288,7 +285,6 @@ export class BidService extends BaseService {
         productBidStatusPromise,
       ]);
 
-      console.log(3);
       // 3. Lấy thông tin đấu giá hiện tại của sản phẩm
       const productBidStatus: BidStatusType = productBidStatusResult[0]!;
       const {
@@ -302,20 +298,16 @@ export class BidService extends BaseService {
         product_renew_time,
       } = productBidStatus;
 
-      console.log(4);
       // 4. Kiểm tra giá bid có hợp lệ điều kiện cần không
       if (bid.user_id == seller_id) {
         await poolClient.query("ROLLBACK");
-        console.log("Seller không được đấu giá sản phẩm mình bán");
         return { success: false };
       }
       if (bid.price < current_price + price_increment) {
         await poolClient.query("ROLLBACK");
-        console.log("Giá đấu thấp hơn yêu cầu tối thiểu");
         return { success: false };
       }
 
-      console.log(5);
       //Gửi Mail
       const sellerInfo: User | undefined = await getSellerInfo();
       const bidderInfo: User | undefined = await getUserInfo(bid.user_id);
@@ -326,11 +318,8 @@ export class BidService extends BaseService {
       let nowPrice = 0;
       // 5. Thực hiện so sánh và lưu kết quả đấu giá
       if (productBidStatus.top_bidder_id == bid.user_id) {
-        console.log("Bidder vẫn đang thắng đấu giá");
         await poolClient.query("COMMIT");
-        console.log("Commit thành công");
         if (sellerInfo && bidderInfo && productInfo) {
-          console.log(bidderInfo);
           sendEmailToUser(
             sellerInfo.email,
             "THÔNG BÁO VỀ SẢN PHẨM ĐANG BÁN",
@@ -457,9 +446,7 @@ export class BidService extends BaseService {
               order
             );
           }
-          console.log(5);
         } else {
-          console.log(6);
           // Đấu giá thắng
           let myBidPrice = getBidPrice(
             current_price,
@@ -524,9 +511,7 @@ export class BidService extends BaseService {
       }
       await poolClient.query("COMMIT");
 
-      console.log("Commit thành công 2");
       if (sellerInfo && bidderInfo && productInfo) {
-        console.log(bidderInfo);
         sendEmailToUser(
           sellerInfo.email,
           "THÔNG BÁO VỀ SẢN PHẨM ĐANG BÁN",

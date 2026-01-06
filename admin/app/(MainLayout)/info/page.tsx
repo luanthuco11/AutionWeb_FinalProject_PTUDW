@@ -65,7 +65,12 @@ const InfoPage = () => {
     if (submitProfileForm) submitProfileForm();
   }, [submitProfileForm]);
 
-  if (isLoading) return <LoadingSpinner />;
+ if (isLoading)
+    return (
+      <div className="inset-0 h-screen">
+        <LoadingSpinner />
+      </div>
+    );
   if (error) return <p>Lỗi tải dữ liệu</p>;
   if (!userProfile) return <p>Không tìm thấy thông tin người dùng</p>;
   return (

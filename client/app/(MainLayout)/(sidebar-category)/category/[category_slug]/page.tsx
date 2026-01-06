@@ -62,7 +62,11 @@ function CategorySlugPage({
 
   // 1. Logic Loading: Ưu tiên hiển thị Spinner khi bất kỳ API nào đang fetch
   if (isLoadingProducts || isLoadingFavoriteProduct) {
-    return <LoadingSpinner />;
+    return (
+      <div className="inset-0 h-[80vh]">
+        <LoadingSpinner />
+      </div>
+    )
   }
 
   // 2. Logic Error: Hiển thị lỗi nếu có

@@ -73,7 +73,6 @@ export class UserService extends BaseService {
     return totalUsers[0]?.total;
   }
   async updateProfile(payload: UpdateUserPayload) {
-    console.log(payload, typeof payload.day_of_birth);
     const r2 = R2Service.getInstance();
     const filesArray = payload.profile_image ? [payload.profile_image] : [];
     const [avatarUrl] = await r2.uploadFilesToR2(filesArray, "user");

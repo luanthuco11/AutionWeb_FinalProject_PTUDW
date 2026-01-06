@@ -78,7 +78,6 @@ export class AuthController extends BaseController {
     const hashPassword = await bcrypt.hash(registerUser.password, 10); // salt = 10
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otp_hash = await bcrypt.hash(otp, 10);
-    console.log("Gia tri otp va otp hash luu vao: ", otp, otp_hash);
     const newUser: CreateTempUser = {
       username: registerUser.username,
       email: registerUser.email,
@@ -92,7 +91,6 @@ export class AuthController extends BaseController {
     const googleVerifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${registerUser.captchaToken}`;
 
     const response = await axios.post(googleVerifyUrl);
-    console.log("gia tri response: ", response);
     const { success } = response.data;
     if (!success) {
       throw new Error("Xác thực Captcha thất bại, vui lòng thử lại.");
@@ -192,7 +190,6 @@ export class AuthController extends BaseController {
       throw new Error(" Tên đăng nhập hoặc mật khẩu không đúng");
     }
 
-    console.log("thong tin user: ", user);
     if (user.role !== "admin") {
       throw new Error("Tài khoản phải có quyền admin mới có thể truy cập");
     }
@@ -232,13 +229,11 @@ export class AuthController extends BaseController {
 
   async verifyRegisterOTP(req: Request, res: Response) {
     // 1. Kiem tra thong tin input
-    console.log("verify register controller backend");
     const userOTP: UserRegisterOTP = req.body;
     if (!userOTP.email || !userOTP.otp) {
       throw new Error("Thiếu thông tin người dùng hoặc mã otp");
     }
 
-    console.log("otp: ", userOTP);
 
     const otpRes: PendingUserHashOTP =
       await this.service.getPendingUserOTPByEmail(userOTP.email);
@@ -421,7 +416,6 @@ export class AuthController extends BaseController {
     if (!user) {
       throw new Error("Không tồn tại thông tin người dùng");
     }
-    console.log(user);
     const userId = user.id;
 
     // 3. Lay record cua user o reset password otp
@@ -457,7 +451,6 @@ export class AuthController extends BaseController {
   async resetPassword(req: Request, res: Response) {
     const userConfirm: ResetPasswordRequest = req.body;
     const user = req.user;
-    console.log("user: ", user);
     if (!user || !user.id) {
       throw new Error("Phiên làm việc không hợp lệ hoặc đã hết hạn");
     }
@@ -482,7 +475,6 @@ export class AuthController extends BaseController {
   async changePassword(req: Request, res: Response) {
     const userConfirm: ChangePasswordRequest = req.body;
     const user = req.user;
-    console.log("user: ", user);
 
     // 1. Kiem tra thong tin user
     if (!user || !user.id) {
@@ -510,9 +502,7 @@ export class AuthController extends BaseController {
       throw new Error("Tài khoản không tồn tại");
     }
 
-    console.log("Thong tin user trong db: ", userInfo);
     const oldHashPassword = userInfo.password_hash;
-    console.log("compare: ", oldHashPassword, userConfirm.oldPassword);
     const isCorrectPassword = await bcrypt.compare(
       userConfirm.oldPassword,
       oldHashPassword
@@ -532,7 +522,6 @@ export class AuthController extends BaseController {
   }
 
   async reSendPendingUserOTP(req: Request, res: Response) {
-    console.log("gia tri req.body: ", req.body);
     const { email } = req.body;
 
     if (!email) {
@@ -557,7 +546,6 @@ export class AuthController extends BaseController {
       otp_hash
     );
 
-    console.log("Gia tri mail, otp, otpHash:", otpRecord.email, otp, otp_hash);
     await sendRegisterOTPEmail(otpRecord.email, otp);
     return {
       message: "Gửi lại OTP thành công",
@@ -591,14 +579,11 @@ export class AuthController extends BaseController {
     const otp_hash = await bcrypt.hash(otp, 10);
 
     // 4. Cap nhat lai record do
-    console.log("otpRecord: ", otpRecord);
     await this.service.updateHashOTPResetPasswordByUserId(
       otpRecord.user_id,
       otp_hash
     );
 
-    console.log("gia tri user: ", user);
-    console.log("Gia tri mail, otp, otpHash:", user.email, otp, otp_hash);
     // 5: Gui mail
     await sendForgetPasswordOTPEmail(user.email, otp);
     return {

@@ -95,7 +95,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ loading: true });
 
       const data = await authService.forgetPassword(user);
-      console.log("data response from reset password: ", data);
       set({ forgetUserId: data.userId });
       get().setVerifyOTPType("forgetPassword-otp");
       console.log(data);
@@ -157,7 +156,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       set({ loading: true });
       const { resetToken, message } = await authService.verifyOTP(user);
-      console.log("gia tri reset token: ", resetToken);
       get().setResetToken(resetToken);
       toast.success(message);
     } catch (error: any) {
@@ -204,7 +202,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const email = get().pendingUserEmail;
       set({ loading: true });
-      console.log("gia tri email: ", email);
       const data = await authService.reSendRegisterOTP(email);
       toast.success(data.message);
     } catch (error: any) {

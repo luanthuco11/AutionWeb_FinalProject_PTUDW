@@ -30,7 +30,6 @@ export const sendForgetPasswordOTPEmail = async (email: string, otp: string) => 
             `,
     });
 
-    console.log("Email sent: " + info.response);
     return true;
   } catch (error) {
     console.log(error);
@@ -59,7 +58,6 @@ export const sendRegisterOTPEmail = async (email: string, otp: string) => {
             `,
     });
 
-    console.log("Email sent: " + info.response);
     return true;
   } catch (error) {
     console.log(error);
@@ -79,7 +77,6 @@ export const sendEmailToUser = async (
       html: html,
     });
 
-    console.log("Email sent: " + info.response);
     return true;
   } catch (error) {
     console.log(error);

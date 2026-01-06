@@ -18,7 +18,6 @@ export const BidHistory = ({ productId }: ProductId) => {
     productId,
     user ? true : false
   ) as { data: BidLog[]; isLoading: boolean };
-  console.log("bid", bidLogs);
   return (
     <div className="relative bg-white rounded-xl shadow-sm overflow-hidden  mb-8 border border-slate-200">
       {isLoadingBigLogs && <LoadingSpinner />}

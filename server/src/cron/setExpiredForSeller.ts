@@ -15,7 +15,6 @@ export const deleteExpiredTokensJob = () => {
           AND status = 'approved';
         `
       );
-      console.log("Đã cập nhật:", res.rowCount, "yêu cầu seller hết hạn");
     } catch (err) {
       console.error("Cron job error:", err);
     }
@@ -32,11 +31,9 @@ export const deleteExpiredTokensJob = () => {
           AND role = 'seller';
         `
       );
-      console.log("Đã cập nhật:", res.rowCount, "quyền seller hết hạn");
     } catch (err) {
       console.error("Cron job error:", err);
     }
   });
 
-  console.log("Cron job: setExpiredForSeller đã khởi động.");
 };

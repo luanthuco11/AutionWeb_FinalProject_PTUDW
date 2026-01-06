@@ -20,7 +20,6 @@ export default function VerifyOtpPage() {
 
   const handleOtpComplete = async (otp: string) => {
     try {
-      console.log("Type: ", verifyOTPType, forgetUserId, pendingUserEmail);
       if (verifyOTPType === "forgetPassword-otp") {
         const user: UserOTP = {
           otp: otp,
@@ -28,7 +27,6 @@ export default function VerifyOtpPage() {
         };
 
         await verifyOTP(user);
-        console.log(useAuthStore.getState().resetToken);
         if (useAuthStore.getState().resetToken) {
           router.push("/reset-password");
         }
@@ -37,11 +35,9 @@ export default function VerifyOtpPage() {
           otp: otp,
           email: pendingUserEmail,
         };
-        console.log("verify-type");
         await verifyRegisterOTP(user);
         router.push("/login");
       }
-      console.log("Mã OTP đã nhập:", otp);
     } catch (error) {
       console.log(error);
     }
@@ -49,7 +45,6 @@ export default function VerifyOtpPage() {
 
   const handleResend = async () => {
     try {
-      console.log("Type: ", verifyOTPType, forgetUserId, pendingUserEmail);
       if (verifyOTPType === "forgetPassword-otp") {
         await reSendResetPasswordOTP();
       } else if (verifyOTPType === "register-otp") {

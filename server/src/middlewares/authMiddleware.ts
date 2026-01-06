@@ -70,7 +70,6 @@ export const protectedRoutes = (
       }
     );
   } catch (error) {
-    console.log("Lỗi khi xác minh JWT trong middleware", error);
     return res.status(500).json({ message: "Lỗi hệ thống" });
   }
 };
@@ -125,7 +124,6 @@ export const ProtectedResetPasswordRoutes = (
       }
     );
   } catch (error) {
-    console.log("Lỗi khi xác minh JWT trong middleware", error);
     return res.status(500).json({ message: "Lỗi hệ thống" });
   }
 };
