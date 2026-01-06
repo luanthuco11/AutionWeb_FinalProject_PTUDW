@@ -16,6 +16,8 @@
     "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "flowbite": "^3.1.2",
+    "flowbite-react": "^0.12.15",
     "fuse.js": "^7.1.0",
     "lucide-react": "^0.553.0",
     "next": "16.0.7",
