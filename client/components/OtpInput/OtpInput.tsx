@@ -38,9 +38,17 @@ const OtpInput = ({ length = 6, onComplete }: OtpInputProps) => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     // Xử lý khi nhấn Backspace
-    if (e.key === "Backspace" && !otp[index] && index > 0 && inputRefs.current[index - 1]) {
+    if (
+      e.key === "Backspace" &&
+      !otp[index] &&
+      index > 0 &&
+      inputRefs.current[index - 1]
+    ) {
       inputRefs.current[index - 1]?.focus();
     }
   };
@@ -57,11 +65,8 @@ const OtpInput = ({ length = 6, onComplete }: OtpInputProps) => {
       }
     });
     setOtp(newOtp);
-    
-    if (data.length === length) {
-      onComplete(data);
-    }
-    
+
+
     // Focus vào ô cuối cùng hoặc ô tiếp theo sau chuỗi paste
     const nextIndex = data.length < length ? data.length : length - 1;
     inputRefs.current[nextIndex]?.focus();

@@ -69,12 +69,12 @@ export const UserList = () => {
     setIsPopup(false);
   };
   const handleOnResetUserPassword = (user: User) => {
-    setSelectedResetUser({userId: String(user.id), mail: user.email});
+    setSelectedResetUser({ userId: String(user.id), mail: user.email });
     setIsResetPopup(true);
   };
   const handleResetUserPassword = () => {
     if (selectedResetUser) {
-        resetUserPassword(selectedResetUser)
+      resetUserPassword(selectedResetUser);
     }
     setIsResetPopup(false);
   };
@@ -113,13 +113,15 @@ export const UserList = () => {
                   <tbody>
                     {users.map((item: User, index: number) => {
                       let point = 100;
+                      let isRating = false;
                       if (item.positive_points + item.negative_points != 0)
-                        point = Math.round(
-                          (Number(item.positive_points) /
-                            (Number(item.positive_points) +
-                              Number(item.negative_points))) *
-                            100
-                        );
+                        isRating = true;
+                      point = Math.round(
+                        (Number(item.positive_points) /
+                          (Number(item.positive_points) +
+                            Number(item.negative_points))) *
+                          100
+                      );
 
                       return (
                         <tr
@@ -132,17 +134,24 @@ export const UserList = () => {
                           <td className="px-4 py-3 text-text-light">
                             {item.email}
                           </td>
-                          <td
-                            className={`px-4 py-3 font-bold ${
-                              point <= 60
-                                ? "text-red-500"
-                                : point < 80
-                                ? "text-yellow-400"
-                                : "text-green-500"
-                            }`}
-                          >
-                            {point}%
-                          </td>
+                          {isRating ? (
+                            <td
+                              className={`px-4 py-3 font-bold ${
+                                point <= 60
+                                  ? "text-red-500"
+                                  : point < 80
+                                  ? "text-yellow-400"
+                                  : "text-green-500"
+                              }`}
+                            >
+                              {point}%
+                            </td>
+                          ) : (
+                            <td className={`px-4 py-3 font-bold text-gray-400`}>
+                              Chưa đánh giá
+                            </td>
+                          )}
+
                           <td className="px-4 py-3">{item.role}</td>
                           <td className="px-4 py-3 text-text-light ">
                             {formatDate(item.created_at)}

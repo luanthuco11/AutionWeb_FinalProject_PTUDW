@@ -18,7 +18,7 @@ export default function ViewDetail({ user }: { user: User }) {
   const positiveRatingPercent = useMemo(
     () =>
       sumRating === 0
-        ? 0
+        ? -1
         : Math.round(
             (user.positive_points /
               (user.negative_points + user.positive_points)) *
@@ -86,8 +86,10 @@ export default function ViewDetail({ user }: { user: User }) {
                   Tích cực
                 </p>
                 <p className="text-xl sm:text-2xl font-bold text-emerald-600">
-                  {positiveRatingPercent !== 0
-                    ? `${positiveRatingPercent}%`
+                  {positiveRatingPercent !== -1
+                    ? `${positiveRatingPercent}${
+                        positiveRatingPercent ? "%" : ""
+                      }`
                     : "--"}
                 </p>
               </div>
